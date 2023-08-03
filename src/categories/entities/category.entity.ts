@@ -1,6 +1,8 @@
 import { Table, Model, Column, DataType } from 'sequelize-typescript';
 
-@Table
+@Table({ 
+  timestamps: false,
+})
 export class Category extends Model {
 
   @Column({
