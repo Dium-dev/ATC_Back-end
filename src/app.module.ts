@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import * as dotenv from 'dotenv'
+import * as dotenv from 'dotenv';
 import { SequelizeModule } from '@nestjs/sequelize';
-dotenv.config()
+import { CategoriesModule } from './categories/categories.module';
+dotenv.config();
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ dotenv.config()
       autoLoadModels: true,
       synchronize: true,
     }),
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
