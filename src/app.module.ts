@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import * as dotenv from 'dotenv';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { CategoriesModule } from './categories/categories.module';
+import { Category } from './categories/entities/category.entity';
 dotenv.config();
 
 @Module({
@@ -15,7 +16,7 @@ dotenv.config();
       username: process.env.DBUSERNAME,
       password: process.env.DBPASSWORD,
       database: process.env.DBDATABASE,
-      models: [],
+      models: [Category],
       autoLoadModels: true,
       synchronize: true,
     }),
