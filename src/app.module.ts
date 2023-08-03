@@ -6,7 +6,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ProductsModule } from './products/products.module';
 import { BrandsModule } from './brands/brands.module';
 import { DireetionsModule } from './directions/directions.module';
+import { CategoriesModule } from './categories/categories.module';
+import { Category } from './categories/entities/category.entity';
 import { UsersModule } from './users/users.module';
+
 
 dotenv.config();
 
@@ -19,7 +22,7 @@ dotenv.config();
       username: process.env.DBUSERNAME,
       password: process.env.DBPASSWORD,
       database: process.env.DBDATABASE,
-      models: [],
+      models: [Category],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -27,8 +30,8 @@ dotenv.config();
     ProductsModule,
     BrandsModule,
     DireetionsModule,
+    CategoriesModule,
     UsersModule,
-
   ],
   controllers: [AppController],
   providers: [AppService],
