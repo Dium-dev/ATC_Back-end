@@ -2,7 +2,7 @@
 import { Column, Model, DataType, Table } from "sequelize-typescript";
 
 @Table({
-    tableName: 'brands',
+    tableName: 'Brands',
     timestamps: true,
     underscored: true
 })
