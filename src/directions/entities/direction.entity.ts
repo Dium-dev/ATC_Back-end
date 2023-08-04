@@ -1,4 +1,4 @@
-import { Column, Model, DataType, Table, BelongsTo } from "sequelize-typescript";
+import { Column, Model, DataType, Table, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { User } from "src/users/entities/user.entity";
 @Table({
     tableName: 'Directions',
@@ -23,7 +23,7 @@ export class Direction extends Model<Direction> {
 
     @Column({
         type: DataType.STRING,
-        allowNull:false,
+        allowNull: false,
     })
     ciudad: string;
 
@@ -39,7 +39,13 @@ export class Direction extends Model<Direction> {
     })
     calle: string;
 
-    @BelongsTo(() => User, 'userId')
-    userId: User
-
+    @ForeignKey(() => User)
+    @Column({
+        type: DataType.UUID
+      })
+    userId: User;
+    
+    @BelongsTo(() => User)
+    user: User;
+    
 }

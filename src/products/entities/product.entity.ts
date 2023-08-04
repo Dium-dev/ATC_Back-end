@@ -4,9 +4,10 @@ import {
   Table,
   DataType,
   BelongsTo,
+  ForeignKey,
 } from 'sequelize-typescript';
 import { Brand } from 'src/brands/entities/brand.entity';
-import { Category } from 'src/categories/entities/category.entity';
+import { Categories } from 'src/categories/entities/category.entity';
 
 enum stateproduct {
   Active = 'Activa',
@@ -79,9 +80,22 @@ export class Product extends Model<Product> {
   })
   year: string;
 
-  @BelongsTo(() => Brand)
+  @ForeignKey(() => Brand)
+  @Column({
+    type: DataType.UUID
+  })
   brandId: Brand;
 
-  @BelongsTo(() => Category)
-  categoyryId: Category;
+  @BelongsTo(() => Brand, 'brandId')
+  brand: Brand;
+
+  @ForeignKey(() => Categories)
+  @Column({
+    type: DataType.UUID
+  })
+  categoyryId: Categories;
+
+  @BelongsTo(() => Categories)
+  category: Categories;
+
 }

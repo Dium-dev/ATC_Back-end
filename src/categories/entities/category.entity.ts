@@ -1,10 +1,11 @@
-import { Table, Model, Column, DataType } from 'sequelize-typescript';
+import { Table, Model, Column, DataType, HasMany } from 'sequelize-typescript';
+import { Product } from 'src/products/entities/product.entity';
 
-@Table({ 
-  timestamps: false,
+@Table({
   tableName: 'Categories',
+  timestamps: false,
 })
-export class Category extends Model<Category> {
+export class Categories extends Model<Categories> {
 
   @Column({
     type: DataType.UUID,
@@ -12,12 +13,15 @@ export class Category extends Model<Category> {
     allowNull: false,
     primaryKey: true,
   })
-    id: string;
+  id: string;
+
+  @HasMany(() => Product)
+  products: Product[];
 
   @Column({
-    type:DataType.STRING,
-    allowNull:false,
-    unique:true,
+    type: DataType.STRING,
+    allowNull: false,
+    unique: true,
   })
-    name:string;
+  name: string;
 }
