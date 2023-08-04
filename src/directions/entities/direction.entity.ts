@@ -39,7 +39,7 @@ export class Direction extends Model<Direction> {
     })
     calle: string;
 
-    @BelongsTo(() => User)
-    user: User
+    @BelongsTo(() => User, 'userId')
+    userId: User
 
 }
