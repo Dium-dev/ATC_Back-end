@@ -1,4 +1,12 @@
-import { Column, Model, Table, DataType } from 'sequelize-typescript';
+import {
+  Column,
+  Model,
+  Table,
+  DataType,
+  BelongsTo,
+} from 'sequelize-typescript';
+import { Brand } from 'src/brands/entities/brand.entity';
+import { Category } from 'src/categories/entities/category.entity';
 
 enum stateproduct {
   Active = 'Activa',
@@ -70,4 +78,10 @@ export class Product extends Model<Product> {
     allowNull: false,
   })
   year: string;
+
+  @BelongsTo(() => Brand)
+  brandId: Brand;
+
+  @BelongsTo(() => Category)
+  categoyryId: Category;
 }
