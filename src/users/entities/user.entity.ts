@@ -54,6 +54,7 @@ export class User extends Model<User> {
     type: DataType.ENUM({
       values: ['superAdmin', 'admin', 'user'],
     }),
+    defaultValue: rol.user,
     allowNull: false,
   })
   rol: rol;
