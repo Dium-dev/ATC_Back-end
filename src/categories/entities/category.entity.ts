@@ -2,8 +2,9 @@ import { Table, Model, Column, DataType } from 'sequelize-typescript';
 
 @Table({ 
   timestamps: false,
+  tableName: 'categories',
 })
-export class Category extends Model {
+export class Category extends Model<Category> {
 
   @Column({
     type:DataType.STRING,
