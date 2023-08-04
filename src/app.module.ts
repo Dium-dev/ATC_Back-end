@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import * as dotenv from 'dotenv'
 import { SequelizeModule } from '@nestjs/sequelize';
 import { BrandsModule } from './brands/brands.module';
+import { DireetionsModule } from './directions/directions.module';
 dotenv.config()
 
 @Module({
@@ -20,6 +21,7 @@ dotenv.config()
       synchronize: true,
     }),
     BrandsModule,
+    DireetionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
