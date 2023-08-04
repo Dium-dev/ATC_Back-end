@@ -93,7 +93,7 @@ export class Product extends Model<Product> {
   @Column({
     type: DataType.UUID
   })
-  categoyryId: Categories;
+  categoryId: Categories;
 
   @BelongsTo(() => Categories)
   category: Categories;
