@@ -1,4 +1,6 @@
-import { Column, Model, Table, DataType } from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { Direction } from '../../directions/entities/direction.entity'
+
 enum rol {
   superAdmin = 'superAdmin',
   admin = 'admin',
@@ -64,4 +66,7 @@ export class User extends Model<User> {
     defaultValue: true,
   })
   active: boolean;
+
+  @HasMany(() => Direction)
+  directions: Direction[];
 }
