@@ -1,5 +1,5 @@
-import { Column, Model, DataType, Table } from "sequelize-typescript";
-
+import { Column, Model, DataType, Table, BelongsTo } from "sequelize-typescript";
+import { User } from "src/users/entities/user.entity";
 @Table({
     tableName: 'Directions',
     timestamps: true,
@@ -38,4 +38,8 @@ export class Direction extends Model<Direction> {
         allowNull: false
     })
     calle: string;
+
+    @BelongsTo(() => User)
+    user: User
+
 }
