@@ -7,8 +7,12 @@ import { ProductsModule } from './products/products.module';
 import { BrandsModule } from './brands/brands.module';
 import { DireetionsModule } from './directions/directions.module';
 import { CategoriesModule } from './categories/categories.module';
-import { Category } from './categories/entities/category.entity';
+import { Categories } from './categories/entities/category.entity';
 import { UsersModule } from './users/users.module';
+import { User } from './users/entities/user.entity';
+import { Direction } from './directions/entities/direction.entity';
+import { Brand } from './brands/entities/brand.entity';
+import { Product } from './products/entities/product.entity';
 
 
 dotenv.config();
@@ -22,7 +26,7 @@ dotenv.config();
       username: process.env.DBUSERNAME,
       password: process.env.DBPASSWORD,
       database: process.env.DBDATABASE,
-      models: [Category],
+      models: [Product, User, Categories, Direction, Brand],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -36,4 +40,4 @@ dotenv.config();
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

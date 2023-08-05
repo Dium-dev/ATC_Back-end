@@ -17,13 +17,12 @@ export class Brand extends Model<Brand> {
     })
     id: string;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull:false,
-    })
-    name: string;
-
     @HasMany(() => Product)
     products: Product[];
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
+    name: string;
 }
