@@ -10,33 +10,33 @@ enum Rol {
 export class CreateUserDto {
 
   @ApiProperty()
-  @IsString()
-  @IsEmail()
-  @IsNotEmpty()
+  @IsString({ message: 'El campo $property debe ser un texto' })
+  @IsEmail(undefined, { message: 'Invalid email format' })
+  @IsNotEmpty({ message: 'El campo $property está vacío' })
     email: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'El campo $property debe ser un texto' })
+  @IsNotEmpty({ message: 'El campo $property está vacío' })
     password: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'El campo $property debe ser un texto' })
+  @IsNotEmpty({ message: 'El campo $property está vacío' })
     firtsName: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'El campo $property debe ser un texto' })
+  @IsNotEmpty({ message: 'El campo $property está vacío' })
     lastName: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'El campo $property debe ser un texto' })
+  @IsNotEmpty({ message: 'El campo $property está vacío' })
     phone: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'El campo $property debe ser un texto' })
+  @IsNotEmpty({ message: 'El campo $property está vacío' })
     rol: string;
 }
