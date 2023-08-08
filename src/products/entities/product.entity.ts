@@ -9,7 +9,7 @@ import {
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 
-enum stateproduct {
+export enum stateproduct {
   Active = 'Activa',
   Inactive = 'Inactiva',
 }
@@ -21,10 +21,11 @@ enum stateproduct {
 })
 export class Product extends Model<Product> {
   @Column({
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
+    type: DataType.STRING,
     allowNull: false,
     primaryKey: true,
+    unique: true,
+    defaultValue: DataType.UUIDV4
   })
   id: string;
 
@@ -70,13 +71,13 @@ export class Product extends Model<Product> {
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
   model: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
   year: string;
 
@@ -84,7 +85,7 @@ export class Product extends Model<Product> {
   @Column({
     type: DataType.UUID
   })
-  brandId: Brand;
+  brandId: string;
 
   @BelongsTo(() => Brand, 'brandId')
   brand: Brand;
@@ -93,7 +94,7 @@ export class Product extends Model<Product> {
   @Column({
     type: DataType.UUID
   })
-  categoryId: Categories;
+  categoryId: string;
 
   @BelongsTo(() => Categories)
   category: Categories;
