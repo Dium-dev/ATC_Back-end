@@ -3,7 +3,8 @@ import { User } from "src/users/entities/user.entity";
 @Table({
     tableName: 'Directions',
     timestamps: true,
-    underscored: true
+    underscored: true,
+    paranoid:true,
 })
 
 export class Direction extends Model<Direction> {
