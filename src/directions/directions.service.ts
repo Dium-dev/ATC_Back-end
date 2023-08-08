@@ -52,7 +52,7 @@ export class DireetionsService {
       }
 
     }catch(error){
-      console.log('Error al actualizar la direccion: ', error)
+   
       throw error
 
     }
