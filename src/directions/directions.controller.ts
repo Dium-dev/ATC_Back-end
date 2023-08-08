@@ -24,7 +24,7 @@ export class DireetionsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDireetionDto: UpdateDireetionDto) {
-    return this.direetionsService.update(+id, updateDireetionDto);
+    return this.direetionsService.update(id, updateDireetionDto);
   }
 
   @Delete(':id')
