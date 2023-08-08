@@ -4,7 +4,7 @@ import { Product } from "src/products/entities/product.entity";
 
 @Table({
     tableName: 'Brands',
-    timestamps: true,
+    timestamps: false,
     underscored: true
 })
 
