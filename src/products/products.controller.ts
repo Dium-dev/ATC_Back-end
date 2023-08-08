@@ -18,9 +18,15 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  async getProducts(@Query() queryProducts: QueryProductsDto): Promise<any> {
+  async getProducts(
+    @Query() queryProducts: QueryProductsDto,
+  ): Promise<{
+    items: any;
+    totalItems: number;
+    totalPages: number;
+    page: number;
+  }> {
     let queryBD = await this.productsService.getQueryDB(queryProducts);
     return await this.productsService.getProducts(queryBD);
   }
-
 }

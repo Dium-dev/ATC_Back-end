@@ -6,10 +6,11 @@ import { Op } from 'sequelize';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Product } from './entities/product.entity';
+import { IQuery } from './interfaces/querys.interface';
 
 @Injectable()
 export class ProductsService {
-  async getQueryDB(query: QueryProductsDto): Promise<any> {
+  async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
     let querys = {
       limit: query.limit,
       page: query.page,
