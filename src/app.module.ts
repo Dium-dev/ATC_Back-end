@@ -13,6 +13,7 @@ import { User } from './users/entities/user.entity';
 import { Direction } from './directions/entities/direction.entity';
 import { Brand } from './brands/entities/brand.entity';
 import { Product } from './products/entities/product.entity';
+import { AdminProductsModule } from './admin-products/admin-products.module';
 
 
 dotenv.config();
@@ -29,6 +30,8 @@ dotenv.config();
       models: [Product, User, Categories, Direction, Brand],
       autoLoadModels: true,
       synchronize: true,
+      logging: false,
+      sync: { force: false },
     }),
 
     ProductsModule,
@@ -36,6 +39,7 @@ dotenv.config();
     DireetionsModule,
     CategoriesModule,
     UsersModule,
+    AdminProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

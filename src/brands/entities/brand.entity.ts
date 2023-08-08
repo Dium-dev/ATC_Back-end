@@ -1,28 +1,28 @@
 
-import { Column, Model, DataType, Table, HasMany } from "sequelize-typescript";
-import { Product } from "src/products/entities/product.entity";
+import { Column, Model, DataType, Table, HasMany } from 'sequelize-typescript';
+import { Product } from 'src/products/entities/product.entity';
 
 @Table({
-    tableName: 'Brands',
-    timestamps: true,
-    underscored: true
+  tableName: 'Brands',
+  timestamps: false,
+  underscored: true,
 })
 
 export class Brand extends Model<Brand> {
-    @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
-        allowNull: false,
-        primaryKey: true
-    })
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    allowNull: false,
+    primaryKey: true,
+  })
     id: string;
 
-    @HasMany(() => Product)
+  @HasMany(() => Product)
     products: Product[];
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
     name: string;
 }

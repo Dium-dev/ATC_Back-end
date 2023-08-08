@@ -9,7 +9,7 @@ import {
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 
-enum stateproduct {
+export enum stateproduct {
   Active = 'Activa',
   Inactive = 'Inactiva',
 }
@@ -21,12 +21,13 @@ enum stateproduct {
 })
 export class Product extends Model<Product> {
   @Column({
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
+    type: DataType.STRING,
     allowNull: false,
     primaryKey: true,
+    unique: true,
+    defaultValue: DataType.UUIDV4,
   })
-  id: string;
+    id: string;
 
   @Column({
     type: DataType.STRING(60),
@@ -35,67 +36,67 @@ export class Product extends Model<Product> {
       len: [1, 60],
     },
   })
-  title: string;
+    title: string;
 
   @Column({
     type: DataType.TEXT,
     allowNull: false,
   })
-  description: string;
+    description: string;
 
   @Column({
     type: DataType.ENUM(...Object.values(stateproduct)),
     allowNull: false,
   })
-  state: stateproduct;
+    state: stateproduct;
 
   @Column({
     type: DataType.INTEGER,
     defaultValue: 0,
     allowNull: false,
   })
-  stock: number;
+    stock: number;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
-  availability: number;
+    availability: number;
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),
     allowNull: true,
   })
-  image: string[];
+    image: string[];
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
-  model: string;
+    model: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
-  year: string;
+    year: string;
 
   @ForeignKey(() => Brand)
   @Column({
-    type: DataType.UUID
+    type: DataType.UUID,
   })
-  brandId: Brand;
+    brandId: string;
 
   @BelongsTo(() => Brand, 'brandId')
-  brand: Brand;
+    brand: Brand;
 
   @ForeignKey(() => Categories)
   @Column({
-    type: DataType.UUID
+    type: DataType.UUID,
   })
-  categoryId: Categories;
+    categoryId: string;
 
   @BelongsTo(() => Categories)
-  category: Categories;
+    category: Categories;
 
 }
