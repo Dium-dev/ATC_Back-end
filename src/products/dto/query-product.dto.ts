@@ -7,16 +7,18 @@ import {
 } from 'class-validator';
 
 export enum OrderType {
-  Asc = 'ASC',
-  Desc = 'DESC',
+  nameAsc = 'NOMBRE ASC',
+  nameDesc = 'NOMBRE DESC',
+  priceAsc = 'PRECIO ASC',
+  priceDesc = 'PRECIO DESC',
 }
 
-export enum ActiveType{
-    active = 'Activa',
-    inactive = 'Inactiva'
+export enum ActiveType {
+  active = 'Activa',
+  inactive = 'Inactiva',
 }
 
-export class GetProductDto {
+export class QueryProductsDto {
   @IsNotEmpty()
   @IsInt()
   limit: number;
