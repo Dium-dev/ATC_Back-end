@@ -10,9 +10,13 @@ export class UsersController {
     ) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-
-    !this.usersService.findOneEmail(createUserDto.email) && this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const userVerify = await this.usersService.findOneEmail(createUserDto.email)
+    if(!userVerify){
+      return await this.usersService.create(createUserDto);
+    } else {
+      return userVerify;
+    }
   }
 
   @Get()

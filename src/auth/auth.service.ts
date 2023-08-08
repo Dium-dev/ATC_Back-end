@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
@@ -11,8 +11,8 @@ export class AuthService {
     ){}
 
     async generatePassword(password: string) {
-            const salt = await bcrypt.genSalt(11);
-            return await bcrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt(10);
+        return await bcrypt.hash(password, salt);
     }
 
     async generateToken(userId: string, userEmail: string) {

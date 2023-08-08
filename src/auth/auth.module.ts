@@ -9,7 +9,7 @@ import { JWT_SECRET } from '../config/env';
     JwtModule.register({
       global: true,
       secret: JWT_SECRET,
-      signOptions: { expiresIn: "12hs" }
+      signOptions: { expiresIn: "12h" }
     })
   ],
   providers: [AuthService],

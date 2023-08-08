@@ -1,4 +1,4 @@
-import { Injectable, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,12 +9,12 @@ import { AuthService } from '../auth/auth.service';
 export class UsersService {
   constructor(
     @InjectModel(User)
-    //private userModel: typeof User,
+    private userModel: typeof User,
     private AuthService: AuthService,
   ){}
 
-  @HttpCode(HttpStatus.OK)
-  async create(createUserDto: CreateUserDto): Promise<User> {
+
+  async create(createUserDto: CreateUserDto) {
     try {
       const data = {
         firstName: createUserDto.firstName,
@@ -24,17 +24,24 @@ export class UsersService {
         phone: createUserDto.phone
       }
 
-      const newUser = await User.create(data);
+      const newUser = await this.userModel.create(data);
 
       if(newUser) {
-        newUser['token'] = await this.AuthService.generateToken(newUser.id, newUser.email)
-
-        return newUser;
+        
+        const response = {
+          id: newUser.id,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          email: newUser.email,
+          token: await this.AuthService.generateToken(newUser.id, newUser.email)
+        }
+        
+        return response;
       } else {
         throw new Error('Error creating user');
       }
     } catch (err) {
-      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new Error(err.message);
     }
   }
 
@@ -49,8 +56,11 @@ export class UsersService {
   async findOneEmail(email: string) {
     const user = await User.findOne({ where: { email }});
 
-    if(!user) return false;
-    else throw new Error('There is already an account created with that email');
+    if(!user){ 
+      return false
+    } else {
+      throw new Error('There is already an account created with that email');
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
