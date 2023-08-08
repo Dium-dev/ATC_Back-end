@@ -13,6 +13,7 @@ import { User } from './users/entities/user.entity';
 import { Direction } from './directions/entities/direction.entity';
 import { Brand } from './brands/entities/brand.entity';
 import { Product } from './products/entities/product.entity';
+import { AuthModule } from './auth/auth.module';
 
 
 dotenv.config();
@@ -36,6 +37,7 @@ dotenv.config();
     DireetionsModule,
     CategoriesModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
