@@ -29,6 +29,6 @@ export class DireetionsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.direetionsService.remove(+id);
+    this.direetionsService.remove(id);
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
+import { Direction } from './entities/direction.entity';
 
 @Injectable()
 export class DireetionsService {
@@ -20,7 +21,24 @@ export class DireetionsService {
     return `This action updates a #${id} direetion`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} direetion`;
+  async remove(id: string) {
+
+    try {
+      const direction = await Direction.findByPk(id);
+
+      if (direction) {
+          await direction.destroy();
+          return { message: 'Direccion eliminada exitosamente' };
+      } else {
+          throw new Error('Direccion no encontrada');
+      }
+  } catch (error) {
+      console.error('Error al eliminar direccion:', error);
+      throw error;
   }
+   
+  }
+
+
+  
 }
