@@ -35,10 +35,6 @@ export class UsersService {
           user.email = updateUserDto.email;
           }
 
-          if(updateUserDto.password){
-            user.password = updateUserDto.password;
-
-          }
 
           if(updateUserDto.phone){
             user.phone = updateUserDto.phone;
@@ -54,7 +50,7 @@ export class UsersService {
 
       }
   } catch (error) {
-      console.error('Error al actualizar el usuario:', error);
+      
       throw error; 
   }
 
