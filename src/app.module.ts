@@ -14,6 +14,7 @@ import { Direction } from './directions/entities/direction.entity';
 import { Brand } from './brands/entities/brand.entity';
 import { Product } from './products/entities/product.entity';
 import { AdminProductsModule } from './admin-products/admin-products.module';
+import { AuthModule } from './auth/auth.module';
 
 
 dotenv.config();
@@ -40,6 +41,7 @@ dotenv.config();
     CategoriesModule,
     UsersModule,
     AdminProductsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

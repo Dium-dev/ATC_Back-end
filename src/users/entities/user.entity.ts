@@ -1,7 +1,7 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
 
-enum rol {
+export enum Rol {
   superAdmin = 'superAdmin',
   admin = 'admin',
   user = 'user',
@@ -20,48 +20,48 @@ export class User extends Model<User> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    firtsName: string;
+  firstName: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    lastName: string;
+  lastName: string;
 
   @Column({
     type: DataType.STRING,
     unique: true,
     allowNull: false,
   })
-    email: string;
+  email: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    password: string;
+  password: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    phone: string;
+  phone: string;
 
   @Column({
     type: DataType.ENUM({
       values: ['superAdmin', 'admin', 'user'],
     }),
-    defaultValue: rol.user,
+    defaultValue: Rol.user,
     allowNull: false,
   })
-    rol: rol;
+  rol: Rol;
 
   @HasMany(() => Direction)
-    directions: Direction[];
+  directions: Direction[];
 }

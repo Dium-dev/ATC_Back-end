@@ -22,14 +22,15 @@ export class ProductsService {
       whereBrandId: { id: {} },
     };
 
-    if (query.name) querys.whereProduct['title'] = { [Op.iLike]: query.name };
-    if (query.active)
-      querys.whereProduct['active'] = { [Op.iLike]: query.active };
+    if (query.name)
+      querys.whereProduct['title'] = { [Op.iLike]: `%${query.name}%` };
+    if (query.active) querys.whereProduct['state'] = query.active;
     if (query.order) {
       let thisOrder = query.order.split(' ');
       if (thisOrder[0] === 'NOMBRE') {
         querys.order.push(['title', thisOrder[1]]);
-      } else {
+      }
+      if (thisOrder[0] === 'PRECIO') {
         querys.order.push(['price', thisOrder[1]]);
       }
     }
@@ -67,6 +68,7 @@ export class ProductsService {
         'title',
         'state',
         'stock',
+        'price',
         'availability',
         'image',
         'model',
@@ -83,4 +85,25 @@ export class ProductsService {
 
     return { items, totalItems, totalPages, page };
   }
+
+
+  async existCategoty(categoryName: string): Promise<boolean> {
+    const boleanCategory: number = await Categories.count({ where: { name: { [Op.iLike]: `%${categoryName}%` } } });
+    if (boleanCategory) {
+      return true;
+    };
+    return false;
+  }
+
+  async getProductsXCategory(categoryName: string): Promise<any> {
+    const thisProducts = await Product.findAll({
+      limit: 5,
+      attributes: ['id', 'title', 'state', 'price', 'image'],
+      include: [
+        { model: Categories, where: { name: { [Op.iLike]: `%${categoryName}%` } } }
+      ]
+    });
+    return thisProducts;
+  }
+
 }
