@@ -25,8 +25,8 @@ export class UsersService {
 
       if (user) {
          
-          if (updateUserDto.firtsName) {
-              user.firtsName = updateUserDto.firtsName;
+          if (updateUserDto.firstName) {
+              user.firtsName = updateUserDto.firstName;
           }
           if (updateUserDto.lastName) {
               user.lastName = updateUserDto.lastName;
