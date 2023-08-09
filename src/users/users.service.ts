@@ -47,7 +47,7 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    return 'This action returns all users';
   }
 
   findOne(id: number) {
@@ -64,8 +64,34 @@ export class UsersService {
     }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    try {
+      const user = await User.findByPk(id);
+
+      if (user) {
+        if (updateUserDto.firstName) {
+          user.firstName = updateUserDto.firstName;
+        }
+        if (updateUserDto.lastName) {
+          user.lastName = updateUserDto.lastName;
+        }
+        if (updateUserDto.email) {
+          user.email = updateUserDto.email;
+        }
+
+        if (updateUserDto.phone) {
+          user.phone = updateUserDto.phone;
+        }
+
+        await user.save();
+
+        return user;
+      } else {
+        throw new Error('Usuario no encontrado');
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   remove(id: number) {
