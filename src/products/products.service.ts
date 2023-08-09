@@ -7,6 +7,7 @@ import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Product } from './entities/product.entity';
 import { IQuery } from './interfaces/querys.interface';
+import { IGetProducts } from './interfaces/getProducts.interface';
 
 @Injectable()
 export class ProductsService {
@@ -46,7 +47,7 @@ export class ProductsService {
     return querys;
   }
 
-  async getProducts(querys: any): Promise<{items: any; totalItems: number, totalPages: number, page: number}> {
+  async getProducts(querys: any): Promise<IGetProducts> {
     const {
       limit,
       offset,
