@@ -11,8 +11,7 @@ export class UsersService {
     @InjectModel(User)
     private userModel: typeof User,
     private AuthService: AuthService,
-  ){}
-
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -20,22 +19,24 @@ export class UsersService {
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
         email: createUserDto.email,
-        password: await this.AuthService.generatePassword(createUserDto.password),
-        phone: createUserDto.phone
-      }
+        password: await this.AuthService.generatePassword(
+          createUserDto.password,
+        ),
+        phone: createUserDto.phone,
+      };
 
       const newUser = await this.userModel.create(data);
 
-      if(newUser) {
-        
+      if (newUser) {
         const response = {
           id: newUser.id,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          email: newUser.email,
-          token: await this.AuthService.generateToken(newUser.id, newUser.email)
-        }
-        
+          token: await this.AuthService.generateToken(
+            newUser.id,
+            newUser.email,
+          ),
+          rol: newUser.rol,
+        };
+
         return response;
       } else {
         throw new Error('Error creating user');
@@ -54,10 +55,10 @@ export class UsersService {
   }
 
   async findOneEmail(email: string) {
-    const user = await User.findOne({ where: { email }});
+    const user = await User.findOne({ where: { email } });
 
-    if(!user){ 
-      return false
+    if (!user) {
+      return false;
     } else {
       throw new Error('There is already an account created with that email');
     }

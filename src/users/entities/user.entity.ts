@@ -1,7 +1,7 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { Direction } from '../../directions/entities/direction.entity'
+import { Direction } from '../../directions/entities/direction.entity';
 
-enum rol {
+export enum Rol {
   superAdmin = 'superAdmin',
   admin = 'admin',
   user = 'user',
@@ -56,10 +56,10 @@ export class User extends Model<User> {
     type: DataType.ENUM({
       values: ['superAdmin', 'admin', 'user'],
     }),
-    defaultValue: rol.user,
+    defaultValue: Rol.user,
     allowNull: false,
   })
-  rol: rol;
+  rol: Rol;
 
   @Column({
     type: DataType.BOOLEAN,
