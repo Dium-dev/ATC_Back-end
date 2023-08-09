@@ -58,7 +58,7 @@ export class UsersService {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return false;
+      return true;
     } else {
       throw new Error('There is already an account created with that email');
     }

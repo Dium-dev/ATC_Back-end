@@ -1,22 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService
-    ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const userVerify = await this.usersService.findOneEmail(createUserDto.email)
-    if(!userVerify){
-      return await this.usersService.create(createUserDto);
-    } else {
-      return userVerify;
-    }
+    return (
+      (await this.usersService.findOneEmail(createUserDto.email)) &&
+      (await this.usersService.create(createUserDto))
+    );
   }
 
   @Get()
