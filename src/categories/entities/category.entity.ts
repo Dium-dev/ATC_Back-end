@@ -4,6 +4,7 @@ import { Product } from 'src/products/entities/product.entity';
 @Table({
   tableName: 'Categories',
   timestamps: false,
+  underscored: true
 })
 export class Categories extends Model<Categories> {
 
