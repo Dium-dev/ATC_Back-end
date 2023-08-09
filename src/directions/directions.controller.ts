@@ -28,7 +28,7 @@ export class DireetionsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.direetionsService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.direetionsService.remove(id);
   }
 }

@@ -33,7 +33,7 @@ export class DireetionsService {
           throw new Error('Direccion no encontrada');
       }
   } catch (error) {
-      console.error('Error al eliminar direccion:', error);
+      
       throw error;
   }
    
