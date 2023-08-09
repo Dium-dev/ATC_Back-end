@@ -14,11 +14,6 @@ export enum OrderType {
   priceDesc = 'PRECIO DESC',
 }
 
-// export enum ActiveType {
-//   active = 'Activa',
-//   inactive = 'Inactiva',
-// }
-
 export class QueryProductsDto {
   @IsNotEmpty()
   @IsInt()
