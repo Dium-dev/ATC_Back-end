@@ -61,7 +61,24 @@ export class DireetionsService {
     
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} direetion`;
+  async remove(id: string) {
+
+    try {
+      const direction = await Direction.findByPk(id);
+
+      if (direction) {
+          await direction.destroy();
+          return { message: 'Direccion eliminada exitosamente' };
+      } else {
+          throw new Error('Direccion no encontrada');
+      }
+  } catch (error) {
+      
+      throw error;
   }
+   
+  }
+
+
+  
 }
