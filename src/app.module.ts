@@ -32,7 +32,7 @@ dotenv.config();
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: false }
+      sync: { force: true },
     }),
 
     ProductsModule,

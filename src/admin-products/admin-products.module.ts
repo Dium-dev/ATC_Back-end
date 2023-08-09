@@ -9,6 +9,6 @@ import { Brand } from 'src/brands/entities/brand.entity';
 @Module({
   imports: [SequelizeModule.forFeature([Product, Categories, Brand])],
   controllers: [AdminProductsController],
-  providers: [AdminProductsService]
+  providers: [AdminProductsService],
 })
 export class AdminProductsModule { }

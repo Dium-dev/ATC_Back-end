@@ -1,5 +1,6 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
+import { Direction } from '../../directions/entities/direction.entity';
 
 export enum Rol {
   superAdmin = 'superAdmin',
@@ -27,6 +28,7 @@ export class User extends Model<User> {
     allowNull: false,
   })
   firstName: string;
+  firtsName: string;
 
   @Column({
     type: DataType.STRING,
