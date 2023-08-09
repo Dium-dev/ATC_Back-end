@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,8 +17,43 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+
+    try {
+
+      const user = await User.findByPk(id);
+
+      if (user) {
+         
+          if (updateUserDto.firstName) {
+              user.firtsName = updateUserDto.firstName;
+          }
+          if (updateUserDto.lastName) {
+              user.lastName = updateUserDto.lastName;
+          }
+          if(updateUserDto.email){
+          user.email = updateUserDto.email;
+          }
+
+
+          if(updateUserDto.phone){
+            user.phone = updateUserDto.phone;
+
+          }
+
+          await user.save();
+
+          return user; 
+      } else {
+
+          throw new Error('Usuario no encontrado');
+
+      }
+  } catch (error) {
+      
+      throw error; 
+  }
+
   }
 
   remove(id: number) {
