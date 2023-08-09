@@ -11,6 +11,7 @@ enum rol {
   tableName: 'Users',
   underscored: true,
   timestamps: true,
+  paranoid: true,
 })
 export class User extends Model<User> {
   @Column({
@@ -60,12 +61,6 @@ export class User extends Model<User> {
     allowNull: false,
   })
     rol: rol;
-
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: true,
-  })
-    active: boolean;
 
   @HasMany(() => Direction)
     directions: Direction[];

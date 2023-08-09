@@ -23,12 +23,12 @@ export class DireetionsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDireetionDto: UpdateDireetionDto) {
-    return this.direetionsService.update(+id, updateDireetionDto);
+  async update(@Param('id') id: string, @Body() updateDireetionDto: UpdateDireetionDto) {
+    return await this.direetionsService.update(id, updateDireetionDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.direetionsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.direetionsService.remove(id);
   }
 }

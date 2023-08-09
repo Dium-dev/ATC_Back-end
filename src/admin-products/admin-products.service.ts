@@ -65,6 +65,7 @@ export class AdminProductsService {
           description: product.Descripción,
           state: product.Estado,
           stock: 0,
+          price: Number(product['Precio COP']),
           availability: Number(product['Disponibilidad de stock (días)']) || 0,
           image: [''],
           year: product.Título.split(' ')[3].includes('-')
@@ -113,6 +114,7 @@ export class AdminProductsService {
     thisProduct.stock = 0;
     thisProduct.availability = Number(product['Disponibilidad de stock (días)']) || 0;
     thisProduct.image = [''];
+
     thisProduct.year = product.Título.split(' ')[3].includes('-')
       ? product.Título.split(' ')[3]
       : product.Título.split(' ')[4].includes('-')
@@ -120,7 +122,7 @@ export class AdminProductsService {
         : null;
     thisProduct.brandId = brandId;
     thisProduct.categoryId = categoryId.dataValues.id;
-  
+
 
     await thisProduct.save();
   }
