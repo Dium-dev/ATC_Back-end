@@ -58,6 +58,12 @@ export class Product extends Model<Product> {
   stock: number;
 
   @Column({
+    type: DataType.FLOAT,
+    allowNull: false
+  })
+  price: number;
+
+  @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
