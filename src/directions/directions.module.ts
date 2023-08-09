@@ -7,6 +7,6 @@ import { Direction } from './entities/direction.entity';
 @Module({
   imports: [SequelizeModule.forFeature([Direction])],
   controllers: [DireetionsController],
-  providers: [DireetionsService]
+  providers: [DireetionsService],
 })
 export class DireetionsModule {}

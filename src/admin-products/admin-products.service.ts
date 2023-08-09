@@ -3,9 +3,9 @@ import { ExcelProductDto } from './dto/exelProducts.dto';
 import { Op } from 'sequelize';
 import axios from 'axios';
 
-import * as XLSX from 'xlsx'
-import * as fs from 'fs'
-import * as Papa from 'papaparse'
+import * as XLSX from 'xlsx';
+import * as fs from 'fs';
+import * as Papa from 'papaparse';
 
 /* entities */
 import { Product } from 'src/products/entities/product.entity';
@@ -16,8 +16,8 @@ import { Brand } from 'src/brands/entities/brand.entity';
 export class AdminProductsService {
 
   async getExcelData(url: string) {
-    let { data } = await axios.get(url, { responseType: 'arraybuffer' })
-    return data
+    const { data } = await axios.get(url, { responseType: 'arraybuffer' });
+    return data;
   }
 
   async excelToCsv(excelData: Buffer): Promise<string> {
@@ -51,14 +51,13 @@ export class AdminProductsService {
 
   async JsonToDatabase(allProducts: ExcelProductDto[]): Promise<{ message: string }> {
     for (const product of allProducts) {
-      let thisProduct = await Product.findByPk(product['Número de publicación'])
+      const thisProduct = await Product.findByPk(product['Número de publicación']);
 
       if (thisProduct) {
-        await this.updateProduct(thisProduct, product)
-      }
-      else {
-        let categoryId = await this.getCategory(product.Categoría);
-        let brandId = await this.getBrand(product.Marca);
+        await this.updateProduct(thisProduct, product);
+      } else {
+        const categoryId = await this.getCategory(product.Categoría);
+        const brandId = await this.getBrand(product.Marca);
 
         await Product.create({
           id: product['Número de publicación'],
@@ -106,26 +105,26 @@ export class AdminProductsService {
   }
 
   private async updateProduct(thisProduct: any, product: any) {
-    let categoryId = await this.getCategory(product.Categoría);
-    let brandId = await this.getBrand(product.Marca);
+    const categoryId = await this.getCategory(product.Categoría);
+    const brandId = await this.getBrand(product.Marca);
 
-    thisProduct.title = product.Título
-    thisProduct.description = product.Descripción
-    thisProduct.state = product.Estado
-    thisProduct.stock = 0
-    thisProduct.price = Number(product['Precio COP'])
-    thisProduct.availability = Number(product['Disponibilidad de stock (días)']) || 0
-    thisProduct.image = ['']
+    thisProduct.title = product.Título;
+    thisProduct.description = product.Descripción;
+    thisProduct.state = product.Estado;
+    thisProduct.stock = 0;
+    thisProduct.availability = Number(product['Disponibilidad de stock (días)']) || 0;
+    thisProduct.image = [''];
+
     thisProduct.year = product.Título.split(' ')[3].includes('-')
       ? product.Título.split(' ')[3]
       : product.Título.split(' ')[4].includes('-')
         ? product.Título.split(' ')[4]
-        : null
-    thisProduct.brandId = brandId
-    thisProduct.categoryId = categoryId.dataValues.id
+        : null;
+    thisProduct.brandId = brandId;
+    thisProduct.categoryId = categoryId.dataValues.id;
 
 
-    await thisProduct.save()
+    await thisProduct.save();
   }
 
 }

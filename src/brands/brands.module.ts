@@ -7,6 +7,6 @@ import { Brand } from './entities/brand.entity';
 @Module({
   imports: [SequelizeModule.forFeature([Brand])],
   controllers: [BrandsController],
-  providers: [BrandsService]
+  providers: [BrandsService],
 })
 export class BrandsModule {}

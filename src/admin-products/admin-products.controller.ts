@@ -8,13 +8,13 @@ export class AdminProductsController {
   @Post('')
   async excelToDataBase(@Body('url') url: string) {
 
-    let excelData = await this.adminProductsService.getExcelData(url)
+    const excelData = await this.adminProductsService.getExcelData(url);
     
-    let csvData = await this.adminProductsService.excelToCsv(excelData)
+    const csvData = await this.adminProductsService.excelToCsv(excelData);
 
-    let jsonData = await this.adminProductsService.csvToJson(csvData)
+    const jsonData = await this.adminProductsService.csvToJson(csvData);
 
-    return await this.adminProductsService.JsonToDatabase(jsonData)
+    return this.adminProductsService.JsonToDatabase(jsonData);
 
   }
 
