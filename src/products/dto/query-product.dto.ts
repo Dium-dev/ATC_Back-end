@@ -5,17 +5,13 @@ import {
   IsEnum,
   IsString,
 } from 'class-validator';
+import { stateproduct } from '../entities/product.entity';
 
 export enum OrderType {
   nameAsc = 'NOMBRE ASC',
   nameDesc = 'NOMBRE DESC',
   priceAsc = 'PRECIO ASC',
   priceDesc = 'PRECIO DESC',
-}
-
-export enum ActiveType {
-  active = 'Activa',
-  inactive = 'Inactiva',
 }
 
 export class QueryProductsDto {
@@ -44,6 +40,6 @@ export class QueryProductsDto {
   brandId?: string;
 
   @IsOptional()
-  @IsEnum(ActiveType)
-  active?: ActiveType;
+  @IsEnum(stateproduct)
+  active?: stateproduct;
 }
