@@ -85,4 +85,25 @@ export class ProductsService {
 
     return { items, totalItems, totalPages, page };
   }
+
+
+  async existCategoty(categoryName: string): Promise<boolean> {
+    const boleanCategory: number = await Categories.count({ where: { name: { [Op.iLike]: `%${categoryName}%` } } });
+    if (boleanCategory) {
+      return true;
+    };
+    return false;
+  }
+
+  async getProductsXCategory(categoryName: string): Promise<any> {
+    const thisProducts = await Product.findAll({
+      limit: 5,
+      attributes: ['id', 'title', 'state', 'price', 'image'],
+      include: [
+        { model: Categories, where: { name: { [Op.iLike]: `%${categoryName}%` } } }
+      ]
+    });
+    return thisProducts;
+  }
+
 }
