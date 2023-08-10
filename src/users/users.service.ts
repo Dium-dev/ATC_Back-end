@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -42,7 +43,40 @@ export class UsersService {
         throw new Error('Error creating user');
       }
     } catch (err) {
-      throw new Error(err.message);
+      console.log({ err: err.message });
+    }
+  }
+
+  async signIn(LoginUserDto: LoginUserDto) {
+    try {
+      const checkUser = await User.findOne({
+        where: { email: LoginUserDto.email },
+      });
+      if (checkUser) {
+        const comparePassword = await this.AuthService.comparePassword(
+          LoginUserDto.password,
+          checkUser.password,
+        );
+
+        if (comparePassword) {
+          const response = {
+            id: checkUser.id,
+            rol: checkUser.rol,
+            token: await this.AuthService.generateToken(
+              checkUser.id,
+              checkUser.email,
+            ),
+          };
+
+          return response;
+        } else {
+          throw new Error('Incorrect password');
+        }
+      } else {
+        throw new Error('The email entered does not correspond to any user');
+      }
+    } catch (err) {
+      return { message: err.message };
     }
   }
 
@@ -55,12 +89,16 @@ export class UsersService {
   }
 
   async findOneEmail(email: string) {
-    const user = await User.findOne({ where: { email } });
+    try {
+      const user = await User.findOne({ where: { email } });
 
-    if (!user) {
-      return true;
-    } else {
-      throw new Error('There is already an account created with that email');
+      if (!user) {
+        return true;
+      } else {
+        throw new Error('There is already an account created with that email');
+      }
+    } catch (err) {
+      return { message: err.message };
     }
   }
 
@@ -89,8 +127,8 @@ export class UsersService {
       } else {
         throw new Error('Usuario no encontrado');
       }
-    } catch (error) {
-      throw error;
+    } catch (err) {
+           return { message: err.message };
     }
   }
 

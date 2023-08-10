@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -21,6 +22,11 @@ export class UsersController {
       (await this.usersService.findOneEmail(createUserDto.email)) &&
       (await this.usersService.create(createUserDto))
     );
+  }
+
+  @Post('login')
+  async signIn(@Body() LoginUserDto: LoginUserDto) {
+    return this.usersService.signIn(LoginUserDto);
   }
 
   @Get()
