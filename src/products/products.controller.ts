@@ -22,7 +22,7 @@ export class ProductsController {
   async getProducts(
     @Query() queryProducts: QueryProductsDto,
   ): Promise<IGetProducts> {
-    let queryBD = await this.productsService.getQueryDB(queryProducts);
-    return await this.productsService.getProducts(queryBD);
+    const queryBD = await this.productsService.getQueryDB(queryProducts);
+    return this.productsService.getProducts(queryBD);
   }
 }
