@@ -17,7 +17,6 @@ export class DireetionsService {
       userId: createDireetionDto.userId
     })
 
-    await newDirection.save()
     return newDirection
 
   }catch(error){
