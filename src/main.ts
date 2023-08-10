@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { Categories } from './categories/entities/category.entity';
 import { Brand } from './brands/entities/brand.entity';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {config} from 'dotenv';
+import { config } from 'dotenv';
 config();
 
 async function bootstrap() {

@@ -31,7 +31,7 @@ export class DireetionsService {
 
 
   findAll() {
-    return `This action returns all direetions`;
+    return 'This action returns all direetions';
   }
 
   findOne(id: number) {
@@ -40,41 +40,41 @@ export class DireetionsService {
 
   async update(id: string, updateDireetionDto: UpdateDireetionDto) {
 
-    try{
+    try {
 
-      const direction = await Direction.findByPk(id)
+      const direction = await Direction.findByPk(id);
 
-      if(direction){
+      if (direction) {
 
-        if(updateDireetionDto.codigoPostal){
-          direction.codigoPostal = updateDireetionDto.codigoPostal
+        if (updateDireetionDto.codigoPostal) {
+          direction.codigoPostal = updateDireetionDto.codigoPostal;
         }
 
-        if(updateDireetionDto.ciudad){
-          direction.ciudad = updateDireetionDto.ciudad
+        if (updateDireetionDto.ciudad) {
+          direction.ciudad = updateDireetionDto.ciudad;
         }
 
-        if(updateDireetionDto.estado){
-          direction.estado = updateDireetionDto.estado
+        if (updateDireetionDto.estado) {
+          direction.estado = updateDireetionDto.estado;
         }
 
-        if(updateDireetionDto.calle){
-          direction.calle = updateDireetionDto.calle
+        if (updateDireetionDto.calle) {
+          direction.calle = updateDireetionDto.calle;
         }
 
-        await direction.save()
+        await direction.save();
 
-        return direction
+        return direction;
 
 
 
-      }else{
-        throw new Error('direccion no encontrada')
+      } else {
+        throw new Error('direccion no encontrada');
       }
 
-    }catch(error){
+    } catch (error) {
    
-      throw error
+      throw error;
 
     }
 
@@ -88,15 +88,15 @@ export class DireetionsService {
       const direction = await Direction.findByPk(id);
 
       if (direction) {
-          await direction.destroy();
-          return { message: 'Direccion eliminada exitosamente' };
+        await direction.destroy();
+        return { message: 'Direccion eliminada exitosamente' };
       } else {
-          throw new Error('Direccion no encontrada');
+        throw new Error('Direccion no encontrada');
       }
-  } catch (error) {
+    } catch (error) {
       
       throw error;
-  }
+    }
    
   }
 
