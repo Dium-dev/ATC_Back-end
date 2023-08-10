@@ -7,13 +7,18 @@ import {
   Param,
   Delete,
   Query,
+  HttpCode,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductsDto } from './dto/query-product.dto';
 import { IGetProducts } from './interfaces/getProducts.interface';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { IError } from 'src/utils/interfaces/error.interface';
+import { IProductXcategory } from './interfaces/product-x-category.interface';
 
+@ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
@@ -27,16 +32,36 @@ export class ProductsController {
     return products;
   }
 
+  @ApiParam({
+    name: 'categoryName',
+    description: 'Debe ser similar o igual al nombre de una categoría existente o incluir parte de la misma',
+    examples: {
+      'variante 1': {
+        summary: 'variante 1 <literal>',
+        description: 'Nombre literal de la categoria',
+        value: 'Farolas',
+      },
+      'variante 2': {
+        summary: 'variante 2 <alterado>',
+        description: 'Nombre con variantes de la categoría',
+        value: 'FaRolA',
+      },
+    },
+  })
+  @ApiResponse({
+    description: 'En caso de no haber error, la respuesta de la misma será un objeto con propiedades \'statusCode\', \'items\'',
+  })
   @Get('principales/:categoryName')
+  @HttpCode(200)
   async getProductsXCategory(
-    @Param('categoryName') category: string
-  ): Promise<any> {
-    const findCategory: boolean = await this.productsService.existCategoty(category)
-    if (findCategory) {
-      return await this.productsService.getProductsXCategory(category)
-    } else {
-      return findCategory
-    }
+    @Param('categoryName') category: string,
+  ): Promise<IProductXcategory | IError> {
+    const thisData: IProductXcategory = await this.productsService.existCategoty(category)
+      .then(async () => {
+        const thisProducts: IProductXcategory = await this.productsService.getProductsXCategory(category);
+        return thisProducts;
+      });
+    return thisData;
   }
 
 }
