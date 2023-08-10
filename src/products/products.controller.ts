@@ -22,8 +22,9 @@ export class ProductsController {
   async getProducts(
     @Query() queryProducts: QueryProductsDto,
   ): Promise<IGetProducts> {
-    let queryBD = await this.productsService.getQueryDB(queryProducts);
-    return await this.productsService.getProducts(queryBD);
+    const queryBD = await this.productsService.getQueryDB(queryProducts);
+    const products = await this.productsService.getProducts(queryBD);
+    return products;
   }
 
   @Get('principales/:categoryName')

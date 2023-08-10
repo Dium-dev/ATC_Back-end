@@ -17,29 +17,29 @@ export enum OrderType {
 export class QueryProductsDto {
   @IsNotEmpty()
   @IsInt()
-  limit: number;
+    limit: number;
 
   @IsNotEmpty()
   @IsInt()
-  page: number;
+    page: number;
 
   @IsOptional()
   @IsEnum(OrderType)
-  order?: OrderType;
+    order?: OrderType;
 
   @IsString()
   @IsOptional()
-  name?: string;
+    name?: string;
 
   @IsString()
   @IsOptional()
-  categoryId?: string;
+    categoryId?: string;
 
   @IsString()
   @IsOptional()
-  brandId?: string;
+    brandId?: string;
 
   @IsOptional()
   @IsEnum(stateproduct)
-  active?: stateproduct;
+    active?: stateproduct;
 }

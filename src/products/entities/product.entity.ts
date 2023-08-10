@@ -9,6 +9,7 @@ import {
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export enum stateproduct {
   Active = 'Activa',
   Inactive = 'Inactiva',
@@ -59,9 +60,9 @@ export class Product extends Model<Product> {
 
   @Column({
     type: DataType.FLOAT,
-    allowNull: false
+    allowNull: false,
   })
-  price: number;
+    price: number;
 
   @Column({
     type: DataType.INTEGER,
