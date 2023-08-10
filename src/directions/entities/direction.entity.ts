@@ -44,7 +44,7 @@ export class Direction extends Model<Direction> {
   @Column({
     type: DataType.UUID,
   })
-    userId: User;
+    userId: string
     
   @BelongsTo(() => User)
     user: User;
