@@ -98,9 +98,9 @@ export class ProductsService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(`No hay coincidencias de una categoria '${categoryName}' en nuestra base de datos`);
+          throw new BadRequestException(`No hay coincidencias de una categoría '${categoryName}' en nuestra base de datos`);
         default:
-          throw new InternalServerErrorException('Hubo un problema en el servidor a la hora de consultar la categoria existente');
+          throw new InternalServerErrorException('Hubo un problema en el servidor a la hora de consultar la categoría existente');
       }
     }
   }
@@ -124,7 +124,7 @@ export class ProductsService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(`No se encontraron coincidencias de productos con categoria '${categoryName}'`);
+          throw new BadRequestException(`No se encontraron coincidencias de productos con categoría '${categoryName}'`);
         default:
           throw new InternalServerErrorException('Hubo un problema en el servidor a la hora de consultar por los productos');
       }
