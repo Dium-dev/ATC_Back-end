@@ -6,8 +6,9 @@ interface IWhereProducts {
   state?: { [Op.iLike]: string };
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 interface whereCategoriandBrandId {
-  id: { [Op.not]: null } | { [Op.eq]: string } | {};
+  id: { [Op.not]: null } | { [Op.eq]: string } | object;
 }
 
 export interface IQuery {

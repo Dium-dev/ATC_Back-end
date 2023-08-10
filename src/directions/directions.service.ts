@@ -5,9 +5,30 @@ import { Direction } from './entities/direction.entity';
 
 @Injectable()
 export class DireetionsService {
-  create(createDireetionDto: CreateDireetionDto) {
-    return 'This action adds a new direetion';
+  async create(createDireetionDto: CreateDireetionDto){
+
+    try{
+
+    const newDirection =  await Direction.create({
+      codigoPostal: createDireetionDto.codigoPostal,
+      ciudad: createDireetionDto.ciudad,
+      estado: createDireetionDto.estado,
+      calle: createDireetionDto.calle,
+      userId: createDireetionDto.userId
+    })
+
+    return newDirection
+
+  }catch(error){
+
+    throw error
+
   }
+
+  }
+
+
+
 
   findAll() {
     return `This action returns all direetions`;

@@ -8,8 +8,8 @@ export class DireetionsController {
   constructor(private readonly direetionsService: DireetionsService) {}
 
   @Post()
-  create(@Body() createDireetionDto: CreateDireetionDto) {
-    return this.direetionsService.create(createDireetionDto);
+  async create(@Body() createDireetionDto: CreateDireetionDto) {
+    return await this.direetionsService.create(createDireetionDto);
   }
 
   @Get()

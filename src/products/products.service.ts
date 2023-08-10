@@ -12,7 +12,7 @@ import { IGetProducts } from './interfaces/getProducts.interface';
 @Injectable()
 export class ProductsService {
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
-    let querys = {
+    const querys = {
       limit: query.limit,
       page: query.page,
       offset: (query.page - 1) * query.limit,
@@ -23,10 +23,12 @@ export class ProductsService {
     };
 
     if (query.name)
+      // eslint-disable-next-line @typescript-eslint/dot-notation
       querys.whereProduct['title'] = { [Op.iLike]: `%${query.name}%` };
+    // eslint-disable-next-line @typescript-eslint/dot-notation
     if (query.active) querys.whereProduct['state'] = query.active;
     if (query.order) {
-      let thisOrder = query.order.split(' ');
+      const thisOrder = query.order.split(' ');
       if (thisOrder[0] === 'NOMBRE') {
         querys.order.push(['title', thisOrder[1]]);
       }
@@ -81,9 +83,9 @@ export class ProductsService {
       ],
     });
 
-    let totalPages = Math.ceil(totalItems / limit);
+    const totalPages = Math.ceil(totalItems / limit);
 
-    return { items, totalItems, totalPages, page };
+    return { items, totalItems, totalPages, page: Number(page) };
   }
 
 
