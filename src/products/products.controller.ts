@@ -14,7 +14,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductsDto } from './dto/query-product.dto';
 import { IGetProducts } from './interfaces/getProducts.interface';
-import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { IError } from 'src/utils/interfaces/error.interface';
 import { IProductXcategory } from './interfaces/product-x-category.interface';
 
@@ -32,6 +32,7 @@ export class ProductsController {
     return products;
   }
 
+  @ApiOperation({ summary: 'Trae los primeros 5 productos coincidentes con la categoría indicada' }) 
   @ApiParam({
     name: 'categoryName',
     description: 'Debe ser similar o igual al nombre de una categoría existente o incluir parte de la misma',
@@ -49,7 +50,20 @@ export class ProductsController {
     },
   })
   @ApiResponse({
+    status: 200,
     description: 'En caso de no haber error, la respuesta de la misma será un objeto con propiedades \'statusCode\', \'items\'',
+  })
+   @ApiResponse({
+     status: 400,
+    description: 'No hay coincidencias de una categoría <nombre de la categoria buscada> en nuestra base de datos',
+  })
+  @ApiResponse({
+     status: 400,
+    description: 'No se encontraron coincidencias de productos con categoría <nombre de la categoria por la que se filtró>',
+  })
+   @ApiResponse({
+     status: 500,
+    description: 'Hubo un problema en el servidor a la hora de consultar la categoría existente',
   })
   @Get('principales/:categoryName')
   @HttpCode(200)
