@@ -1,5 +1,5 @@
 import {IsString, IsInt, IsNotEmpty} from 'class-validator'
-import { User } from 'src/users/entities/user.entity'
+
 
 export class CreateDireetionDto {
 
@@ -22,7 +22,8 @@ export class CreateDireetionDto {
 
 
     @IsNotEmpty({message: 'Debe agregar un userId'})
-    userId: User
+    @IsString({ message: 'El userId debe ser un string' })
+    userId: string
 
 
 }
