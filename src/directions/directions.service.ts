@@ -13,7 +13,8 @@ export class DireetionsService {
       codigoPostal: createDireetionDto.codigoPostal,
       ciudad: createDireetionDto.ciudad,
       estado: createDireetionDto.estado,
-      calle: createDireetionDto.calle
+      calle: createDireetionDto.calle,
+      userId: createDireetionDto.userId
     })
 
     await newDirection.save()
