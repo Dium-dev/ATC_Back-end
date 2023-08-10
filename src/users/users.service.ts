@@ -76,7 +76,7 @@ export class UsersService {
         throw new Error('The email entered does not correspond to any user');
       }
     } catch (err) {
-      console.log({ err: err.message });
+      return { message: err.message };
     }
   }
 
@@ -98,7 +98,7 @@ export class UsersService {
         throw new Error('There is already an account created with that email');
       }
     } catch (err) {
-      console.log({ err: err.message });
+      return { message: err.message };
     }
   }
 
@@ -128,7 +128,7 @@ export class UsersService {
         throw new Error('Usuario no encontrado');
       }
     } catch (err) {
-      console.log({ err: err.message });
+           return { message: err.message };
     }
   }
 
