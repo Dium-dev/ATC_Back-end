@@ -55,7 +55,6 @@ export class UsersService {
   }
 
   async signIn(loginUserDto: LoginUserDto) {
-  async signIn(loginUserDto: LoginUserDto) {
     try {
       const { email, password } = loginUserDto;
       const checkUser = await this.findOneByEmail(email);
@@ -70,7 +69,6 @@ export class UsersService {
           const response = {
             id: checkUser.id,
             rol: checkUser.rol,
-            token: await this.authService.generateToken(
             token: await this.authService.generateToken(
               checkUser.id,
               checkUser.email,
