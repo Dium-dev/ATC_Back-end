@@ -105,5 +105,4 @@ export class Product extends Model<Product> {
 
   @BelongsTo(() => Categories)
     category: Categories;
-
 }

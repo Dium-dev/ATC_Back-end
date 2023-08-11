@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductsDto } from './dto/query-product.dto';
@@ -8,7 +13,10 @@ import { Categories } from 'src/categories/entities/category.entity';
 import { Product } from './entities/product.entity';
 import { IQuery } from './interfaces/querys.interface';
 import { IGetProducts } from './interfaces/getProducts.interface';
-import { IItems_producXcategory, IProductXcategory } from './interfaces/product-x-category.interface';
+import {
+  IItems_producXcategory,
+  IProductXcategory,
+} from './interfaces/product-x-category.interface';
 
 @Injectable()
 export class ProductsService {
@@ -89,18 +97,23 @@ export class ProductsService {
     return { items, totalItems, totalPages, page: Number(page) };
   }
 
-
   async existCategoty(categoryName: string): Promise<boolean> {
     try {
-      const boleanCategory: number = await Categories.count({ where: { name: { [Op.iLike]: `%${categoryName}%` } } });
+      const boleanCategory: number = await Categories.count({
+        where: { name: { [Op.iLike]: `%${categoryName}%` } },
+      });
       if (boleanCategory) return true;
-      else throw new BadRequestException;
+      else throw new BadRequestException();
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(`No hay coincidencias de una categoría '${categoryName}' en nuestra base de datos`);
+          throw new BadRequestException(
+            `No hay coincidencias de una categoría '${categoryName}' en nuestra base de datos`,
+          );
         default:
-          throw new InternalServerErrorException('Hubo un problema en el servidor a la hora de consultar la categoría existente');
+          throw new InternalServerErrorException(
+            'Hubo un problema en el servidor a la hora de consultar la categoría existente',
+          );
       }
     }
   }
@@ -111,24 +124,29 @@ export class ProductsService {
         limit: 5,
         attributes: ['id', 'title', 'state', 'price', 'image'],
         include: [
-          { model: Categories, where: { name: { [Op.iLike]: `%${categoryName}%` } } },
+          {
+            model: Categories,
+            where: { name: { [Op.iLike]: `%${categoryName}%` } },
+          },
           { model: Brand },
         ],
       });
-      if (items.length === 0) throw new BadRequestException;
+      if (items.length === 0) throw new BadRequestException();
       return {
         statusCode: 200,
         items,
       };
-
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(`No se encontraron coincidencias de productos con categoría '${categoryName}'`);
+          throw new BadRequestException(
+            `No se encontraron coincidencias de productos con categoría '${categoryName}'`,
+          );
         default:
-          throw new InternalServerErrorException('Hubo un problema en el servidor a la hora de consultar por los productos');
+          throw new InternalServerErrorException(
+            'Hubo un problema en el servidor a la hora de consultar por los productos',
+          );
       }
     }
-
   }
 }

@@ -2,47 +2,36 @@ import { Injectable } from '@nestjs/common';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
-import {BadRequestException, InternalServerErrorException} from '@nestjs/common'
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 @Injectable()
 export class DireetionsService {
-  async create(createDireetionDto: CreateDireetionDto){
+  async create(createDireetionDto: CreateDireetionDto) {
+    try {
+      const newDirection = await Direction.create({
+        codigoPostal: createDireetionDto.codigoPostal,
+        ciudad: createDireetionDto.ciudad,
+        estado: createDireetionDto.estado,
+        calle: createDireetionDto.calle,
+        userId: createDireetionDto.userId,
+      });
 
-    try{
-
-    const newDirection =  await Direction.create({
-      codigoPostal: createDireetionDto.codigoPostal,
-      ciudad: createDireetionDto.ciudad,
-      estado: createDireetionDto.estado,
-      calle: createDireetionDto.calle,
-      userId: createDireetionDto.userId
-    })
-
-    if(!newDirection){
-
-      throw new BadRequestException()
-
-    }else{
-
-      return newDirection
-
+      if (!newDirection) {
+        throw new BadRequestException();
+      } else {
+        return newDirection;
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException('No se puede crear direccion');
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
     }
-
-
-  }catch(error){
-
-    if(error instanceof BadRequestException){
-      throw new BadRequestException('No se puede crear direccion')
-    }else{
-      throw new InternalServerErrorException('Error del servidor')
-    }
-
   }
-
-  }
-
-
-
 
   findAll() {
     return 'This action returns all direetions';
@@ -53,13 +42,10 @@ export class DireetionsService {
   }
 
   async update(id: string, updateDireetionDto: UpdateDireetionDto) {
-
     try {
-
       const direction = await Direction.findByPk(id);
 
       if (direction) {
-
         if (updateDireetionDto.codigoPostal) {
           direction.codigoPostal = updateDireetionDto.codigoPostal;
         }
@@ -79,25 +65,15 @@ export class DireetionsService {
         await direction.save();
 
         return direction;
-
-
-
       } else {
         throw new Error('direccion no encontrada');
       }
-
     } catch (error) {
-   
       throw error;
-
     }
-
-
-    
   }
 
   async remove(id: string) {
-
     try {
       const direction = await Direction.findByPk(id);
 
@@ -108,12 +84,7 @@ export class DireetionsService {
         throw new Error('Direccion no encontrada');
       }
     } catch (error) {
-      
       throw error;
     }
-   
   }
-
-
-  
 }

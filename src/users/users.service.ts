@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
-    private AuthService: AuthService,
+    private authService: AuthService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -20,7 +20,7 @@ export class UsersService {
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
         email: createUserDto.email,
-        password: await this.AuthService.generatePassword(
+        password: await this.authService.generatePassword(
           createUserDto.password,
         ),
         phone: createUserDto.phone,
@@ -31,7 +31,7 @@ export class UsersService {
       if (newUser) {
         const response = {
           id: newUser.id,
-          token: await this.AuthService.generateToken(
+          token: await this.authService.generateToken(
             newUser.id,
             newUser.email,
           ),
@@ -47,14 +47,14 @@ export class UsersService {
     }
   }
 
-  async signIn(LoginUserDto: LoginUserDto) {
+  async signIn(loginUserDto: LoginUserDto) {
     try {
       const checkUser = await User.findOne({
-        where: { email: LoginUserDto.email },
+        where: { email: loginUserDto.email },
       });
       if (checkUser) {
-        const comparePassword = await this.AuthService.comparePassword(
-          LoginUserDto.password,
+        const comparePassword = await this.authService.comparePassword(
+          loginUserDto.password,
           checkUser.password,
         );
 
@@ -62,7 +62,7 @@ export class UsersService {
           const response = {
             id: checkUser.id,
             rol: checkUser.rol,
-            token: await this.AuthService.generateToken(
+            token: await this.authService.generateToken(
               checkUser.id,
               checkUser.email,
             ),
