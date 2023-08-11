@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JWT_SECRET } from '../config/env';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { CaslAbilityFactory } from '../casl/casl-ability.factory/casl-ability.factory';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       signOptions: { expiresIn: '12h' },
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, CaslAbilityFactory],
   controllers: [AuthController],
   exports: [AuthService],
 })
