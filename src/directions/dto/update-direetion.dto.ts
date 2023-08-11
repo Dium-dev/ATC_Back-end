@@ -1,7 +1,6 @@
 import { IsString, IsOptional, IsInt } from 'class-validator';
 
 export class UpdateDireetionDto {
-
   @IsOptional()
   @IsInt({ message: 'El código postal debe ser un número entero' })
     codigoPostal: number;
@@ -17,7 +16,4 @@ export class UpdateDireetionDto {
   @IsOptional()
   @IsString({ message: 'La calle debe ser un string' })
     calle: string;
-
-
-
 }

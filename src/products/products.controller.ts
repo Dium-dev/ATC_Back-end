@@ -21,7 +21,7 @@ import { IProductXcategory } from './interfaces/product-x-category.interface';
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) { }
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get()
   async getProducts(
@@ -32,10 +32,14 @@ export class ProductsController {
     return products;
   }
 
-  @ApiOperation({ summary: 'Trae los primeros 5 productos coincidentes con la categoría indicada' }) 
+  @ApiOperation({
+    summary:
+      'Trae los primeros 5 productos coincidentes con la categoría indicada',
+  })
   @ApiParam({
     name: 'categoryName',
-    description: 'Debe ser similar o igual al nombre de una categoría existente o incluir parte de la misma',
+    description:
+      'Debe ser similar o igual al nombre de una categoría existente o incluir parte de la misma',
     examples: {
       'variante 1': {
         summary: 'variante 1 <literal>',
@@ -51,31 +55,36 @@ export class ProductsController {
   })
   @ApiResponse({
     status: 200,
-    description: 'En caso de no haber error, la respuesta de la misma será un objeto con propiedades \'statusCode\', \'items\'',
-  })
-   @ApiResponse({
-     status: 400,
-    description: 'No hay coincidencias de una categoría <nombre de la categoria buscada> en nuestra base de datos',
+    description:
+      "En caso de no haber error, la respuesta de la misma será un objeto con propiedades 'statusCode', 'items'",
   })
   @ApiResponse({
-     status: 400,
-    description: 'No se encontraron coincidencias de productos con categoría <nombre de la categoria por la que se filtró>',
+    status: 400,
+    description:
+      'No hay coincidencias de una categoría <nombre de la categoria buscada> en nuestra base de datos',
   })
-   @ApiResponse({
-     status: 500,
-    description: 'Hubo un problema en el servidor a la hora de consultar la categoría existente',
+  @ApiResponse({
+    status: 400,
+    description:
+      'No se encontraron coincidencias de productos con categoría <nombre de la categoria por la que se filtró>',
+  })
+  @ApiResponse({
+    status: 500,
+    description:
+      'Hubo un problema en el servidor a la hora de consultar la categoría existente',
   })
   @Get('principales/:categoryName')
   @HttpCode(200)
   async getProductsXCategory(
     @Param('categoryName') category: string,
   ): Promise<IProductXcategory | IError> {
-    const thisData: IProductXcategory = await this.productsService.existCategoty(category)
+    const thisData: IProductXcategory = await this.productsService
+      .existCategoty(category)
       .then(async () => {
-        const thisProducts: IProductXcategory = await this.productsService.getProductsXCategory(category);
+        const thisProducts: IProductXcategory =
+          await this.productsService.getProductsXCategory(category);
         return thisProducts;
       });
     return thisData;
   }
-
 }

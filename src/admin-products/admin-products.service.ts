@@ -14,7 +14,6 @@ import { Brand } from 'src/brands/entities/brand.entity';
 
 @Injectable()
 export class AdminProductsService {
-
   async getExcelData(url: string) {
     const { data } = await axios.get(url, { responseType: 'arraybuffer' });
     return data;
@@ -49,9 +48,13 @@ export class AdminProductsService {
     });
   }
 
-  async JsonToDatabase(allProducts: ExcelProductDto[]): Promise<{ message: string }> {
+  async JsonToDatabase(
+    allProducts: ExcelProductDto[],
+  ): Promise<{ message: string }> {
     for (const product of allProducts) {
-      const thisProduct = await Product.findByPk(product['Número de publicación']);
+      const thisProduct = await Product.findByPk(
+        product['Número de publicación'],
+      );
 
       if (thisProduct) {
         await this.updateProduct(thisProduct, product);
@@ -88,7 +91,7 @@ export class AdminProductsService {
       attributes: ['id'],
     });
 
-    category = category || await Categories.create({ name: categoria });
+    category = category || (await Categories.create({ name: categoria }));
 
     return category;
   }
@@ -99,7 +102,7 @@ export class AdminProductsService {
       attributes: ['id'],
     });
 
-    brandObj = brandObj || await Brand.create({ name: brand });
+    brandObj = brandObj || (await Brand.create({ name: brand }));
 
     return brandObj.id;
   }
@@ -112,7 +115,8 @@ export class AdminProductsService {
     thisProduct.description = product.Descripción;
     thisProduct.state = product.Estado;
     thisProduct.stock = 0;
-    thisProduct.availability = Number(product['Disponibilidad de stock (días)']) || 0;
+    thisProduct.availability =
+      Number(product['Disponibilidad de stock (días)']) || 0;
     thisProduct.image = [''];
 
     thisProduct.year = product.Título.split(' ')[3].includes('-')
@@ -123,8 +127,6 @@ export class AdminProductsService {
     thisProduct.brandId = brandId;
     thisProduct.categoryId = categoryId.dataValues.id;
 
-
     await thisProduct.save();
   }
-
 }

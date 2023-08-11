@@ -17,7 +17,6 @@ import { AdminProductsModule } from './admin-products/admin-products.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 
-
 dotenv.config();
 
 @Module({
@@ -48,4 +47,4 @@ dotenv.config();
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
