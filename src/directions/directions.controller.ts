@@ -10,7 +10,7 @@ import {
 import { DireetionsService } from './directions.service';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Directions')
 @Controller('direetions')
@@ -48,8 +48,17 @@ export class DireetionsController {
     return this.direetionsService.update(id, updateDireetionDto);
   }
 
+
+  @ApiOperation({ summary: 'Eliminar una direccion' })
+  @ApiResponse({
+    status: 204,
+    description: 'La dirección ha sido eliminada exitosamente',
+  })
+  @ApiResponse({ status: 400, description: 'Solicitud inválida' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  @ApiParam({ name: 'id', description: 'id de la dirección a eliminar', type: 'string' })
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.direetionsService.remove(id);
+    return await this.direetionsService.remove(id);
   }
 }
