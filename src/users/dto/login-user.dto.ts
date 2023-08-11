@@ -5,7 +5,7 @@ export class LoginUserDto {
   @ApiProperty()
   @IsEmail(undefined, { message: 'Invalid email format' })
   @IsNotEmpty({ message: 'an $property is required to log in' })
-  email: string;
+    email: string;
 
   @ApiProperty()
   @IsString({ message: '$property must be a string' })
@@ -17,5 +17,5 @@ export class LoginUserDto {
         'The $property The password must be 8 to 15 characters long, contain a capital letter, a lower case letter, a number and a special character.',
     },
   )
-  password: string;
+    password: string;
 }

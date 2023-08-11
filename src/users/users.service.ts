@@ -128,7 +128,7 @@ export class UsersService {
         throw new Error('Usuario no encontrado');
       }
     } catch (err) {
-           return { message: err.message };
+      return { message: err.message };
     }
   }
 
