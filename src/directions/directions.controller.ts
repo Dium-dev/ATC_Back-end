@@ -49,6 +49,7 @@ export class DireetionsController {
   })
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  @ApiParam({ name: 'id', description: 'id de la dirección a modificar', type: 'string' })
   @Patch(':id')
   async update(
   @Param('id') id: string,
