@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { DireetionsService } from './directions.service';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
@@ -9,7 +17,7 @@ export class DireetionsController {
 
   @Post()
   async create(@Body() createDireetionDto: CreateDireetionDto) {
-    return await this.direetionsService.create(createDireetionDto);
+    return this.direetionsService.create(createDireetionDto);
   }
 
   @Get()
@@ -23,12 +31,15 @@ export class DireetionsController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateDireetionDto: UpdateDireetionDto) {
-    return await this.direetionsService.update(id, updateDireetionDto);
+  async update(
+  @Param('id') id: string,
+    @Body() updateDireetionDto: UpdateDireetionDto,
+  ) {
+    return this.direetionsService.update(id, updateDireetionDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.direetionsService.remove(id);
+    return this.direetionsService.remove(id);
   }
 }

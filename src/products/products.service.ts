@@ -88,12 +88,13 @@ export class ProductsService {
     return { items, totalItems, totalPages, page: Number(page) };
   }
 
-
   async existCategoty(categoryName: string): Promise<boolean> {
-    const boleanCategory: number = await Categories.count({ where: { name: { [Op.iLike]: `%${categoryName}%` } } });
+    const boleanCategory: number = await Categories.count({
+      where: { name: { [Op.iLike]: `%${categoryName}%` } },
+    });
     if (boleanCategory) {
       return true;
-    };
+    }
     return false;
   }
 
@@ -102,10 +103,12 @@ export class ProductsService {
       limit: 5,
       attributes: ['id', 'title', 'state', 'price', 'image'],
       include: [
-        { model: Categories, where: { name: { [Op.iLike]: `%${categoryName}%` } } }
-      ]
+        {
+          model: Categories,
+          where: { name: { [Op.iLike]: `%${categoryName}%` } },
+        },
+      ],
     });
     return thisProducts;
   }
-
 }

@@ -1,4 +1,3 @@
-
 import { Column, Model, DataType, Table, HasMany } from 'sequelize-typescript';
 import { Product } from 'src/products/entities/product.entity';
 
@@ -7,7 +6,6 @@ import { Product } from 'src/products/entities/product.entity';
   timestamps: false,
   underscored: true,
 })
-
 export class Brand extends Model<Brand> {
   @Column({
     type: DataType.UUID,

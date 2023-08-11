@@ -16,7 +16,7 @@ import { IGetProducts } from './interfaces/getProducts.interface';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) { }
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get()
   async getProducts(
@@ -29,14 +29,15 @@ export class ProductsController {
 
   @Get('principales/:categoryName')
   async getProductsXCategory(
-    @Param('categoryName') category: string
+    @Param('categoryName') category: string,
   ): Promise<any> {
-    const findCategory: boolean = await this.productsService.existCategoty(category)
+    const findCategory: boolean = await this.productsService.existCategoty(
+      category,
+    );
     if (findCategory) {
-      return await this.productsService.getProductsXCategory(category)
+      return this.productsService.getProductsXCategory(category);
     } else {
-      return findCategory
+      return findCategory;
     }
   }
-
 }

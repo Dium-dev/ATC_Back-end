@@ -11,4 +11,4 @@ import { Brand } from 'src/brands/entities/brand.entity';
   controllers: [AdminProductsController],
   providers: [AdminProductsService],
 })
-export class AdminProductsModule { }
+export class AdminProductsModule {}
