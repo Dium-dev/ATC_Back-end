@@ -89,7 +89,7 @@ export class DireetionsService {
     } catch (error) {
 
       if (error instanceof NotFoundException) {
-        throw new NotFoundException('No se puede eliminar direccion');
+        throw new NotFoundException('Direccion no encontrada');
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
