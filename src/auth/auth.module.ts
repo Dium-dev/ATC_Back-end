@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JWT_SECRET } from '../config/env';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { JWT_SECRET } from '../config/env';
       signOptions: { expiresIn: '12h' },
     }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })
