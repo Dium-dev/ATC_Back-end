@@ -65,16 +65,10 @@ export class AuthService {
 
   async resetPassword(resetPassword: ResetPasswordDto): Promise<string> {
     try {
-      const { resetPasswordToken, password } = resetPassword;
+      const { password } = resetPassword;
 
       //modificar con nueva implementacion
-      //const user = await this.usersService.findUserByResetPasswordToken(
-      // resetPasswordToken,
-      //);
-
-      //user.password = await this.generatePassword(password);
-      //user.resetPasswordToken = null;
-      //user.save();
+      //buscar al user con la informacion del token y cambiar contraseña
       return 'El cambio de la contraseña fue exitoso.';
     } catch (error) {
       switch (error.constructor) {
