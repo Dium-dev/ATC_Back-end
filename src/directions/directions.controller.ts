@@ -10,7 +10,13 @@ import {
 import { DireetionsService } from './directions.service';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+} from '@nestjs/swagger';
 
 @ApiTags('Directions')
 @Controller('direetions')
@@ -40,6 +46,19 @@ export class DireetionsController {
     return this.direetionsService.findOne(+id);
   }
 
+  @ApiOperation({ summary: 'Modificar una direccion' })
+  @ApiBody({ type: UpdateDireetionDto })
+  @ApiResponse({
+    status: 200,
+    description: 'La dirección ha sido modificada exitosamente',
+  })
+  @ApiResponse({ status: 400, description: 'Solicitud inválida' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  @ApiParam({
+    name: 'id',
+    description: 'id de la dirección a modificar',
+    type: 'string',
+  })
   @Patch(':id')
   async update(
   @Param('id') id: string,
