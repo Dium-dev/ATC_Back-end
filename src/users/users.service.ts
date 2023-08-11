@@ -2,6 +2,8 @@ import {
   Injectable,
   BadRequestException,
   InternalServerErrorException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +17,7 @@ export class UsersService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
+    @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
   ) {}
 
@@ -92,7 +95,7 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  async findOneByEmail(email: string) {
+  public async findOneByEmail(email: string) {
     try {
       const user = await User.findOne({ where: { email } });
 

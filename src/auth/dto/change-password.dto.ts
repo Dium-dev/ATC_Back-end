@@ -1,5 +1,5 @@
 import { IsNotEmpty, Matches, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs-swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ChangePasswordDto {
   @IsString({ message: 'El campo $property debe ser un texto' })

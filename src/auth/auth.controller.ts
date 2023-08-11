@@ -1,10 +1,11 @@
-import { Controller, Patch, Body } from '@nestjs/common';
+import { Controller, Patch, Body, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { GetUser } from './get-user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { IError } from 'src/utils/interfaces/error.interface';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('auth')
@@ -29,8 +30,11 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
-  @Patch('recover-password')
-  recoverPassword(@Body() recoverPassword: RecoverPasswordDto): Promise<any> {
+  @Patch('recoverPassword')
+  @HttpCode(201)
+  recoverPassword(
+    @Body() recoverPassword: RecoverPasswordDto,
+  ): Promise<string | IError> {
     return this.authService.recoverPassword(recoverPassword);
   }
 
@@ -52,8 +56,11 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
-  @Patch('reset-password')
-  resetPassword(@Body() resetPassword: ResetPasswordDto): Promise<void> {
+  @Patch('resetPassword')
+  @HttpCode(201)
+  resetPassword(
+    @Body() resetPassword: ResetPasswordDto,
+  ): Promise<string | IError> {
     return this.authService.resetPassword(resetPassword);
   }
 
@@ -75,12 +82,13 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
-  @Patch('change-password')
+  @Patch('changePassword')
+  @HttpCode(201)
   //aca va el Guard
   changePassword(
     @Body() changePassword: ChangePasswordDto,
       @GetUser() user: User,
-  ): Promise<void> {
+  ): Promise<string | IError> {
     return this.authService.changePassword(changePassword, user);
   }
 }

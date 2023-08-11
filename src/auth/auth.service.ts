@@ -3,13 +3,14 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { v4 } from 'uuid';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { User } from 'src/users/entities/user.entity';
 
@@ -17,6 +18,7 @@ import { User } from 'src/users/entities/user.entity';
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 
@@ -46,17 +48,15 @@ export class AuthService {
     try {
       const { email } = recoverPassword;
       const user = await this.usersService.findOneByEmail(email);
-      user.resetPasswordToken = v4();
-      user.save();
 
-      //aca iria la implementacion del envio del
-      //correo con el link del formulario para cambiar la contraseña
+      //aca iria la implementacion de la creacion y el envio del
+      //token y el correo con el link del formulario para cambiar la contraseña
 
       return 'Se ha enviado el correo de verificación con el token.';
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          return new BadRequestException().message;
+          throw new BadRequestException(error);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
@@ -67,18 +67,19 @@ export class AuthService {
     try {
       const { resetPasswordToken, password } = resetPassword;
 
-      const user = await this.usersService.findUserByResetPasswordToken(
-        resetPasswordToken,
-      );
+      //modificar con nueva implementacion
+      //const user = await this.usersService.findUserByResetPasswordToken(
+      // resetPasswordToken,
+      //);
 
       user.password = await this.generatePassword(password);
-      user.resetPasswordToken = null;
+      //user.resetPasswordToken = null;
       user.save();
       return 'El cambio de la contraseña fue exitoso.';
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          return new BadRequestException().message;
+          throw new BadRequestException(error);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
@@ -105,7 +106,7 @@ export class AuthService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          return new BadRequestException().message;
+          throw new BadRequestException(error);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }

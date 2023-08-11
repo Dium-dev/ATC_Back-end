@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DireetionsService } from './directions.service';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 
 @ApiTags('Directions')
