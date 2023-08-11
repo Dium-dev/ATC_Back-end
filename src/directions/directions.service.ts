@@ -5,7 +5,7 @@ import { Direction } from './entities/direction.entity';
 import {
   BadRequestException,
   InternalServerErrorException,
-
+  NotFoundException,
 } from '@nestjs/common';
 
 
@@ -24,7 +24,10 @@ export class DireetionsService {
       if (!newDirection) {
         throw new BadRequestException();
       } else {
-        return newDirection;
+        return {
+          statusCode: 201,
+          newDirection,
+        }
       }
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -66,12 +69,21 @@ export class DireetionsService {
 
         await direction.save();
 
-        return direction;
+        return {
+          statusCode: 200,
+          direction,
+        }
       } else {
-        throw new Error('direccion no encontrada');
+        throw new NotFoundException('direccion no encontrada');
       }
     } catch (error) {
-      throw error;
+
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('direccion no encontrada');
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
+      
     }
   }
 
