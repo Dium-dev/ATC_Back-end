@@ -1,6 +1,7 @@
 import {
   Injectable,
   BadRequestException,
+  ConflictException,
   InternalServerErrorException,
   Inject,
   forwardRef,
@@ -11,7 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
-
+import { ICreateUser } from './interfaces/create-user.interface';
 @Injectable()
 export class UsersService {
   constructor(
@@ -21,7 +22,7 @@ export class UsersService {
     private authService: AuthService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     try {
       const data = {
         firstName: createUserDto.firstName,
@@ -37,20 +38,28 @@ export class UsersService {
 
       if (newUser) {
         const response = {
-          id: newUser.id,
+          statusCode: 204,
           token: await this.authService.generateToken(
             newUser.id,
             newUser.email,
           ),
-          rol: newUser.rol,
         };
 
         return response;
       } else {
-        throw new Error('Error creating user');
+        throw new BadRequestException(
+          'Error al crear el usuario verifique los datos enviados e intentelo nuevamente',
+        );
       }
-    } catch (err) {
-      console.log({ err: err.message });
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Erron interno del servidor, intente mas tarde',
+          );
+      }
     }
   }
 
@@ -107,17 +116,26 @@ export class UsersService {
     } catch (err) {}
   }
 
-  async verifyEmail(email: string) {
+  async verifyEmail(email: string): Promise<boolean> {
     try {
       const user = await User.findOne({ where: { email } });
 
       if (!user) {
         return true;
       } else {
-        throw new Error('There is already an account created with that email');
+        throw new ConflictException(
+          'Ya existe una cuenta creada con este correo, puedes iniciar sesión.',
+        );
       }
-    } catch (err) {
-      return { message: err.message };
+    } catch (error) {
+      switch (error.constructor) {
+        case ConflictException:
+          throw new ConflictException(error.message());
+        default:
+          throw new InternalServerErrorException(
+            'Error interno del servidor, intente mas tarde',
+          );
+      }
     }
   }
 

@@ -56,7 +56,7 @@ export class AuthService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error);
+          throw new BadRequestException(error.message);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
@@ -79,7 +79,7 @@ export class AuthService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error);
+          throw new BadRequestException(error.message);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
@@ -106,7 +106,7 @@ export class AuthService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error);
+          throw new BadRequestException(error.message);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
