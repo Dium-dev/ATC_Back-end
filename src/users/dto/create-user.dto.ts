@@ -14,6 +14,10 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&_])[A-Za-z\d$@$!%*?&]{8,15}/,
+    {
+      message:
+        'La contraseña debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial',
+    },
   )
   @ApiProperty({
     description:

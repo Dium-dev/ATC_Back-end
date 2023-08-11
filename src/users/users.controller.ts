@@ -33,7 +33,7 @@ export class UsersController {
   @ApiResponse({
     status: 400,
     description:
-      'Indica que hubo un error a la hora de crear la cuenta del usuario en la aplicación.',
+      'Indica que hubo un error a la hora de crear la cuenta del usuario en la aplicación. Recomendacion verificar los datos enviados',
   })
   @ApiResponse({
     status: 409,

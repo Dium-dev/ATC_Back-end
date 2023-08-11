@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { Categories } from './categories/entities/category.entity';
 import { Brand } from './brands/entities/brand.entity';
@@ -8,6 +9,7 @@ import { PORT } from './config/env';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useGlobalPipes(new ValidationPipe());
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const config = new DocumentBuilder()
     .setTitle('ATC_api')
