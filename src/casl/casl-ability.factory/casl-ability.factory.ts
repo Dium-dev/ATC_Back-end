@@ -1,15 +1,26 @@
 import { PureAbility, AbilityBuilder, AbilityClass, ExtractSubjectType, InferSubjects } from '@casl/ability';
 import { User } from '../../users/entities/user.entity';
-import { Action } from './actions';
 import { Injectable } from '@nestjs/common';
-
-type Subject = InferSubjects<typeof User> | 'all';
-type AppAbility = PureAbility<[Action, Subject]>;
+import { Rol } from '../../users/entities/user.entity';
+import { Product } from 'src/products/entities/product.entity';
 
 interface UserPayload {
   sub:string,
-  username:string
+  username:string,
+  rol: Rol
 }
+
+export enum Action {
+  Manage = 'manage',
+  Create = 'create',
+  Delete = 'delete',
+  Update = 'update',
+  Get = 'get',
+  Patch = 'patch',
+}
+
+export type Subject = InferSubjects<typeof User | typeof Product> | 'all';
+type AppAbility = PureAbility<[Action, Subject]>;
 
 @Injectable()
 export class CaslAbilityFactory {
