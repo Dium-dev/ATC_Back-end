@@ -27,7 +27,7 @@ export class DireetionsController {
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Post()
   async create(@Body() createDireetionDto: CreateDireetionDto) {
-    return this.direetionsService.create(createDireetionDto);
+    return await this.direetionsService.create(createDireetionDto);
   }
 
   @Get()
@@ -40,12 +40,21 @@ export class DireetionsController {
     return this.direetionsService.findOne(+id);
   }
 
+
+  @ApiOperation({ summary: 'Modificar una direccion' })
+  @ApiBody({ type: UpdateDireetionDto })
+  @ApiResponse({
+    status: 200,
+    description: 'La dirección ha sido modificada exitosamente',
+  })
+  @ApiResponse({ status: 400, description: 'Solicitud inválida' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Patch(':id')
   async update(
   @Param('id') id: string,
     @Body() updateDireetionDto: UpdateDireetionDto,
   ) {
-    return this.direetionsService.update(id, updateDireetionDto);
+    return await this.direetionsService.update(id, updateDireetionDto);
   }
 
   @Delete(':id')
