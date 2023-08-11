@@ -1,14 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID, Matches, IsString } from 'class-validator';
+import { IsNotEmpty, Matches, IsString } from 'class-validator';
 
 export class ResetPasswordDto {
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @IsUUID('4')
-  @ApiProperty({
-    description: 'Token enviado al correo del usuario',
-  })
-    resetPasswordToken: string;
-
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @Matches(

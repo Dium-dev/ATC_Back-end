@@ -32,10 +32,11 @@ export class AuthController {
   })
   @Patch('recoverPassword')
   @HttpCode(201)
-  recoverPassword(
+  async recoverPassword(
     @Body() recoverPassword: RecoverPasswordDto,
   ): Promise<string | IError> {
-    return this.authService.recoverPassword(recoverPassword);
+    const response = await this.authService.recoverPassword(recoverPassword);
+    return response;
   }
 
   @ApiOperation({
@@ -58,10 +59,11 @@ export class AuthController {
   })
   @Patch('resetPassword')
   @HttpCode(201)
-  resetPassword(
+  async resetPassword(
     @Body() resetPassword: ResetPasswordDto,
   ): Promise<string | IError> {
-    return this.authService.resetPassword(resetPassword);
+    const response = await this.authService.resetPassword(resetPassword);
+    return response;
   }
 
   @ApiOperation({
@@ -85,10 +87,14 @@ export class AuthController {
   @Patch('changePassword')
   @HttpCode(201)
   //aca va el Guard
-  changePassword(
+  async changePassword(
     @Body() changePassword: ChangePasswordDto,
       @GetUser() user: User,
   ): Promise<string | IError> {
-    return this.authService.changePassword(changePassword, user);
+    const response = await this.authService.changePassword(
+      changePassword,
+      user,
+    );
+    return response;
   }
 }
