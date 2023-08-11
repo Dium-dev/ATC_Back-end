@@ -10,6 +10,9 @@ export interface IItemsProducXcategory {
     id: string;
     name: string;
   };
+    id: string;
+    name: string;
+  };
   brand: {
     id: string;
     name: string;

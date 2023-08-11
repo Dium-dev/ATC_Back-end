@@ -8,6 +8,7 @@ import { PORT } from './config/env';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const config = new DocumentBuilder()
     .setTitle('ATC_api')
     .setDescription('ATC api documentation')
