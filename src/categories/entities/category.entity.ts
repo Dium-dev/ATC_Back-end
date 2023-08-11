@@ -7,7 +7,6 @@ import { Product } from 'src/products/entities/product.entity';
   underscored: true,
 })
 export class Categories extends Model<Categories> {
-
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,

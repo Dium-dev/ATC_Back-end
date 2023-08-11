@@ -154,14 +154,4 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-
-  async findUserByResetPasswordToken(resetPasswordToken: string): Promise<any> {
-    const user: User = await User.findOne({ where: { resetPasswordToken } });
-
-    if (user) {
-      return user;
-    } else {
-      throw new BadRequestException();
-    }
-  }
 }

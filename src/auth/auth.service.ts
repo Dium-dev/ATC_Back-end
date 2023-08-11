@@ -72,9 +72,9 @@ export class AuthService {
       // resetPasswordToken,
       //);
 
-      user.password = await this.generatePassword(password);
+      //user.password = await this.generatePassword(password);
       //user.resetPasswordToken = null;
-      user.save();
+      //user.save();
       return 'El cambio de la contraseña fue exitoso.';
     } catch (error) {
       switch (error.constructor) {
