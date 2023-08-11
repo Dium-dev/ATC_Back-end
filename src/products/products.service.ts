@@ -93,7 +93,7 @@ export class ProductsService {
     const boleanCategory: number = await Categories.count({ where: { name: { [Op.iLike]: `%${categoryName}%` } } });
     if (boleanCategory) {
       return true;
-    };
+    }
     return false;
   }
 
@@ -102,8 +102,8 @@ export class ProductsService {
       limit: 5,
       attributes: ['id', 'title', 'state', 'price', 'image'],
       include: [
-        { model: Categories, where: { name: { [Op.iLike]: `%${categoryName}%` } } }
-      ]
+        { model: Categories, where: { name: { [Op.iLike]: `%${categoryName}%` } } },
+      ],
     });
     return thisProducts;
   }

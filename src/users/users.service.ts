@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
-    private AuthService: AuthService,
+    private authService: AuthService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -20,7 +24,7 @@ export class UsersService {
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
         email: createUserDto.email,
-        password: await this.AuthService.generatePassword(
+        password: await this.authService.generatePassword(
           createUserDto.password,
         ),
         phone: createUserDto.phone,
@@ -31,7 +35,7 @@ export class UsersService {
       if (newUser) {
         const response = {
           id: newUser.id,
-          token: await this.AuthService.generateToken(
+          token: await this.authService.generateToken(
             newUser.id,
             newUser.email,
           ),
@@ -47,14 +51,14 @@ export class UsersService {
     }
   }
 
-  async signIn(LoginUserDto: LoginUserDto) {
+  async signIn(loginUserDto: LoginUserDto) {
     try {
-      const checkUser = await User.findOne({
-        where: { email: LoginUserDto.email },
-      });
+      const { email, password } = loginUserDto;
+      const checkUser = await this.findOneByEmail(email);
+
       if (checkUser) {
-        const comparePassword = await this.AuthService.comparePassword(
-          LoginUserDto.password,
+        const comparePassword = await this.authService.comparePassword(
+          password,
           checkUser.password,
         );
 
@@ -62,7 +66,7 @@ export class UsersService {
           const response = {
             id: checkUser.id,
             rol: checkUser.rol,
-            token: await this.AuthService.generateToken(
+            token: await this.authService.generateToken(
               checkUser.id,
               checkUser.email,
             ),
@@ -88,7 +92,19 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  async findOneEmail(email: string) {
+  async findOneByEmail(email: string) {
+    try {
+      const user = await User.findOne({ where: { email } });
+
+      if (user) {
+        return user;
+      } else {
+        throw new BadRequestException();
+      }
+    } catch (err) {}
+  }
+
+  async verifyEmail(email: string) {
     try {
       const user = await User.findOne({ where: { email } });
 
@@ -128,11 +144,21 @@ export class UsersService {
         throw new Error('Usuario no encontrado');
       }
     } catch (err) {
-           return { message: err.message };
+      return { message: err.message };
     }
   }
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async findUserByResetPasswordToken(resetPasswordToken: string): Promise<any> {
+    const user: User = await User.findOne({ where: { resetPasswordToken } });
+
+    if (user) {
+      return user;
+    } else {
+      throw new BadRequestException();
+    }
   }
 }

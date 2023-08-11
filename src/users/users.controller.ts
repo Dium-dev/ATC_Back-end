@@ -19,14 +19,14 @@ export class UsersController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return (
-      (await this.usersService.findOneEmail(createUserDto.email)) &&
+      (await this.usersService.verifyEmail(createUserDto.email)) &&
       (await this.usersService.create(createUserDto))
     );
   }
 
   @Post('login')
-  async signIn(@Body() LoginUserDto: LoginUserDto) {
-    return this.usersService.signIn(LoginUserDto);
+  async signIn(@Body() loginUserDto: LoginUserDto) {
+    return this.usersService.signIn(loginUserDto);
   }
 
   @Get()

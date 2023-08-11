@@ -9,7 +9,7 @@ export class DireetionsController {
 
   @Post()
   async create(@Body() createDireetionDto: CreateDireetionDto) {
-    return await this.direetionsService.create(createDireetionDto);
+    return this.direetionsService.create(createDireetionDto);
   }
 
   @Get()
@@ -24,11 +24,11 @@ export class DireetionsController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateDireetionDto: UpdateDireetionDto) {
-    return await this.direetionsService.update(id, updateDireetionDto);
+    return this.direetionsService.update(id, updateDireetionDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.direetionsService.remove(id);
+    return this.direetionsService.remove(id);
   }
 }
