@@ -38,7 +38,7 @@ export class UsersService {
 
       if (newUser) {
         const response = {
-          statusCode: 204,
+          statusCode: 201,
           token: await this.authService.generateToken(
             newUser.id,
             newUser.email,
