@@ -47,7 +47,7 @@ export class DireetionsController {
   @Param('id') id: string,
     @Body() updateDireetionDto: UpdateDireetionDto,
   ): Promise<direction | IError> {
-    return this.direetionsService.update(id, updateDireetionDto);
+    return await this.direetionsService.update(id, updateDireetionDto);
   }
 
   @Delete(':id')
