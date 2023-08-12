@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail, IsNotEmpty, Matches } from 'class-validator';
 
 export class CreateUserDto {
-  @IsEmail(undefined, { message: 'Invalid email format' })
+  @IsEmail(undefined, { message: 'El formato del email no es valido' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description:
@@ -21,28 +21,28 @@ export class CreateUserDto {
   )
   @ApiProperty({
     description:
-      'Recie una contraseña que debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial. Requerido',
+      'Recibe una contraseña que debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial. Requerido',
   })
     password: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
-    description: 'Recive el nombre del usuario, requerido',
+    description: 'Recibe el nombre del usuario, requerido',
   })
     firstName: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
-    description: 'Recive el apellido del usuario, requerido',
+    description: 'Recibe el apellido del usuario, requerido',
   })
     lastName: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
-    description: 'Recive el telefono de contacto del usuario, requerido',
+    description: 'Recibe el telefono de contacto del usuario, requerido',
   })
     phone: string;
 }

@@ -28,7 +28,7 @@ export class UsersController {
   @ApiResponse({
     status: 201,
     description:
-      'Si todo sale bien, se devolverá un objeto con un statusCode 204 y el token de verificación de usuario.',
+      'Si todo sale bien, se devolverá un objeto con un statusCode 201 y el token de verificación de usuario.',
   })
   @ApiResponse({
     status: 400,
@@ -55,19 +55,36 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({
+    summary: 'Ruta para inicio de sesión de usuarios.',
+  })
+  @ApiBody({ type: LoginUserDto })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Si todo sale bien, se devolverá un objeto con un statusCode 200 y el token de verificación de usuario.',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Indica que hubo un error con los datos enviados o estos no se encontraron',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'Si el usuario ingresa una password o correo invalidos, se le solicita que verifique sus datos.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor.',
+  })
   @Post('login')
-  async signIn(@Body() loginUserDto: LoginUserDto) {
-    return this.usersService.signIn(loginUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @HttpCode(200)
+  async signIn(
+    @Body() loginUserDto: LoginUserDto,
+  ): Promise<ICreateUser | IError> {
+    const response = await this.usersService.signIn(loginUserDto);
+    return response;
   }
 
   @Patch(':id')

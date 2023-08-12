@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   Inject,
   forwardRef,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -63,57 +64,60 @@ export class UsersService {
     }
   }
 
-  async signIn(loginUserDto: LoginUserDto) {
+  async signIn(loginUserDto: LoginUserDto): Promise<ICreateUser> {
     try {
       const { email, password } = loginUserDto;
       const checkUser = await this.findOneByEmail(email);
 
-      if (checkUser) {
-        const comparePassword = await this.authService.comparePassword(
-          password,
-          checkUser.password,
-        );
+      const comparePassword = await this.authService.comparePassword(
+        password,
+        checkUser.password,
+      );
 
-        if (comparePassword) {
-          const response = {
-            id: checkUser.id,
-            rol: checkUser.rol,
-            token: await this.authService.generateToken(
-              checkUser.id,
-              checkUser.email,
-            ),
-          };
+      if (comparePassword) {
+        const response = {
+          statusCode: 200,
+          token: await this.authService.generateToken(
+            checkUser.id,
+            checkUser.email,
+          ),
+        };
 
-          return response;
-        } else {
-          throw new Error('Incorrect password');
-        }
+        return response;
       } else {
-        throw new Error('The email entered does not correspond to any user');
+        throw new UnauthorizedException(
+          'La contraseña ingresada no es valida, verifiquela e intente de nuevo',
+        );
       }
-    } catch (err) {
-      return { message: err.message };
+    } catch (error) {
+      switch (error.constructor) {
+        case UnauthorizedException:
+          throw new UnauthorizedException(error.message);
+        default:
+          throw new InternalServerErrorException('Error interno del servidor.');
+      }
     }
   }
 
-  findAll() {
-    return 'This action returns all users';
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  public async findOneByEmail(email: string) {
+  public async findOneByEmail(email: string): Promise<User> {
     try {
       const user = await User.findOne({ where: { email } });
 
       if (user) {
         return user;
       } else {
-        throw new BadRequestException();
+        throw new UnauthorizedException(
+          'El email ingresado no corresponde a ningun usuario registrado.',
+        );
       }
-    } catch (err) {}
+    } catch (error) {
+      switch (error.constructor) {
+        case UnauthorizedException:
+          throw new UnauthorizedException(error.message);
+        default:
+          throw new InternalServerErrorException('Error interno del servidor.');
+      }
+    }
   }
 
   async verifyEmail(email: string): Promise<boolean> {
