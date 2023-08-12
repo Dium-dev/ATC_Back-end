@@ -11,6 +11,8 @@ import {
 import { AdminProductsService } from './admin-products.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ExcelProductDto } from './dto/exelProducts.dto';
+import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-update.interface';
+import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Admin Products')
 @Controller('admin-products')
@@ -82,7 +84,7 @@ export class AdminProductsController {
   })
   @Post('')
   @HttpCode(201)
-  async excelToDataBase(@Body('url') url: string) {
+  async excelToDataBase(@Body('url') url: string): Promise<IResponseCreateOrUpdateProducts | IError> {
     const excelData: Buffer = await this.adminProductsService.getExcelData(url);
 
     const csvData: string = this.adminProductsService.excelToCsv(excelData);
@@ -90,7 +92,7 @@ export class AdminProductsController {
     const jsonData: ExcelProductDto[] =
       await this.adminProductsService.csvToJson(csvData);
 
-    const response = await this.adminProductsService.JsonToDatabase(jsonData);
+    const response: IResponseCreateOrUpdateProducts = await this.adminProductsService.JsonToDatabase(jsonData);
     return response;
   }
 }
