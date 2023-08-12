@@ -16,7 +16,6 @@ import { ExcelProductDto } from './dto/exelProducts.dto';
 @Controller('admin-products')
 export class AdminProductsController {
   constructor(private readonly adminProductsService: AdminProductsService) {}
-  constructor(private readonly adminProductsService: AdminProductsService) {}
 
   @ApiOperation({
     description:
