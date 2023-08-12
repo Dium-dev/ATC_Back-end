@@ -25,8 +25,8 @@ export class UsersController {
   }
 
   @Post('login')
-  async signIn(@Body() LoginUserDto: LoginUserDto) {
-    return this.usersService.signIn(LoginUserDto);
+  async signIn(@Body() loginUserDto: LoginUserDto) {
+    return this.usersService.signIn(loginUserDto);
   }
 
   @Get()

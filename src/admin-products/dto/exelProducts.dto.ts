@@ -5,6 +5,9 @@ export class ExcelProductDto {
   @IsNotEmpty({
     message: 'El campo "Número de publicación", no debe estar vacío',
   })
+  @IsNotEmpty({
+    message: 'El campo "Número de publicación", no debe estar vacío',
+  })
   @IsString()
     'Número de publicación': string;
 

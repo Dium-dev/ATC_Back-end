@@ -15,6 +15,7 @@ import { Brand } from './brands/entities/brand.entity';
 import { Product } from './products/entities/product.entity';
 import { AdminProductsModule } from './admin-products/admin-products.module';
 import { AuthModule } from './auth/auth.module';
+import { CaslModule } from './casl/casl.module';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ dotenv.config();
     UsersModule,
     AdminProductsModule,
     AuthModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [AppService],

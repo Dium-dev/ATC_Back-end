@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 @Injectable()
 export class DireetionsService {
@@ -15,9 +19,17 @@ export class DireetionsService {
         userId: createDireetionDto.userId,
       });
 
-      return newDirection;
+      if (!newDirection) {
+        throw new BadRequestException();
+      } else {
+        return newDirection;
+      }
     } catch (error) {
-      throw error;
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException('No se puede crear direccion');
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
     }
   }
 
