@@ -42,12 +42,23 @@ export class DireetionsController {
     return this.direetionsService.findOne(+id);
   }
 
+
+  @ApiOperation({ summary: 'Modificar una direccion' })
+  @ApiBody({ type: UpdateDireetionDto })
+  @ApiResponse({
+    status: 200,
+    description: 'La dirección ha sido modificada exitosamente',
+  })
+  @ApiResponse({ status: 400, description: 'Solicitud inválida' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  @ApiParam({ name: 'id', description: 'id de la dirección a modificar', type: 'string' })
   @Patch(':id')
   async update(
   @Param('id') id: string,
     @Body() updateDireetionDto: UpdateDireetionDto,
   ): Promise<direction | IError> {
-    return await this.direetionsService.update(id, updateDireetionDto);
+    const response = await this.direetionsService.update(id, updateDireetionDto);
+    return response
   }
 
   @Delete(':id')
