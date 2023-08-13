@@ -10,7 +10,13 @@ import {
 import { DireetionsService } from './directions.service';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+} from '@nestjs/swagger';
 import { direction} from './interfaces/direction.interface';
 import { IError } from 'src/utils/interfaces/error.interface';
 
@@ -29,6 +35,7 @@ export class DireetionsController {
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Post()
   async create(@Body() createDireetionDto: CreateDireetionDto): Promise<direction | IError> {
+
     return this.direetionsService.create(createDireetionDto);
   }
 
@@ -42,7 +49,6 @@ export class DireetionsController {
     return this.direetionsService.findOne(+id);
   }
 
-
   @ApiOperation({ summary: 'Modificar una direccion' })
   @ApiBody({ type: UpdateDireetionDto })
   @ApiResponse({
@@ -51,14 +57,19 @@ export class DireetionsController {
   })
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
-  @ApiParam({ name: 'id', description: 'id de la dirección a modificar', type: 'string' })
+  @ApiParam({
+    name: 'id',
+    description: 'id de la dirección a modificar',
+    type: 'string',
+  })
   @Patch(':id')
   async update(
-  @Param('id') id: string,
+    @Param('id') id: string,
     @Body() updateDireetionDto: UpdateDireetionDto,
   ): Promise<direction | IError> {
     const response = await this.direetionsService.update(id, updateDireetionDto);
     return response
+
   }
 
   @Delete(':id')

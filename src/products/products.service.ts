@@ -14,7 +14,7 @@ import { Product } from './entities/product.entity';
 import { IQuery } from './interfaces/querys.interface';
 import { IGetProducts } from './interfaces/getProducts.interface';
 import {
-  IItems_producXcategory,
+  IItemsProducXcategory,
   IProductXcategory,
 } from './interfaces/product-x-category.interface';
 
@@ -120,7 +120,7 @@ export class ProductsService {
 
   async getProductsXCategory(categoryName: string): Promise<IProductXcategory> {
     try {
-      const items: IItems_producXcategory[] | [] = await Product.findAll({
+      const items: IItemsProducXcategory[] | [] = await Product.findAll({
         limit: 5,
         attributes: ['id', 'title', 'state', 'price', 'image'],
         include: [
