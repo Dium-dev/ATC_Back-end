@@ -7,10 +7,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { direction } from './interfaces/direction.interface';
 
 @Injectable()
 export class DireetionsService {
-  async create(createDireetionDto: CreateDireetionDto) {
+  async create(createDireetionDto: CreateDireetionDto): Promise<direction> {
     try {
       const newDirection = await Direction.create({
         codigoPostal: createDireetionDto.codigoPostal,
@@ -45,7 +46,7 @@ export class DireetionsService {
     return `This action returns a #${id} direetion`;
   }
 
-  async update(id: string, updateDireetionDto: UpdateDireetionDto) {
+  async update(id: string, updateDireetionDto: UpdateDireetionDto): Promise<direction> {
     try {
       const direction = await Direction.findByPk(id);
 

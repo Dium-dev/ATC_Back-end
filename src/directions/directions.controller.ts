@@ -17,6 +17,8 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
+import { direction} from './interfaces/direction.interface';
+import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Directions')
 @Controller('direetions')
@@ -32,7 +34,8 @@ export class DireetionsController {
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Post()
-  async create(@Body() createDireetionDto: CreateDireetionDto) {
+  async create(@Body() createDireetionDto: CreateDireetionDto): Promise<direction | IError> {
+
     return this.direetionsService.create(createDireetionDto);
   }
 
@@ -61,10 +64,12 @@ export class DireetionsController {
   })
   @Patch(':id')
   async update(
-  @Param('id') id: string,
+    @Param('id') id: string,
     @Body() updateDireetionDto: UpdateDireetionDto,
-  ) {
-    return this.direetionsService.update(id, updateDireetionDto);
+  ): Promise<direction | IError> {
+    const response = await this.direetionsService.update(id, updateDireetionDto);
+    return response
+
   }
 
   @Delete(':id')
