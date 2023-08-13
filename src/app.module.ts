@@ -1,7 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import * as dotenv from 'dotenv';
+import {
+  DBDATABASE,
+  DBHOST,
+  DBPASSWORD,
+  DBPORT,
+  DBUSERNAME,
+} from './config/env';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ProductsModule } from './products/products.module';
 import { BrandsModule } from './brands/brands.module';
@@ -17,17 +23,15 @@ import { AdminProductsModule } from './admin-products/admin-products.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 
-dotenv.config();
-
 @Module({
   imports: [
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      host: process.env.DBHOST,
-      port: Number(process.env.DBPORT),
-      username: process.env.DBUSERNAME,
-      password: process.env.DBPASSWORD,
-      database: process.env.DBDATABASE,
+      host: DBHOST,
+      port: Number(DBPORT),
+      username: DBUSERNAME,
+      password: DBPASSWORD,
+      database: DBDATABASE,
       models: [Product, User, Categories, Direction, Brand],
       autoLoadModels: true,
       synchronize: true,

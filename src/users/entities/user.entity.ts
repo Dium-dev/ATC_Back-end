@@ -1,4 +1,11 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  AllowNull,
+  Column,
+  DataType,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
 
 export enum Rol {
