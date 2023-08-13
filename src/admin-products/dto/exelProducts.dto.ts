@@ -5,6 +5,9 @@ export class ExcelProductDto {
   @IsNotEmpty({
     message: 'El campo "Número de publicación", no debe estar vacío',
   })
+  @IsNotEmpty({
+    message: 'El campo "Número de publicación", no debe estar vacío',
+  })
   @IsString()
     'Número de publicación': string;
 
@@ -21,12 +24,16 @@ export class ExcelProductDto {
   @IsString()
     'Descripción': string;
 
-  @IsNotEmpty({ message: 'El campo "Estado", no debe estar vacío' })
+  @IsNotEmpty({
+    message:
+      "El campo \"Estado\", no debe estar vacío. Debe contener los valores 'Activa' o'Inactiva'",
+  })
   @IsEnum(stateproduct)
     'Estado': stateproduct;
 
   @IsNotEmpty({
-    message: 'El campo "Disponibilidad de stock", no debe estar vacío',
+    message:
+      'El campo "Disponibilidad de stock", no debe estar vacío y su valor solo puede ser numérico!',
   })
     'Disponibilidad de stock (días)': string;
 
