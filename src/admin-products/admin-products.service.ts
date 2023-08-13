@@ -1,4 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ExcelProductDto } from './dto/exelProducts.dto';
 import { Op } from 'sequelize';
 import axios from 'axios';
@@ -12,24 +18,65 @@ import { Product } from 'src/products/entities/product.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 
+/* interface */
+import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-update.interface';
+
 @Injectable()
 export class AdminProductsService {
-  async getExcelData(url: string) {
-    const { data } = await axios.get(url, { responseType: 'arraybuffer' });
-    return data;
+  async getExcelData(url: string): Promise<Buffer> {
+    try {
+      const { data }: { data: Buffer } = await axios.get(url, {
+        responseType: 'arraybuffer',
+      });
+
+      if (!data)
+        throw new NotFoundException(
+          `No se ha encontrado el contenido de la URL solicitada \'${url}\'`,
+        );
+
+      return data;
+    } catch (error) {
+      switch (error.constructor) {
+        case NotFoundException:
+          throw new NotFoundException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            `Hubo un problema al solicitar los datos a la URL: ${url}`,
+          );
+      }
+    }
   }
 
-  async excelToCsv(excelData: Buffer): Promise<string> {
+  excelToCsv(excelData: Buffer): string {
     try {
       const workbook = XLSX.read(excelData, { type: 'buffer' });
+
       const sheetName = workbook.SheetNames[0];
+
+      if (!sheetName)
+        throw new ConflictException(
+          'Hubo un problema a la hora de trabajár el Excel!. Recuerde ponerle un nombre a la hoja de trabajo',
+        );
+
       const worksheet = workbook.Sheets[sheetName];
+
+      if (!workbook)
+        throw new ConflictException(
+          'Hubo un problema a la hora de trabajár el Excel!. confirme que la hoja de trabajo esté guardada',
+        );
+
       const csvData = XLSX.utils.sheet_to_csv(worksheet);
 
-      fs.writeFileSync('archivo.csv', csvData);
       return csvData;
     } catch (error) {
-      throw new Error('No se pudo convertir el archivo Excel a CSV.');
+      switch (error.constructor) {
+        case ConflictException:
+          throw new ConflictException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Hubo un problema en el servidor al realizar la operación Excel => .csv',
+          );
+      }
     }
   }
 
@@ -48,85 +95,150 @@ export class AdminProductsService {
     });
   }
 
+  private async findThisProduct(id: string): Promise<Product | null> {
+    const thisProduct: Product | null = await Product.findByPk(id);
+    return thisProduct;
+  }
+
+  private async createNewProduct(
+    product: ExcelProductDto,
+    index: number,
+  ): Promise<void> {
+    try {
+      const categoryId = await this.getOrCreateInEntitis(
+        Categories,
+        product.Categoría,
+        index,
+      );
+
+      const brandId = await this.getOrCreateInEntitis(
+        Brand,
+        product.Marca,
+        index,
+      );
+
+      await Product.create({
+        id: product['Número de publicación'],
+        title: 'product.Título',
+        description: product.Descripción,
+        state: product.Estado,
+        stock: 0,
+        price: Number(product['Precio COP']),
+        availability: Number(product['Disponibilidad de stock (días)']) || 0,
+        image: [''],
+        year: product.Título.split(' ')[3].includes('-')
+          ? product.Título.split(' ')[3]
+          : product.Título.split(' ')[4].includes('-')
+            ? product.Título.split(' ')[4]
+            : null,
+        brandId: brandId,
+        categoryId: categoryId,
+      });
+
+      return;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Ocurrió un problema en la creación del producto '${
+          product.Título
+        }', en el Indice: ${index + 2}`,
+      );
+    }
+  }
+
   async JsonToDatabase(
-    allProducts: ExcelProductDto[],
-  ): Promise<{ message: string }> {
-    for (const product of allProducts) {
-      const thisProduct = await Product.findByPk(
-        product['Número de publicación'],
+    allProducts: any[],
+  ): Promise<IResponseCreateOrUpdateProducts> {
+    for (const [index, value] of allProducts.entries()) {
+      const thisProduct: Product | null = await this.findThisProduct(
+        value['Número de publicación'],
       );
 
       if (thisProduct) {
-        await this.updateProduct(thisProduct, product);
+        await this.updateProduct(thisProduct, value, index);
       } else {
-        const categoryId = await this.getCategory(product.Categoría);
-        const brandId = await this.getBrand(product.Marca);
-
-        await Product.create({
-          id: product['Número de publicación'],
-          title: product.Título,
-          description: product.Descripción,
-          state: product.Estado,
-          stock: 0,
-          price: Number(product['Precio COP']),
-          availability: Number(product['Disponibilidad de stock (días)']) || 0,
-          image: [''],
-          year: product.Título.split(' ')[3].includes('-')
-            ? product.Título.split(' ')[3]
-            : product.Título.split(' ')[4].includes('-')
-              ? product.Título.split(' ')[4]
-              : null,
-          brandId: brandId,
-          categoryId: categoryId.dataValues.id,
-        });
+        await this.createNewProduct(value, index);
       }
     }
 
-    return { message: 'todo ok' };
+    return {
+      statusCode: 201,
+      message: 'Productos creados / actualizados con éxito!',
+    };
   }
 
-  private async getCategory(categoria: string) {
-    let category = await Categories.findOne({
-      where: { name: { [Op.iLike]: `%${categoria}%` } },
-      attributes: ['id'],
-    });
+  private async getOrCreateInEntitis(
+    Entity: typeof Categories | typeof Brand,
+    name: string,
+    index: number,
+  ): Promise<string> {
+    try {
+      const [thisResult]: [Categories | Brand, boolean] =
+        await Entity.findOrCreate({
+          where: { name },
+        });
 
-    category = category || (await Categories.create({ name: categoria }));
+      if (!thisResult)
+        throw new NotFoundException(
+          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${
+            index + 2
+          }`,
+        );
 
-    return category;
+      return thisResult.id;
+    } catch (error) {
+      switch (error.constructor) {
+        case NotFoundException:
+          throw new NotFoundException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            `Ocurrio un error al consultar la entidad ${Entity.tableName}`,
+          );
+      }
+    }
   }
 
-  private async getBrand(brand: string) {
-    let brandObj = await Brand.findOne({
-      where: { name: { [Op.iLike]: `%${brand}%` } },
-      attributes: ['id'],
-    });
+  private async updateProduct(
+    thisProduct: Product,
+    product: ExcelProductDto,
+    index: number,
+  ): Promise<void> {
+    try {
+      const categoryId: string = await this.getOrCreateInEntitis(
+        Categories,
+        product.Categoría,
+        index,
+      );
 
-    brandObj = brandObj || (await Brand.create({ name: brand }));
+      const brandId: string = await this.getOrCreateInEntitis(
+        Brand,
+        product.Marca,
+        index,
+      );
 
-    return brandObj.id;
-  }
+      thisProduct.title = product.Título;
+      thisProduct.description = product.Descripción;
+      thisProduct.state = product.Estado;
+      thisProduct.stock = 0;
+      thisProduct.availability =
+        Number(product['Disponibilidad de stock (días)']) || 0;
+      thisProduct.image = [''];
+      thisProduct.year = product.Título.split(' ')[3].includes('-')
+        ? product.Título.split(' ')[3]
+        : product.Título.split(' ')[4].includes('-')
+          ? product.Título.split(' ')[4]
+          : null;
+      thisProduct.brandId = brandId;
+      thisProduct.categoryId = categoryId;
 
-  private async updateProduct(thisProduct: any, product: any) {
-    const categoryId = await this.getCategory(product.Categoría);
-    const brandId = await this.getBrand(product.Marca);
+      await thisProduct.save();
 
-    thisProduct.title = product.Título;
-    thisProduct.description = product.Descripción;
-    thisProduct.state = product.Estado;
-    thisProduct.stock = 0;
-    thisProduct.availability =
-      Number(product['Disponibilidad de stock (días)']) || 0;
-    thisProduct.image = [''];
-
-    thisProduct.year = product.Título.split(' ')[3].includes('-')
-      ? product.Título.split(' ')[3]
-      : product.Título.split(' ')[4].includes('-')
-        ? product.Título.split(' ')[4]
-        : null;
-    thisProduct.brandId = brandId;
-    thisProduct.categoryId = categoryId.dataValues.id;
-
-    await thisProduct.save();
+      return;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Ocurrio un error al Actualizar el producto ${
+          product.Título
+        }, en el Indice: ${index + 2}`,
+      );
+    }
   }
 }
