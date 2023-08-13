@@ -72,8 +72,17 @@ export class DireetionsController {
 
   }
 
+
+  @ApiOperation({ summary: 'Eliminar una direccion' })
+  @ApiResponse({
+    status: 204,
+    description: 'Direccion eliminada exitosamente',
+  })
+  @ApiResponse({ status: 404, description: 'Direccion no encontrada' })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiParam({ name: 'id', description: 'id de la dirección a eliminar', type: 'string' })
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.direetionsService.remove(id);
+    return await this.direetionsService.remove(id);
   }
 }

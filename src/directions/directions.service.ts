@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDireetionDto } from './dto/create-direetion.dto';
-import { UpdateDireetionDto } from './dto/update-direetion.dto';
-import { Direction } from './entities/direction.entity';
-import {
+import { 
+  Injectable, 
+  NotFoundException,
   BadRequestException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { CreateDireetionDto } from './dto/create-direetion.dto';
+import { UpdateDireetionDto } from './dto/update-direetion.dto';
+import { Direction } from './entities/direction.entity';
 import { direction } from './interfaces/direction.interface';
+
 
 @Injectable()
 export class DireetionsService {
@@ -91,12 +93,19 @@ export class DireetionsService {
 
       if (direction) {
         await direction.destroy();
-        return { message: 'Direccion eliminada exitosamente' };
+        return {statusCode: 204, message: 'Direccion eliminada exitosamente'
+       };
       } else {
-        throw new Error('Direccion no encontrada');
+        throw new NotFoundException('Direccion no encontrada');
       }
     } catch (error) {
-      throw error;
+
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('Direccion no encontrada');
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
+    
     }
   }
 }
