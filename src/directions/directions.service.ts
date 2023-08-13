@@ -28,7 +28,7 @@ export class DireetionsService {
         return {
           statusCode: 201,
           newDirection,
-        }
+        };
       }
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -73,18 +73,16 @@ export class DireetionsService {
         return {
           statusCode: 200,
           direction,
-        }
+        };
       } else {
         throw new NotFoundException('direccion no encontrada');
       }
     } catch (error) {
-
       if (error instanceof NotFoundException) {
         throw new NotFoundException('direccion no encontrada');
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
-      
     }
   }
 
