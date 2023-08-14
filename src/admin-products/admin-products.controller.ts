@@ -82,9 +82,12 @@ export class AdminProductsController {
       },
     },
   })
+  /* post admin-products */
   @Post('')
   @HttpCode(201)
   async excelToDataBase(@Body('url') url: string): Promise<IResponseCreateOrUpdateProducts | IError> {
+    /* Se usa la url al archivo excel para generar un buffer, luego a 
+    formato csv y por último formato json para para aprovechar la data */
     const excelData: Buffer = await this.adminProductsService.getExcelData(url);
 
     const csvData: string = this.adminProductsService.excelToCsv(excelData);
