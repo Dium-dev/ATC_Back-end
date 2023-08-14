@@ -8,6 +8,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { CaslAbilityFactory } from '../casl/casl-ability.factory/casl-ability.factory';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     }),
     SequelizeModule.forFeature([User]),
   ],
-  providers: [AuthService, UsersService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, CaslAbilityFactory],
   controllers: [AuthController],
   exports: [AuthService],
 })

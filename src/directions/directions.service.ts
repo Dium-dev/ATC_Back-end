@@ -1,5 +1,5 @@
-import { 
-  Injectable, 
+import {
+  Injectable,
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
@@ -9,7 +9,6 @@ import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
 import { direction } from './interfaces/direction.interface';
-
 
 @Injectable()
 export class DireetionsService {
@@ -48,7 +47,10 @@ export class DireetionsService {
     return `This action returns a #${id} direetion`;
   }
 
-  async update(id: string, updateDireetionDto: UpdateDireetionDto): Promise<direction> {
+  async update(
+    id: string,
+    updateDireetionDto: UpdateDireetionDto,
+  ): Promise<direction> {
     try {
       const direction = await Direction.findByPk(id);
 
@@ -93,19 +95,16 @@ export class DireetionsService {
 
       if (direction) {
         await direction.destroy();
-        return {statusCode: 204, message: 'Direccion eliminada exitosamente'
-       };
+        return { statusCode: 204, message: 'Direccion eliminada exitosamente' };
       } else {
         throw new NotFoundException('Direccion no encontrada');
       }
     } catch (error) {
-
       if (error instanceof NotFoundException) {
         throw new NotFoundException('Direccion no encontrada');
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
-    
     }
   }
 }
