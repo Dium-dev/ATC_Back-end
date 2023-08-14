@@ -1,26 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { Brand } from './entities/brand.entity';
+import { IError } from 'src/utils/interfaces/error.interface';
 
 @Injectable()
 export class BrandsService {
-  create(createBrandDto: CreateBrandDto) {
-    return 'This action adds a new brand';
-  }
-
-  findAll() {
-    return 'This action returns all brands';
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} brand`;
-  }
-
-  update(id: number, updateBrandDto: UpdateBrandDto) {
-    return `This action updates a #${id} brand`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+  async findAllBrands(): Promise<{ id: string; name: string }[] | IError> {
+    try {
+      const allBrands = await Brand.findAll();
+      if (!allBrands.length)
+        throw new NotFoundException(
+          'No se encontró ninguna marca en la base de datos',
+        );
+      return allBrands;
+    } catch (error) {
+      switch (error.constructor) {
+        case NotFoundException:
+          throw new NotFoundException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrió un error al en el servidor al trabajar las Categorias',
+          );
+      }
+    }
   }
 }

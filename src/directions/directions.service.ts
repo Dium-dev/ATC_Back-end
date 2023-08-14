@@ -1,19 +1,19 @@
-import { 
-  Injectable, 
+import {
+  Injectable,
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
-import { direction } from './interfaces/direction.interface';
-
+import { IDirection } from './interfaces/direction.interface';
 
 @Injectable()
 export class DireetionsService {
-  async create(createDireetionDto: CreateDireetionDto): Promise<direction> {
+  async create(
+    createDireetionDto: CreateDireetionDto,
+  ): Promise<{ statusCode: number; newDirection: IDirection }> {
     try {
       const newDirection = await Direction.create({
         codigoPostal: createDireetionDto.codigoPostal,
@@ -48,32 +48,35 @@ export class DireetionsService {
     return `This action returns a #${id} direetion`;
   }
 
-  async update(id: string, updateDireetionDto: UpdateDireetionDto): Promise<direction> {
+  async update(
+    id: string,
+    updateDireetionDto: UpdateDireetionDto,
+  ): Promise<{ statusCode: number; direction: IDirection }> {
     try {
-      const direction = await Direction.findByPk(id);
+      const thisDirection = await Direction.findByPk(id);
 
-      if (direction) {
+      if (thisDirection) {
         if (updateDireetionDto.codigoPostal) {
-          direction.codigoPostal = updateDireetionDto.codigoPostal;
+          thisDirection.codigoPostal = updateDireetionDto.codigoPostal;
         }
 
         if (updateDireetionDto.ciudad) {
-          direction.ciudad = updateDireetionDto.ciudad;
+          thisDirection.ciudad = updateDireetionDto.ciudad;
         }
 
         if (updateDireetionDto.estado) {
-          direction.estado = updateDireetionDto.estado;
+          thisDirection.estado = updateDireetionDto.estado;
         }
 
         if (updateDireetionDto.calle) {
-          direction.calle = updateDireetionDto.calle;
+          thisDirection.calle = updateDireetionDto.calle;
         }
 
-        await direction.save();
+        await thisDirection.save();
 
         return {
           statusCode: 200,
-          direction,
+          direction: thisDirection,
         };
       } else {
         throw new NotFoundException('direccion no encontrada');
@@ -89,23 +92,23 @@ export class DireetionsService {
 
   async remove(id: string) {
     try {
-      const direction = await Direction.findByPk(id);
+      const toRemoveDirection = await Direction.findByPk(id);
 
-      if (direction) {
-        await direction.destroy();
-        return {statusCode: 204, message: 'Direccion eliminada exitosamente'
-       };
+      if (toRemoveDirection) {
+        await toRemoveDirection.destroy();
+        return {
+          statusCode: 204,
+          message: 'Direccion eliminada exitosamente',
+        };
       } else {
         throw new NotFoundException('Direccion no encontrada');
       }
     } catch (error) {
-
       if (error instanceof NotFoundException) {
         throw new NotFoundException('Direccion no encontrada');
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
-    
     }
   }
 }
