@@ -84,7 +84,9 @@ export class AdminProductsController {
   })
   @Post('')
   @HttpCode(201)
-  async excelToDataBase(@Body('url') url: string): Promise<IResponseCreateOrUpdateProducts | IError> {
+  async excelToDataBase(
+    @Body('url') url: string,
+  ): Promise<IResponseCreateOrUpdateProducts | IError> {
     const excelData: Buffer = await this.adminProductsService.getExcelData(url);
 
     const csvData: string = this.adminProductsService.excelToCsv(excelData);
@@ -92,7 +94,8 @@ export class AdminProductsController {
     const jsonData: ExcelProductDto[] =
       await this.adminProductsService.csvToJson(csvData);
 
-    const response: IResponseCreateOrUpdateProducts = await this.adminProductsService.JsonToDatabase(jsonData);
+    const response: IResponseCreateOrUpdateProducts =
+      await this.adminProductsService.JsonToDatabase(jsonData);
     return response;
   }
 }

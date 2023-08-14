@@ -17,7 +17,7 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { direction} from './interfaces/direction.interface';
+import { direction } from './interfaces/direction.interface';
 import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Directions')
@@ -34,8 +34,9 @@ export class DireetionsController {
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Post()
-  async create(@Body() createDireetionDto: CreateDireetionDto): Promise<direction | IError> {
-
+  async create(
+    @Body() createDireetionDto: CreateDireetionDto,
+  ): Promise<direction | IError> {
     return this.direetionsService.create(createDireetionDto);
   }
 
@@ -65,13 +66,14 @@ export class DireetionsController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateDireetionDto: UpdateDireetionDto,
+      @Body() updateDireetionDto: UpdateDireetionDto,
   ): Promise<direction | IError> {
-    const response = await this.direetionsService.update(id, updateDireetionDto);
-    return response
-
+    const response = await this.direetionsService.update(
+      id,
+      updateDireetionDto,
+    );
+    return response;
   }
-
 
   @ApiOperation({ summary: 'Eliminar una direccion' })
   @ApiResponse({
@@ -80,9 +82,13 @@ export class DireetionsController {
   })
   @ApiResponse({ status: 404, description: 'Direccion no encontrada' })
   @ApiResponse({ status: 500, description: 'Error del servidor' })
-  @ApiParam({ name: 'id', description: 'id de la dirección a eliminar', type: 'string' })
+  @ApiParam({
+    name: 'id',
+    description: 'id de la dirección a eliminar',
+    type: 'string',
+  })
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.direetionsService.remove(id);
+    return this.direetionsService.remove(id);
   }
 }
