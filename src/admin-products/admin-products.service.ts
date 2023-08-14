@@ -23,6 +23,7 @@ import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-up
 
 @Injectable()
 export class AdminProductsService {
+  //Usa una url al archivo original para obtener la información y retornar un buffer
   async getExcelData(url: string): Promise<Buffer> {
     try {
       const { data }: { data: Buffer } = await axios.get(url, {
@@ -49,6 +50,7 @@ export class AdminProductsService {
 
   excelToCsv(excelData: Buffer): string {
     try {
+      //Parse a buffer wich contains the data to save in DB
       const workbook = XLSX.read(excelData, { type: 'buffer' });
 
       const sheetName = workbook.SheetNames[0];
@@ -57,7 +59,7 @@ export class AdminProductsService {
         throw new ConflictException(
           'Hubo un problema a la hora de trabajár el Excel!. Recuerde ponerle un nombre a la hoja de trabajo',
         );
-
+ 
       const worksheet = workbook.Sheets[sheetName];
 
       if (!workbook)
@@ -145,6 +147,7 @@ export class AdminProductsService {
     }
   }
 
+  //Crea o actualiza un producto en DB
   async JsonToDatabase(
     allProducts: any[],
   ): Promise<IResponseCreateOrUpdateProducts> {
@@ -202,7 +205,9 @@ export class AdminProductsService {
     product: ExcelProductDto,
     index: number,
   ): Promise<void> {
-    try {
+    try { 
+      //Se obtiene o, de no existir, se crea una nueva categoría y luego retorna el id
+      //Lo mismo se aplica para el Brand
       const categoryId: string = await this.getOrCreateInEntitis(
         Categories,
         product.Categoría,
@@ -215,6 +220,7 @@ export class AdminProductsService {
         index,
       );
 
+      //Se actualiza el producto
       thisProduct.title = product.Título;
       thisProduct.description = product.Descripción;
       thisProduct.state = product.Estado;

@@ -12,6 +12,7 @@ import { CaslAbilityFactory } from '../casl/casl-ability.factory/casl-ability.fa
 
 @Module({
   imports: [
+    //Both authModule and UsersModule refers each other.
     forwardRef(() => UsersModule),
     JwtModule.register({
       global: true,
