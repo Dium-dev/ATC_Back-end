@@ -17,7 +17,7 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { direction} from './interfaces/direction.interface';
+import { IDirection } from './interfaces/direction.interface';
 import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Directions')
@@ -34,9 +34,11 @@ export class DireetionsController {
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Post()
-  async create(@Body() createDireetionDto: CreateDireetionDto): Promise<direction | IError> {
-
-    return this.direetionsService.create(createDireetionDto);
+  async create(
+    @Body() createDireetionDto: CreateDireetionDto,
+  ): Promise<{ statusCode: number; newDirection: IDirection } | IError> {
+    const response = await this.direetionsService.create(createDireetionDto);
+    return response;
   }
 
   @Get()
@@ -65,15 +67,30 @@ export class DireetionsController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateDireetionDto: UpdateDireetionDto,
-  ): Promise<direction | IError> {
-    const response = await this.direetionsService.update(id, updateDireetionDto);
-    return response
-
+      @Body() updateDireetionDto: UpdateDireetionDto,
+  ): Promise<{ statusCode: number; direction: IDirection } | IError> {
+    const response = await this.direetionsService.update(
+      id,
+      updateDireetionDto,
+    );
+    return response;
   }
 
+  @ApiOperation({ summary: 'Eliminar una direccion' })
+  @ApiResponse({
+    status: 204,
+    description: 'Direccion eliminada exitosamente',
+  })
+  @ApiResponse({ status: 404, description: 'Direccion no encontrada' })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiParam({
+    name: 'id',
+    description: 'id de la dirección a eliminar',
+    type: 'string',
+  })
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.direetionsService.remove(id);
+    const response = await this.direetionsService.remove(id);
+    return response;
   }
 }
