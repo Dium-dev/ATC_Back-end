@@ -30,6 +30,7 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
+  /* auth/recoverPassword */
   @Patch('recoverPassword')
   @HttpCode(201)
   async recoverPassword(
@@ -57,6 +58,7 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
+  /* auth.resetPassword */
   @Patch('resetPassword')
   @HttpCode(201)
   async resetPassword(
@@ -84,6 +86,7 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
+  /* auth/changePassword */
   @Patch('changePassword')
   @HttpCode(201)
   //aca va el Guard

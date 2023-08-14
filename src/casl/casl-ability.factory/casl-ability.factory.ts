@@ -35,12 +35,15 @@ export class CaslAbilityFactory {
     PureAbility<[Action, Subject]>
     >(PureAbility as AbilityClass<AppAbility>);
 
+    //Permisses
     if (user.sub) {
       can(Action.Update, User, ['firstName', 'lastName', 'email', 'phone'], {
         id: user.sub,
       }); // read-write access to everything
     }
 
+    //detectSubjectType es para detectar el tipado de un subject como lo
+    //podría ser la entidad Product o User
     return build({
       // Read https://casl.js.org/v5/en/guide/subject-type-detection#use-classes-as-subject-types for details
       detectSubjectType: (item) =>
