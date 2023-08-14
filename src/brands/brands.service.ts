@@ -15,7 +15,7 @@ export class BrandsService {
       const allBrands = await Brand.findAll();
       if (!allBrands.length)
         throw new NotFoundException(
-          'No se encontró ninguna marca en la base de datos',
+          'No se encontró ninguna Marca en la base de datos',
         );
       return allBrands;
     } catch (error) {
@@ -24,7 +24,7 @@ export class BrandsService {
           throw new NotFoundException(error.message);
         default:
           throw new InternalServerErrorException(
-            'Ocurrió un error al en el servidor al trabajar las Categorias',
+            'Ocurrió un error al en el servidor al trabajar las Marcas',
           );
       }
     }
