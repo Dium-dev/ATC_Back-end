@@ -17,7 +17,7 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { direction } from './interfaces/direction.interface';
+import { IDirection } from './interfaces/direction.interface';
 import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Directions')
@@ -36,8 +36,9 @@ export class DireetionsController {
   @Post()
   async create(
     @Body() createDireetionDto: CreateDireetionDto,
-  ): Promise<direction | IError> {
-    return this.direetionsService.create(createDireetionDto);
+  ): Promise<{ statusCode: number; newDirection: IDirection } | IError> {
+    const response = await this.direetionsService.create(createDireetionDto);
+    return response;
   }
 
   @Get()
@@ -67,7 +68,7 @@ export class DireetionsController {
   async update(
     @Param('id') id: string,
       @Body() updateDireetionDto: UpdateDireetionDto,
-  ): Promise<direction | IError> {
+  ): Promise<{ statusCode: number; direction: IDirection } | IError> {
     const response = await this.direetionsService.update(
       id,
       updateDireetionDto,
@@ -89,6 +90,7 @@ export class DireetionsController {
   })
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.direetionsService.remove(id);
+    const response = await this.direetionsService.remove(id);
+    return response;
   }
 }

@@ -1,4 +1,4 @@
-export interface direction {
+export interface IDirection {
   id: string;
   codigoPostal: number;
   ciudad: string;
