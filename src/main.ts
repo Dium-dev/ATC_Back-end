@@ -1,14 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { Categories } from './categories/entities/category.entity';
 import { Brand } from './brands/entities/brand.entity';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { config } from 'dotenv';
-config();
+import { PORT } from './config/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useGlobalPipes(new ValidationPipe());
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const config = new DocumentBuilder()
     .setTitle('ATC_api')
@@ -19,7 +20,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT);
+  await app.listen(PORT);
 }
 bootstrap().then(async () => {
   const allCategories: { id: string; name: string }[] =

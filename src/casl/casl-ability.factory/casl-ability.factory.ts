@@ -1,13 +1,19 @@
-import { PureAbility, AbilityBuilder, AbilityClass, ExtractSubjectType, InferSubjects } from '@casl/ability';
+import {
+  PureAbility,
+  AbilityBuilder,
+  AbilityClass,
+  ExtractSubjectType,
+  InferSubjects,
+} from '@casl/ability';
 import { User } from '../../users/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { Rol } from '../../users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
 
 interface UserPayload {
-  sub:string,
-  username:string,
-  rol: Rol
+  sub: string;
+  username: string;
+  rol: Rol;
 }
 
 export enum Action {
@@ -26,13 +32,15 @@ type AppAbility = PureAbility<[Action, Subject]>;
 export class CaslAbilityFactory {
   createForUser(user: UserPayload) {
     const { can, cannot, build } = new AbilityBuilder<
-    PureAbility<[Action, Subject]>
+      PureAbility<[Action, Subject]>
     >(PureAbility as AbilityClass<AppAbility>);
-    
+
     if (user.sub) {
-      can(Action.Update, User, ['firstName', 'lastName', 'email', 'phone'], { id: user.sub }); // read-write access to everything
+      can(Action.Update, User, ['firstName', 'lastName', 'email', 'phone'], {
+        id: user.sub,
+      }); // read-write access to everything
     }
-    
+
     return build({
       // Read https://casl.js.org/v5/en/guide/subject-type-detection#use-classes-as-subject-types for details
       detectSubjectType: (item) =>

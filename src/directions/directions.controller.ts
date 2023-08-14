@@ -10,7 +10,15 @@ import {
 import { DireetionsService } from './directions.service';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+} from '@nestjs/swagger';
+import { direction} from './interfaces/direction.interface';
+import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Directions')
 @Controller('direetions')
@@ -26,7 +34,8 @@ export class DireetionsController {
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Post()
-  async create(@Body() createDireetionDto: CreateDireetionDto) {
+  async create(@Body() createDireetionDto: CreateDireetionDto): Promise<direction | IError> {
+
     return this.direetionsService.create(createDireetionDto);
   }
 
@@ -40,16 +49,40 @@ export class DireetionsController {
     return this.direetionsService.findOne(+id);
   }
 
+  @ApiOperation({ summary: 'Modificar una direccion' })
+  @ApiBody({ type: UpdateDireetionDto })
+  @ApiResponse({
+    status: 200,
+    description: 'La dirección ha sido modificada exitosamente',
+  })
+  @ApiResponse({ status: 400, description: 'Solicitud inválida' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  @ApiParam({
+    name: 'id',
+    description: 'id de la dirección a modificar',
+    type: 'string',
+  })
   @Patch(':id')
   async update(
-  @Param('id') id: string,
+    @Param('id') id: string,
     @Body() updateDireetionDto: UpdateDireetionDto,
-  ) {
-    return this.direetionsService.update(id, updateDireetionDto);
+  ): Promise<direction | IError> {
+    const response = await this.direetionsService.update(id, updateDireetionDto);
+    return response
+
   }
 
+
+  @ApiOperation({ summary: 'Eliminar una direccion' })
+  @ApiResponse({
+    status: 204,
+    description: 'Direccion eliminada exitosamente',
+  })
+  @ApiResponse({ status: 404, description: 'Direccion no encontrada' })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiParam({ name: 'id', description: 'id de la dirección a eliminar', type: 'string' })
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.direetionsService.remove(id);
+    return await this.direetionsService.remove(id);
   }
 }

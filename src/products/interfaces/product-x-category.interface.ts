@@ -1,7 +1,6 @@
 import { stateproduct } from '../entities/product.entity';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export interface IItems_producXcategory {
+export interface IItemsProducXcategory {
   id: string;
   title: string;
   state: stateproduct;
@@ -19,5 +18,5 @@ export interface IItems_producXcategory {
 
 export interface IProductXcategory {
   statusCode: number;
-  items: IItems_producXcategory[];
+  items: IItemsProducXcategory[];
 }

@@ -1,20 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+  Inject,
+  forwardRef,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
-
+import { ICreateUser } from './interfaces/create-user.interface';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
+    @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     try {
       const data = {
         firstName: createUserDto.firstName,
@@ -30,75 +39,107 @@ export class UsersService {
 
       if (newUser) {
         const response = {
-          id: newUser.id,
+          statusCode: 201,
           token: await this.authService.generateToken(
             newUser.id,
             newUser.email,
           ),
-          rol: newUser.rol,
         };
 
         return response;
       } else {
-        throw new Error('Error creating user');
-      }
-    } catch (err) {
-      console.log({ err: err.message });
-    }
-  }
-
-  async signIn(loginUserDto: LoginUserDto) {
-    try {
-      const checkUser = await User.findOne({
-        where: { email: loginUserDto.email },
-      });
-      if (checkUser) {
-        const comparePassword = await this.authService.comparePassword(
-          loginUserDto.password,
-          checkUser.password,
+        throw new BadRequestException(
+          'Error al crear el usuario verifique los datos enviados e intentelo nuevamente',
         );
-
-        if (comparePassword) {
-          const response = {
-            id: checkUser.id,
-            rol: checkUser.rol,
-            token: await this.authService.generateToken(
-              checkUser.id,
-              checkUser.email,
-            ),
-          };
-
-          return response;
-        } else {
-          throw new Error('Incorrect password');
-        }
-      } else {
-        throw new Error('The email entered does not correspond to any user');
       }
-    } catch (err) {
-      return { message: err.message };
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Erron interno del servidor, intente mas tarde',
+          );
+      }
     }
   }
 
-  findAll() {
-    return 'This action returns all users';
+  async signIn(loginUserDto: LoginUserDto): Promise<ICreateUser> {
+    try {
+      const { email, password } = loginUserDto;
+      const checkUser = await this.findOneByEmail(email);
+
+      const comparePassword = await this.authService.comparePassword(
+        password,
+        checkUser.password,
+      );
+
+      if (comparePassword) {
+        const response = {
+          statusCode: 200,
+          token: await this.authService.generateToken(
+            checkUser.id,
+            checkUser.email,
+          ),
+        };
+
+        return response;
+      } else {
+        throw new UnauthorizedException(
+          'La contraseña ingresada no es valida, verifiquela e intente de nuevo',
+        );
+      }
+    } catch (error) {
+      switch (error.constructor) {
+        case UnauthorizedException:
+          throw new UnauthorizedException(error.message);
+        default:
+          throw new InternalServerErrorException('Error interno del servidor.');
+      }
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  public async findOneByEmail(email: string): Promise<User> {
+    try {
+      const user = await User.findOne({ where: { email } });
+
+      if (user) {
+        return user;
+      } else {
+        throw new UnauthorizedException(
+          'El email ingresado no corresponde a ningun usuario registrado.',
+        );
+      }
+    } catch (error) {
+      switch (error.constructor) {
+        case UnauthorizedException:
+          throw new UnauthorizedException(error.message);
+        default:
+          throw new InternalServerErrorException('Error interno del servidor.');
+      }
+    }
   }
 
-  async findOneEmail(email: string) {
+  async verifyEmail(email: string): Promise<boolean> {
     try {
       const user = await User.findOne({ where: { email } });
 
       if (!user) {
         return true;
       } else {
-        throw new Error('There is already an account created with that email');
+        throw new ConflictException(
+          'Ya existe una cuenta creada con este correo, puedes iniciar sesión.',
+        );
       }
-    } catch (err) {
-      return { message: err.message };
+    } catch (error) {
+      switch (error.constructor) {
+        case ConflictException:
+          throw new ConflictException(error.message());
+        default:
+          throw new InternalServerErrorException(
+            'Error interno del servidor, intente mas tarde',
+          );
+      }
     }
   }
 

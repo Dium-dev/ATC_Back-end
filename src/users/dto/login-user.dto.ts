@@ -2,20 +2,26 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail, IsNotEmpty, Matches } from 'class-validator';
 
 export class LoginUserDto {
-  @ApiProperty()
-  @IsEmail(undefined, { message: 'Invalid email format' })
-  @IsNotEmpty({ message: 'an $property is required to log in' })
+  @IsEmail(undefined, { message: 'El formato del email no es valido' })
+  @IsNotEmpty({ message: 'el $property es requerido para iniciar sesión' })
+  @ApiProperty({
+    description:
+      'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
+  })
     email: string;
 
-  @ApiProperty()
-  @IsString({ message: '$property must be a string' })
-  @IsNotEmpty({ message: '$property is required to log in' })
+  @IsString({ message: '$property debe ser un string' })
+  @IsNotEmpty({ message: '$property es requerida para iniciar sesión' })
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&_])[A-Za-z\d$@$!%*?&]{8,15}/,
     {
       message:
-        'The $property The password must be 8 to 15 characters long, contain a capital letter, a lower case letter, a number and a special character.',
+        'La $property debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial..',
     },
   )
+  @ApiProperty({
+    description:
+      'Recibe una contraseña que debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial. Requerido',
+  })
     password: string;
 }
