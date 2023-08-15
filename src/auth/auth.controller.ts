@@ -1,4 +1,4 @@
-import { Controller, Patch, Body, HttpCode } from '@nestjs/common';
+import { Controller, Patch, Body, HttpCode, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -7,6 +7,8 @@ import { GetUser } from './get-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { IError } from 'src/utils/interfaces/error.interface';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from './guards/jwt-auth.guarg';
+import { UserChangePasswordDto } from './dto/user-change-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -58,13 +60,15 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
-  /* auth.resetPassword */
+  /* auth/resetPassword */
+  @UseGuards(JwtAuthGuard)
   @Patch('resetPassword')
   @HttpCode(201)
   async resetPassword(
     @Body() resetPassword: ResetPasswordDto,
+      @GetUser user: UserChangePasswordDto,
   ): Promise<string | IError> {
-    const response = await this.authService.resetPassword(resetPassword);
+    const response = await this.authService.resetPassword(resetPassword, user);
     return response;
   }
 
@@ -87,12 +91,12 @@ export class AuthController {
     description: 'Error interno del servidor.',
   })
   /* auth/changePassword */
+  @UseGuards(JwtAuthGuard)
   @Patch('changePassword')
   @HttpCode(201)
-  //aca va el Guard
   async changePassword(
     @Body() changePassword: ChangePasswordDto,
-      @GetUser() user: User,
+      @GetUser() user: UserChangePasswordDto,
   ): Promise<string | IError> {
     const response = await this.authService.changePassword(
       changePassword,

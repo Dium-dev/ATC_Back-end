@@ -12,7 +12,9 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { User } from 'src/users/entities/user.entity';
+import { UserChangePasswordDto } from './dto/user-change-password.dto';
+import { JWT_SECRET } from 'src/config/env';
+import { Jwt } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -49,6 +51,8 @@ export class AuthService {
       const { email } = recoverPassword;
       const user = await this.usersService.findOneByEmail(email);
 
+      const token = await Jwt.sign();
+
       //aca iria la implementacion de la creacion y el envio del
       //token y el correo con el link del formulario para cambiar la contraseña
 
@@ -63,12 +67,18 @@ export class AuthService {
     }
   }
 
-  async resetPassword(resetPassword: ResetPasswordDto): Promise<string> {
+  async resetPassword(
+    resetPassword: ResetPasswordDto,
+    user: UserChangePasswordDto,
+  ): Promise<string> {
     try {
       const { password } = resetPassword;
+      const { username } = user;
 
-      //modificar con nueva implementacion
-      //buscar al user con la informacion del token y cambiar contraseña
+      const userPass = await this.usersService.findOneByEmail(username);
+
+      userPass.password = await this.generatePassword(password);
+      userPass.save();
       return 'El cambio de la contraseña fue exitoso.';
     } catch (error) {
       switch (error.constructor) {
@@ -80,17 +90,25 @@ export class AuthService {
     }
   }
 
-  async changePassword(changePassword: ChangePasswordDto, user: User) {
+  async changePassword(
+    changePassword: ChangePasswordDto,
+    user: UserChangePasswordDto,
+  ) {
     try {
+      console.log(user);
       const { oldPassword, newPassword } = changePassword;
+      const { username } = user;
+
+      const userFind = await this.usersService.findOneByEmail(username);
+
       const validatePassword = await this.comparePassword(
         oldPassword,
-        user.password,
+        userFind.password,
       );
 
       if (validatePassword) {
-        user.password = await this.generatePassword(newPassword);
-        user.save();
+        userFind.password = await this.generatePassword(newPassword);
+        userFind.save();
         return 'El cambio de la contraseña fue exitoso.';
       } else {
         throw new BadRequestException(

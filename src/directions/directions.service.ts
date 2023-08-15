@@ -52,7 +52,6 @@ export class DireetionsService {
     id: string,
     updateDireetionDto: UpdateDireetionDto,
   ): Promise<{ statusCode: number; direction: IDirection }> {
-
     try {
       const thisDirection = await Direction.findByPk(id);
 
