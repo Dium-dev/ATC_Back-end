@@ -13,9 +13,9 @@ import { UsersService } from 'src/users/users.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
+import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from 'src/config/env';
-import { Jwt } from 'jsonwebtoken';
-
+import { IResponse } from 'src/utils/interfaces/response.interface';
 @Injectable()
 export class AuthService {
   constructor(
@@ -46,17 +46,22 @@ export class AuthService {
     return checkPassword;
   }
 
-  async recoverPassword(recoverPassword: RecoverPasswordDto): Promise<string> {
+  async recoverPassword(
+    recoverPassword: RecoverPasswordDto,
+  ): Promise<IResponse> {
     try {
       const { email } = recoverPassword;
       const user = await this.usersService.findOneByEmail(email);
+      const token = jwt.sign({ userEmail: user.email }, JWT_SECRET, {
+        expiresIn: '30m',
+      });
 
-      const token = await Jwt.sign();
+      //aca el envio del mail con el token en la query del link del formulario
 
-      //aca iria la implementacion de la creacion y el envio del
-      //token y el correo con el link del formulario para cambiar la contraseña
-
-      return 'Se ha enviado el correo de verificación con el token.';
+      return {
+        statusCode: 204,
+        message: 'Se ha enviado el correo de verificación con el token.',
+      };
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
@@ -70,7 +75,7 @@ export class AuthService {
   async resetPassword(
     resetPassword: ResetPasswordDto,
     user: UserChangePasswordDto,
-  ): Promise<string> {
+  ): Promise<IResponse> {
     try {
       const { password } = resetPassword;
       const { username } = user;
@@ -79,7 +84,10 @@ export class AuthService {
 
       userPass.password = await this.generatePassword(password);
       userPass.save();
-      return 'El cambio de la contraseña fue exitoso.';
+      return {
+        statusCode: 204,
+        message: 'El cambio de la contraseña fue exitoso.',
+      };
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
@@ -109,7 +117,10 @@ export class AuthService {
       if (validatePassword) {
         userFind.password = await this.generatePassword(newPassword);
         userFind.save();
-        return 'El cambio de la contraseña fue exitoso.';
+        return {
+          statusCode: 204,
+          message: 'El cambio de la contraseña fue exitoso.',
+        };
       } else {
         throw new BadRequestException(
           'La contraseña actual recibida no corresponde con la guardada en la aplicación',
