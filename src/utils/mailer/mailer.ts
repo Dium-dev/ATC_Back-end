@@ -1,8 +1,6 @@
 import nodemailer = require('nodemailer');
-import * as dotenv from 'dotenv';
 
-dotenv.config();
-const { CLIENT_ID, CLIENT_SECRET, EMAIL_USER, REFRESH_TOKEN } = process.env;
+import { CLIENT_ID, CLIENT_SECRET, EMAIL_USER, REFRESH_TOKEN } from '../../config/env';
 
 export const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
