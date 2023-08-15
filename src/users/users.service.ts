@@ -14,7 +14,7 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
-import { IUpdateUser } from './interfaces/update-user.interface';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 @Injectable()
 export class UsersService {
   constructor(
@@ -144,7 +144,7 @@ export class UsersService {
     }
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<IUpdateUser> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<IResponse> {
     try {
       const user = await User.findByPk(id);
 

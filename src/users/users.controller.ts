@@ -21,7 +21,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { ICreateUser } from './interfaces/create-user.interface';
-import { IUpdateUser } from './interfaces/update-user.interface';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('users')
 @Controller('users')
@@ -122,7 +122,7 @@ export class UsersController {
   async update(
     @Param('id') id: string,
       @Body() updateUserDto: UpdateUserDto,
-  ): Promise<IUpdateUser | IError> {
+  ): Promise<IResponse | IError> {
     const response = this.usersService.update(id, updateUserDto);
     return response;
   }

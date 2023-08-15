@@ -1,4 +1,4 @@
-export interface IUpdateUser {
+export interface IResponse {
   statusCode: number;
   message: string;
 }
