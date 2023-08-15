@@ -8,7 +8,7 @@ import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
 import { IDirection } from './interfaces/direction.interface';
-import { User } from 'src/users/entities/user.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class DireetionsService {
@@ -45,13 +45,19 @@ export class DireetionsService {
 
     try{
 
-     const user = await User.findByPk(id)
+     const directions = await Direction.findAll({
+      where: {
+        userId: {
+          [Op.eq]: id,
+        },
+      },
+    })
 
-      if(user && user.directions){
+      if(directions){
 
         return {
           statusCode: 200,
-          directions: user.directions
+          directions,
         };
 
       }else{
