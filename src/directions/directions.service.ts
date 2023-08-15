@@ -40,9 +40,37 @@ export class DireetionsService {
     }
   }
 
-  findAll() {
-    return 'This action returns all direetions';
+  async findAll() {
+
+    try{
+
+      const directions = await Direction.findAll();
+
+      if(directions){
+
+        return {
+          statusCode: 200,
+          directions,
+        };
+
+      }else{
+
+        throw new NotFoundException('no hay direcciones');
+
+      }
+
+    }catch(error){
+
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('no hay direcciones');
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
+
+    }
+    
   }
+
 
   findOne(id: number) {
     return `This action returns a #${id} direetion`;

@@ -41,10 +41,22 @@ export class DireetionsController {
     return response;
   }
 
+
+
+  @ApiOperation({ summary: 'Obtener direcciones' })
+  @ApiResponse({
+    status: 200,
+    description: 'Direcciones obtenidas',
+  })
+  @ApiResponse({ status: 404, description: 'Direcciones no encontradas' })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
   @Get()
-  findAll() {
-    return this.direetionsService.findAll();
+  async findAll(){
+    return await this.direetionsService.findAll();
   }
+
+
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
