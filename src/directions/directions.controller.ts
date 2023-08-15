@@ -50,9 +50,14 @@ export class DireetionsController {
   })
   @ApiResponse({ status: 404, description: 'Direcciones no encontradas' })
   @ApiResponse({ status: 500, description: 'Error del servidor' })
-  @Get()
-  async findAll(){
-    return await this.direetionsService.findAll();
+  @ApiParam({
+    name: 'id',
+    description: 'id del usuario del que obtengo las direcciones',
+    type: 'string',
+  })
+  @Get(':id')
+  async findAll(@Param('id') id: string){
+    return await this.direetionsService.findAll(id);
   }
 
 

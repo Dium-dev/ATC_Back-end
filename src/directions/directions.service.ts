@@ -8,6 +8,7 @@ import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
 import { IDirection } from './interfaces/direction.interface';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class DireetionsService {
@@ -40,29 +41,29 @@ export class DireetionsService {
     }
   }
 
-  async findAll() {
+  async findAll(id: string) {
 
     try{
 
-      const directions = await Direction.findAll();
+     const user = await User.findByPk(id)
 
-      if(directions){
+      if(user && user.directions){
 
         return {
           statusCode: 200,
-          directions,
+          directions: user.directions
         };
 
       }else{
 
-        throw new NotFoundException('no hay direcciones');
+        throw new NotFoundException('no hay direcciones para el usuario solicitado');
 
       }
 
     }catch(error){
 
       if (error instanceof NotFoundException) {
-        throw new NotFoundException('no hay direcciones');
+        throw new NotFoundException('no hay direcciones para el usuario solicitado');
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
