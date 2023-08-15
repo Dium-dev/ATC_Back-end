@@ -13,8 +13,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { IError } from 'src/utils/interfaces/error.interface';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+} from '@nestjs/swagger';
 import { ICreateUser } from './interfaces/create-user.interface';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('users')
 @Controller('users')
@@ -87,13 +94,36 @@ export class UsersController {
     return response;
   }
 
+  @ApiOperation({
+    summary: 'Ruta para actualizacion de datos del usuario.',
+  })
+  @ApiBody({ type: LoginUserDto })
+  @ApiResponse({
+    status: 204,
+    description:
+      'Si todo sale bien, se devolverá un mensaje con un statusCode 204, indicando que todo estuvo bien, pero sin devolver contenido.',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Indica que hubo un error con el id enviado, debido a que, no pertenece a ningun usuario.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'id del usuario a modificar',
+    type: 'string',
+  })
+  @HttpCode(204)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async update(
+    @Param('id') id: string,
+      @Body() updateUserDto: UpdateUserDto,
+  ): Promise<IResponse | IError> {
+    const response = this.usersService.update(id, updateUserDto);
+    return response;
   }
 }
