@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 const { CLIENT_ID, CLIENT_SECRET, EMAIL_USER, REFRESH_TOKEN } = process.env;
 
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
   secure: true, // true for 465, false for other ports
@@ -15,4 +15,8 @@ const transporter = nodemailer.createTransport({
     clientSecret: CLIENT_SECRET,
     refreshToken: REFRESH_TOKEN,
   },
+  from: EMAIL_USER,
 });
+transporter.verify().then(() => {
+  console.log('Server is ready to take our messages');
+}).catch( error => console.log(error));
