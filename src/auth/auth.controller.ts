@@ -78,7 +78,7 @@ export class AuthController {
   @HttpCode(201)
   async resetPassword(
     @Body() resetPassword: ResetPasswordDto,
-      @GetUser user: UserChangePasswordDto,
+      @GetUser() user: UserChangePasswordDto,
   ): Promise<IResponse | IError> {
     const response = await this.authService.resetPassword(resetPassword, user);
     return response;

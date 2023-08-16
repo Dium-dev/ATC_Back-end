@@ -2,9 +2,9 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
   Inject,
   forwardRef,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
@@ -66,6 +66,8 @@ export class AuthService {
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);
+        case UnauthorizedException:
+          throw new UnauthorizedException(error.message);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
@@ -92,6 +94,8 @@ export class AuthService {
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);
+        case UnauthorizedException:
+          throw new UnauthorizedException(error.message);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
@@ -101,9 +105,8 @@ export class AuthService {
   async changePassword(
     changePassword: ChangePasswordDto,
     user: UserChangePasswordDto,
-  ) {
+  ): Promise<IResponse> {
     try {
-      console.log(user);
       const { oldPassword, newPassword } = changePassword;
       const { username } = user;
 
@@ -130,6 +133,8 @@ export class AuthService {
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);
+        case UnauthorizedException:
+          throw new UnauthorizedException(error.message);
         default:
           throw new InternalServerErrorException('Error interno del servidor');
       }
