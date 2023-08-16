@@ -21,10 +21,13 @@ import {
 @Injectable()
 export class ProductsService {
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
+    const limit = parseInt(query.limit);
+    const page = parseInt(query.page);
+
     const querys = {
-      limit: query.limit,
-      page: query.page,
-      offset: (query.page - 1) * query.limit,
+      limit,
+      page,
+      offset: (page - 1) * limit,
       order: [],
       whereProduct: { id: { [Op.not]: null } },
       whereCategoryId: { id: {} },
