@@ -17,7 +17,7 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { IDirection } from './interfaces/direction.interface';
+import { IDirection, IDirections } from './interfaces/direction.interface';
 import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Directions')
@@ -56,7 +56,7 @@ export class DireetionsController {
     type: 'string',
   })
   @Get(':id')
-  async findAll(@Param('id') id: string){
+  async findAll(@Param('id') id: string):Promise< IDirections | IError>{
     return await this.direetionsService.findAll(id);
   }
 

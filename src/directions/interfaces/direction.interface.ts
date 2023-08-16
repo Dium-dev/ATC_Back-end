@@ -6,3 +6,8 @@ export interface IDirection {
   calle: string;
   userId: string;
 }
+
+export interface IDirections {
+  statusCode: number;
+  directions: IDirection[];
+}
