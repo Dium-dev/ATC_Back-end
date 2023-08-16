@@ -16,12 +16,14 @@ import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from 'src/config/env';
 import { IResponse } from 'src/utils/interfaces/response.interface';
+import { MailService } from '../mail/mail.service';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    private readonly mailsService: MailService,
   ) {}
 
   async generatePassword(password: string): Promise<string> {
@@ -56,7 +58,9 @@ export class AuthService {
         expiresIn: '30m',
       });
 
-      //aca el envio del mail con el token en la query del link del formulario
+      //aca iria la implementacion de la creacion y el envio del
+      //token y el correo con el link del formulario para cambiar la contraseña
+      await this.mailsService.sendMails('data', 'RESET_PASSWORD');
 
       return {
         statusCode: 204,
