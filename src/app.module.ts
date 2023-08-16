@@ -22,6 +22,11 @@ import { Product } from './products/entities/product.entity';
 import { AdminProductsModule } from './admin-products/admin-products.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
+import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
+import { OrderModule } from './order/order.module';
+import { Order } from './order/entities/order.entity';
+import { ShoppingCart } from './shopping-cart/entities/shopping-cart.entity';
+import { CartProduct } from './shopping-cart/entities/cart-product.entity';
 
 @Module({
   imports: [
@@ -32,7 +37,7 @@ import { CaslModule } from './casl/casl.module';
       username: DBUSERNAME,
       password: DBPASSWORD,
       database: DBDATABASE,
-      models: [Product, User, Categories, Direction, Brand],
+      models: [Product, User, Categories, Direction, Brand, ShoppingCart, CartProduct, Order],
       autoLoadModels: true,
       synchronize: true,
       logging: false,
@@ -47,8 +52,10 @@ import { CaslModule } from './casl/casl.module';
     AdminProductsModule,
     AuthModule,
     CaslModule,
+    ShoppingCartModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

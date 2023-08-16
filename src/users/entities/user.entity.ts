@@ -3,10 +3,13 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
+import { Order } from 'src/order/entities/order.entity';
+import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 
 export enum Rol {
   superAdmin = 'superAdmin',
@@ -27,38 +30,38 @@ export class User extends Model<User> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    firstName: string;
+  firstName: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    lastName: string;
+  lastName: string;
 
   @Column({
     type: DataType.STRING,
     unique: true,
     allowNull: false,
   })
-    email: string;
+  email: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    password: string;
+  password: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    phone: string;
+  phone: string;
 
   @Column({
     type: DataType.ENUM({
@@ -67,8 +70,14 @@ export class User extends Model<User> {
     defaultValue: Rol.user,
     allowNull: false,
   })
-    rol: Rol;
+  rol: Rol;
 
   @HasMany(() => Direction)
-    directions: Direction[];
+  directions: Direction[];
+
+  @HasMany(() => Order)
+  orders: Order[]
+
+  @HasOne(() => ShoppingCart)
+  cart: ShoppingCart
 }
