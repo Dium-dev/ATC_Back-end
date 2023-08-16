@@ -1,6 +1,11 @@
 import nodemailer = require('nodemailer');
 
-import { CLIENT_ID, CLIENT_SECRET, EMAIL_USER, REFRESH_TOKEN } from '../../config/env';
+import {
+  CLIENT_ID,
+  CLIENT_SECRET,
+  EMAIL_USER,
+  REFRESH_TOKEN,
+} from '../../config/env';
 
 export const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -15,6 +20,9 @@ export const transporter = nodemailer.createTransport({
   },
   from: EMAIL_USER,
 });
-transporter.verify().then(() => {
-  console.log('Server is ready to take our messages');
-}).catch( error => console.log(error));
+transporter
+  .verify()
+  .then(() => {
+    console.log('Server is ready to take our messages');
+  })
+  .catch((error) => console.log(error));
