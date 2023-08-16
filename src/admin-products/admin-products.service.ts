@@ -59,7 +59,7 @@ export class AdminProductsService {
         throw new ConflictException(
           'Hubo un problema a la hora de trabajár el Excel!. Recuerde ponerle un nombre a la hoja de trabajo',
         );
- 
+
       const worksheet = workbook.Sheets[sheetName];
 
       if (!workbook)
@@ -205,7 +205,7 @@ export class AdminProductsService {
     product: ExcelProductDto,
     index: number,
   ): Promise<void> {
-    try { 
+    try {
       //Se obtiene o, de no existir, se crea una nueva categoría y luego retorna el id
       //Lo mismo se aplica para el Brand
       const categoryId: string = await this.getOrCreateInEntitis(
