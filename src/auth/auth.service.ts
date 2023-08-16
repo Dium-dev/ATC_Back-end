@@ -13,6 +13,7 @@ import { UsersService } from 'src/users/users.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { User } from 'src/users/entities/user.entity';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    private readonly mailsService: MailService,
   ) {}
 
   async generatePassword(password: string): Promise<string> {
@@ -44,13 +46,21 @@ export class AuthService {
     return checkPassword;
   }
 
+  //Para enviar el correo junto con token de recuperación
   async recoverPassword(recoverPassword: RecoverPasswordDto): Promise<string> {
     try {
       const { email } = recoverPassword;
       const user = await this.usersService.findOneByEmail(email);
 
+      //Se genera un token que expira en 10min para la verificación
+      const token = await this.jwtService.signAsync({
+        sub: user.id,
+        username: user.email,
+      });
+
       //aca iria la implementacion de la creacion y el envio del
       //token y el correo con el link del formulario para cambiar la contraseña
+      await this.mailsService.sendMails('data', 'RESET_PASSWORD');
 
       return 'Se ha enviado el correo de verificación con el token.';
     } catch (error) {
@@ -63,6 +73,7 @@ export class AuthService {
     }
   }
 
+  //Para cambiar la contraseña una vez verificado el token de verificación
   async resetPassword(resetPassword: ResetPasswordDto): Promise<string> {
     try {
       const { password } = resetPassword;
