@@ -17,8 +17,9 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { IDirection, IDirections } from './interfaces/direction.interface';
+import { IDirections, IResDirection } from './interfaces/direction.interface';
 import { IError } from 'src/utils/interfaces/error.interface';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('Directions')
 @Controller('direetions')
@@ -36,12 +37,10 @@ export class DireetionsController {
   @Post()
   async create(
     @Body() createDireetionDto: CreateDireetionDto,
-  ): Promise<{ statusCode: number; newDirection: IDirection } | IError> {
+  ): Promise<IResDirection | IError> {
     const response = await this.direetionsService.create(createDireetionDto);
     return response;
   }
-
-
 
   @ApiOperation({ summary: 'Obtener direcciones' })
   @ApiResponse({
@@ -56,12 +55,10 @@ export class DireetionsController {
     type: 'string',
   })
   @Get(':id')
-  async findAll(@Param('id') id: string):Promise< IDirections | IError>{
-    return await this.direetionsService.findAll(id);
+  async findAll(@Param('id') id: string): Promise<IDirections | IError> {
+    const response = await this.direetionsService.findAll(id);
+    return response;
   }
-
-
-
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -84,8 +81,8 @@ export class DireetionsController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-      @Body() updateDireetionDto: UpdateDireetionDto,
-  ): Promise<{ statusCode: number; direction: IDirection } | IError> {
+    @Body() updateDireetionDto: UpdateDireetionDto,
+  ): Promise<IResDirection | IError> {
     const response = await this.direetionsService.update(
       id,
       updateDireetionDto,
@@ -106,7 +103,7 @@ export class DireetionsController {
     type: 'string',
   })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<IResponse | IError> {
     const response = await this.direetionsService.remove(id);
     return response;
   }

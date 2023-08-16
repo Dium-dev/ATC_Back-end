@@ -7,14 +7,13 @@ import {
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
-import { IDirection } from './interfaces/direction.interface';
+import { IDirections, IResDirection } from './interfaces/direction.interface';
 import { Op } from 'sequelize';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @Injectable()
 export class DireetionsService {
-  async create(
-    createDireetionDto: CreateDireetionDto,
-  ): Promise<{ statusCode: number; newDirection: IDirection }> {
+  async create(createDireetionDto: CreateDireetionDto): Promise<IResDirection> {
     try {
       const newDirection = await Direction.create({
         codigoPostal: createDireetionDto.codigoPostal,
@@ -29,7 +28,7 @@ export class DireetionsService {
       } else {
         return {
           statusCode: 201,
-          newDirection,
+          direction: newDirection,
         };
       }
     } catch (error) {
@@ -41,43 +40,36 @@ export class DireetionsService {
     }
   }
 
-  async findAll(id: string) {
-
-    try{
-
-     const directions = await Direction.findAll({
-      where: {
-        userId: {
-          [Op.eq]: id,
+  async findAll(id: string): Promise<IDirections> {
+    try {
+      const directions = await Direction.findAll({
+        where: {
+          userId: {
+            [Op.eq]: id,
+          },
         },
-      },
-    })
+      });
 
-      if(directions){
-
+      if (directions) {
         return {
           statusCode: 200,
           directions,
         };
-
-      }else{
-
-        throw new NotFoundException('no hay direcciones para el usuario solicitado');
-
+      } else {
+        throw new NotFoundException(
+          'no hay direcciones para el usuario solicitado',
+        );
       }
-
-    }catch(error){
-
+    } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException('no hay direcciones para el usuario solicitado');
+        throw new NotFoundException(
+          'no hay direcciones para el usuario solicitado',
+        );
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
-
     }
-    
   }
-
 
   findOne(id: number) {
     return `This action returns a #${id} direetion`;
@@ -86,7 +78,7 @@ export class DireetionsService {
   async update(
     id: string,
     updateDireetionDto: UpdateDireetionDto,
-  ): Promise<{ statusCode: number; direction: IDirection }> {
+  ): Promise<IResDirection> {
     try {
       const thisDirection = await Direction.findByPk(id);
 
@@ -125,7 +117,7 @@ export class DireetionsService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<IResponse> {
     try {
       const toRemoveDirection = await Direction.findByPk(id);
 

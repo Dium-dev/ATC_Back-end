@@ -11,3 +11,8 @@ export interface IDirections {
   statusCode: number;
   directions: IDirection[];
 }
+
+export interface IResDirection {
+  statusCode: number;
+  direction: IDirection;
+}
