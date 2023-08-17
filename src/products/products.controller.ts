@@ -18,6 +18,7 @@ import { ApiParam, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { IError } from 'src/utils/interfaces/error.interface';
 import { IProductXcategory } from './interfaces/product-x-category.interface';
 import { IProduct } from './interfaces/getProduct.interface';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 
 @ApiTags('Products')
@@ -109,10 +110,30 @@ export class ProductsController {
     return await this.productsService.findOne(id);
   }
 
-
-
-
+  @ApiOperation({ summary: 'Eliminar un producto' })
+  @ApiResponse({
+    status: 204,
+    description: 'Producto eliminado exitosamente',
+  })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado' })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiParam({
+    name: 'id',
+    description: 'id del producto a eliminar',
+    type: 'string',
+  })
+  @Delete(':id')
+  async remove(@Param('id') id: string): Promise<IResponse | IError> {
+    const response = await this.productsService.remove(id);
+    return response;
+  }
 }
+
+
+
+
+
+
 
 
 
