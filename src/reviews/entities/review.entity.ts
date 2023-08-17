@@ -1,11 +1,12 @@
 import {
   Column,
   DataType,
-  HasMany,
+  BelongsTo,
   Model,
   Table,
+  ForeignKey,
 } from 'sequelize-typescript';
-
+import { User } from 'src/users/entities/user.entity';
 
 
 export enum Rating {
@@ -51,4 +52,13 @@ export class Review extends Model {
     allowNull: false,
   })
     rating: Rating;
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+  })
+    userId: string;
+
+  @BelongsTo(() => User)
+    user: User;
 }
