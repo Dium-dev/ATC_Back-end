@@ -17,12 +17,18 @@ export enum OrderType {
 
 export class QueryProductsDto {
   @IsNotEmpty({ message: 'El límite no puede estar vacío' })
-  @IsString({ message: 'El límite debe ser un número entero pasado por query' })
+  @IsString({
+    message:
+      'El límite debe ser string que sea un número entero pasado por query',
+  })
   @ApiProperty({ description: 'Límite de resultados' })
     limit: string;
 
   @IsNotEmpty({ message: 'La página no puede estar vacía' })
-  @IsString({ message: 'La página debe ser un número entero pasado por query' })
+  @IsString({
+    message:
+      'La página debe ser un string que sea un número entero pasado por query',
+  })
   @ApiProperty({ description: 'Página de resultados' })
     page: string;
 
