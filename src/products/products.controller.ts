@@ -106,7 +106,9 @@ export class ProductsController {
   })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise < IProduct| IError> {
-    return await this.productsService.findOne(id);
+
+    const response = await this.productsService.findOne(id);
+    return response
   }
 
 
