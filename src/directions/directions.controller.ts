@@ -17,8 +17,9 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { IDirection } from './interfaces/direction.interface';
+import { IDirections, IResDirection } from './interfaces/direction.interface';
 import { IError } from 'src/utils/interfaces/error.interface';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('Directions')
 @Controller('direetions')
@@ -36,14 +37,27 @@ export class DireetionsController {
   @Post()
   async create(
     @Body() createDireetionDto: CreateDireetionDto,
-  ): Promise<{ statusCode: number; newDirection: IDirection } | IError> {
+  ): Promise<IResDirection | IError> {
     const response = await this.direetionsService.create(createDireetionDto);
     return response;
   }
 
-  @Get()
-  findAll() {
-    return this.direetionsService.findAll();
+  @ApiOperation({ summary: 'Obtener direcciones' })
+  @ApiResponse({
+    status: 200,
+    description: 'Direcciones obtenidas',
+  })
+  @ApiResponse({ status: 404, description: 'Direcciones no encontradas' })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiParam({
+    name: 'id',
+    description: 'id del usuario del que obtengo las direcciones',
+    type: 'string',
+  })
+  @Get(':id')
+  async findAll(@Param('id') id: string): Promise<IDirections | IError> {
+    const response = await this.direetionsService.findAll(id);
+    return response;
   }
 
   @Get(':id')
@@ -68,7 +82,7 @@ export class DireetionsController {
   async update(
     @Param('id') id: string,
       @Body() updateDireetionDto: UpdateDireetionDto,
-  ): Promise<{ statusCode: number; direction: IDirection } | IError> {
+  ): Promise<IResDirection | IError> {
     const response = await this.direetionsService.update(
       id,
       updateDireetionDto,
@@ -89,7 +103,7 @@ export class DireetionsController {
     type: 'string',
   })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<IResponse | IError> {
     const response = await this.direetionsService.remove(id);
     return response;
   }

@@ -22,6 +22,7 @@ import { Product } from './products/entities/product.entity';
 import { AdminProductsModule } from './admin-products/admin-products.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { CaslModule } from './casl/casl.module';
     AdminProductsModule,
     AuthModule,
     CaslModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
