@@ -135,7 +135,7 @@ export class UsersService {
     } catch (error) {
       switch (error.constructor) {
         case ConflictException:
-          throw new ConflictException(error.message());
+          throw new ConflictException(error.message);
         default:
           throw new InternalServerErrorException(
             'Error interno del servidor, intente mas tarde',

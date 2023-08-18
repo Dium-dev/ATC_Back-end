@@ -1,7 +1,26 @@
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
-
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { EMAIL_USER } from 'src/config/env';
+import { transporter } from 'src/utils/mailer/mailer';
+import { join } from 'path';
 @Module({
+  imports: [
+    MailerModule.forRoot({
+      transport: transporter,
+      defaults: {
+        from: EMAIL_USER,
+      },
+      template: {
+        dir: join(__dirname, './templates'),
+        adapter: new PugAdapter(),
+        options: {
+          sticts: true,
+        },
+      },
+    }),
+  ],
   providers: [MailService],
   exports: [MailService],
 })
