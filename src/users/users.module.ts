@@ -7,13 +7,14 @@ import { Direction } from '../directions/entities/direction.entity';
 import { AuthModule } from '../auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
     SequelizeModule.forFeature([User, Direction, ShoppingCart]),
   ],
-  providers: [UsersService, AuthService],
+  providers: [UsersService, AuthService, MailService],
   controllers: [UsersController],
   exports: [UsersService],
 })

@@ -1,12 +1,20 @@
-import { Controller, Patch, Body, HttpCode } from '@nestjs/common';
+import { Controller, Patch, Body, HttpCode, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { GetUser } from './get-user.decorator';
-import { User } from 'src/users/entities/user.entity';
 import { IError } from 'src/utils/interfaces/error.interface';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiHeader,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from './guards/jwt-auth.guarg';
+import { UserChangePasswordDto } from './dto/user-change-password.dto';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,7 +28,8 @@ export class AuthController {
   @ApiBody({ type: RecoverPasswordDto })
   @ApiResponse({
     status: 201,
-    description: 'Se ha enviado el correo de verificación con el token.',
+    description:
+      'Se ha enviado el correo de verificación con el link para cambiar la contraseña.',
   })
   @ApiResponse({
     status: 400,
@@ -30,11 +39,12 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
+  /* auth/recoverPassword */
   @Patch('recoverPassword')
   @HttpCode(201)
   async recoverPassword(
     @Body() recoverPassword: RecoverPasswordDto,
-  ): Promise<string | IError> {
+  ): Promise<IResponse | IError> {
     const response = await this.authService.recoverPassword(recoverPassword);
     return response;
   }
@@ -42,6 +52,11 @@ export class AuthController {
   @ApiOperation({
     summary:
       'Ruta para cambiar la contraseña por olvido. Recibe la nueva contraseña del usuario y el token enviado al correo.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description:
+      'Recibe el token que se encuentra en el link de la vista de cambio de contraseña, enviado al correo usuario. Authorization: Bearer token',
   })
   @ApiBody({ type: ResetPasswordDto })
   @ApiResponse({
@@ -57,12 +72,15 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
+  /* auth/resetPassword */
+  @UseGuards(JwtAuthGuard)
   @Patch('resetPassword')
   @HttpCode(201)
   async resetPassword(
     @Body() resetPassword: ResetPasswordDto,
-  ): Promise<string | IError> {
-    const response = await this.authService.resetPassword(resetPassword);
+      @GetUser() user: UserChangePasswordDto,
+  ): Promise<IResponse | IError> {
+    const response = await this.authService.resetPassword(resetPassword, user);
     return response;
   }
 
@@ -71,6 +89,11 @@ export class AuthController {
       'Ruta para cambiar la contraseña actual del usuario. Recibe la contraseña actual y la nueva contraseña que se desea guardar.',
   })
   @ApiBody({ type: ChangePasswordDto })
+  @ApiHeader({
+    name: 'Authorization',
+    description:
+      'Recibe el token devuelto cuando el usuario se loguea en la app. Authorization: Bearer token',
+  })
   @ApiResponse({
     status: 201,
     description: 'El cambio de la contraseña fue exitoso.',
@@ -84,13 +107,14 @@ export class AuthController {
     status: 500,
     description: 'Error interno del servidor.',
   })
+  /* auth/changePassword */
+  @UseGuards(JwtAuthGuard)
   @Patch('changePassword')
   @HttpCode(201)
-  //aca va el Guard
   async changePassword(
     @Body() changePassword: ChangePasswordDto,
-      @GetUser() user: User,
-  ): Promise<string | IError> {
+      @GetUser() user: UserChangePasswordDto,
+  ): Promise<IResponse | IError> {
     const response = await this.authService.changePassword(
       changePassword,
       user,

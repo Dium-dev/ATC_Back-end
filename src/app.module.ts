@@ -25,6 +25,7 @@ import { CaslModule } from './casl/casl.module';
 import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
 import { ShoppingCart } from './shopping-cart/entities/shopping-cart.entity';
 import { CartProduct } from './shopping-cart/entities/cart-product.entity';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -47,7 +48,7 @@ import { CartProduct } from './shopping-cart/entities/cart-product.entity';
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: false },
+      sync: { force: true },
     }),
 
     ProductsModule,
@@ -59,6 +60,7 @@ import { CartProduct } from './shopping-cart/entities/cart-product.entity';
     AuthModule,
     CaslModule,
     ShoppingCartModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
