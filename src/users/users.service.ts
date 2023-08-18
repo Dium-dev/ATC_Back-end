@@ -14,6 +14,7 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
+import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 @Injectable()
 export class UsersService {
   constructor(
@@ -21,7 +22,7 @@ export class UsersService {
     private userModel: typeof User,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     try {
@@ -36,6 +37,8 @@ export class UsersService {
       };
 
       const newUser = await this.userModel.create(data);
+
+      const _newCartUser = await ShoppingCart.create({ userId: newUser.id })
 
       if (newUser) {
         const response = {

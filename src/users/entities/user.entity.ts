@@ -8,7 +8,6 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
-import { Order } from 'src/order/entities/order.entity';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 
 export enum Rol {
@@ -74,9 +73,6 @@ export class User extends Model<User> {
 
   @HasMany(() => Direction)
   directions: Direction[];
-
-  @HasMany(() => Order)
-  orders: Order[]
 
   @HasOne(() => ShoppingCart)
   cart: ShoppingCart

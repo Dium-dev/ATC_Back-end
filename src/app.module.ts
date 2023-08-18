@@ -23,8 +23,6 @@ import { AdminProductsModule } from './admin-products/admin-products.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
-import { OrderModule } from './order/order.module';
-import { Order } from './order/entities/order.entity';
 import { ShoppingCart } from './shopping-cart/entities/shopping-cart.entity';
 import { CartProduct } from './shopping-cart/entities/cart-product.entity';
 
@@ -37,11 +35,11 @@ import { CartProduct } from './shopping-cart/entities/cart-product.entity';
       username: DBUSERNAME,
       password: DBPASSWORD,
       database: DBDATABASE,
-      models: [Product, User, Categories, Direction, Brand, ShoppingCart, CartProduct, Order],
+      models: [Product, User, Categories, Direction, Brand, ShoppingCart, CartProduct],
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: true },
+      sync: { force: false },
     }),
 
     ProductsModule,
@@ -53,7 +51,6 @@ import { CartProduct } from './shopping-cart/entities/cart-product.entity';
     AuthModule,
     CaslModule,
     ShoppingCartModule,
-    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

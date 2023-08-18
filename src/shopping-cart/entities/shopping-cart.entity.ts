@@ -1,7 +1,6 @@
 import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { Product } from "src/products/entities/product.entity";
 import { CartProduct } from "./cart-product.entity";
-import { Order } from "src/order/entities/order.entity";
 import { User } from "src/users/entities/user.entity";
 
 @Table({
@@ -22,8 +21,6 @@ export class ShoppingCart extends Model<ShoppingCart> {
     @BelongsToMany(() => Product, () => CartProduct)
     products: Product[];
 
-    @ForeignKey(() => Order)
-    orderId: string;
 
     @ForeignKey(() => User)
     userId: string;
