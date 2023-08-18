@@ -6,11 +6,9 @@ import { Product } from 'src/products/entities/product.entity';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 
-
 @Module({
-  imports: [
-    SequelizeModule.forFeature([CartProduct, ShoppingCart, Product])],
+  imports: [SequelizeModule.forFeature([CartProduct, ShoppingCart, Product])],
   controllers: [ShoppingCartController],
-  providers: [ShoppingCartService]
+  providers: [ShoppingCartService],
 })
-export class ShoppingCartModule { }
+export class ShoppingCartModule {}

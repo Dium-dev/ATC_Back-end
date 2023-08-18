@@ -35,7 +35,15 @@ import { CartProduct } from './shopping-cart/entities/cart-product.entity';
       username: DBUSERNAME,
       password: DBPASSWORD,
       database: DBDATABASE,
-      models: [Product, User, Categories, Direction, Brand, ShoppingCart, CartProduct],
+      models: [
+        Product,
+        User,
+        Categories,
+        Direction,
+        Brand,
+        ShoppingCart,
+        CartProduct,
+      ],
       autoLoadModels: true,
       synchronize: true,
       logging: false,
@@ -55,4 +63,4 @@ import { CartProduct } from './shopping-cart/entities/cart-product.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

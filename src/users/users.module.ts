@@ -17,4 +17,4 @@ import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

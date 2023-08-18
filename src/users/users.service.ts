@@ -22,7 +22,7 @@ export class UsersService {
     private userModel: typeof User,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     try {
@@ -38,7 +38,7 @@ export class UsersService {
 
       const newUser = await this.userModel.create(data);
 
-      const _newCartUser = await ShoppingCart.create({ userId: newUser.id })
+      await ShoppingCart.create({ userId: newUser.id });
 
       if (newUser) {
         const response = {
