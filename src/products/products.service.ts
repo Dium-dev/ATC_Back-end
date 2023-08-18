@@ -189,5 +189,31 @@ export class ProductsService {
 
 
 
+  async remove(id: string){
+    try {
+      const product = await Product.findByPk(id);
+
+      if (product) {
+        await product.destroy();
+        return {
+          statusCode: 204,
+          message: 'Producto eliminado exitosamente',
+        };
+      } else {
+        throw new NotFoundException('Producto no encontrado');
+      }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('Producto no encontrado');
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
+    }
+  }
+
+
+
+
+
 }
 
