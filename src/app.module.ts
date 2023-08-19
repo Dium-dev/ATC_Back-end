@@ -26,6 +26,8 @@ import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
 import { ShoppingCart } from './shopping-cart/entities/shopping-cart.entity';
 import { CartProduct } from './shopping-cart/entities/cart-product.entity';
 import { MailModule } from './mail/mail.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { Review } from './reviews/entities/review.entity';
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ import { MailModule } from './mail/mail.module';
         Brand,
         ShoppingCart,
         CartProduct,
+        Review,
       ],
       autoLoadModels: true,
       synchronize: true,
@@ -61,6 +64,7 @@ import { MailModule } from './mail/mail.module';
     CaslModule,
     ShoppingCartModule,
     MailModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
