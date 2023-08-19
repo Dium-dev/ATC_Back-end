@@ -78,7 +78,8 @@ export class DireetionsService {
   async update(
     id: string,
     updateDireetionDto: UpdateDireetionDto,
-  ): Promise<IResDirection> {
+  ): Promise<{ statusCode: number; direction: IDirection }> {
+
     try {
       const thisDirection = await Direction.findByPk(id);
 

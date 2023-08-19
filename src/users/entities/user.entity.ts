@@ -3,10 +3,13 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
+import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
+import { Review } from '../../reviews/entities/review.entity';
 
 export enum Rol {
   superAdmin = 'superAdmin',
@@ -71,4 +74,10 @@ export class User extends Model<User> {
 
   @HasMany(() => Direction)
     directions: Direction[];
+
+  @HasOne(() => ShoppingCart)
+    cart: ShoppingCart;
+  
+  @HasOne(() => Review)
+    review: Review;
 }

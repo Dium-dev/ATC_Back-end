@@ -7,7 +7,6 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { stateproduct } from '../entities/product.entity';
-import { IError } from 'src/utils/interfaces/error.interface';
 
 export enum OrderType {
   nameAsc = 'NOMBRE ASC',
@@ -18,14 +17,20 @@ export enum OrderType {
 
 export class QueryProductsDto {
   @IsNotEmpty({ message: 'El límite no puede estar vacío' })
-  @IsInt({ message: 'El límite debe ser un número entero' })
+  @IsString({
+    message:
+      'El límite debe ser string que sea un número entero pasado por query',
+  })
   @ApiProperty({ description: 'Límite de resultados' })
-    limit: number;
+    limit: string;
 
   @IsNotEmpty({ message: 'La página no puede estar vacía' })
-  @IsInt({ message: 'La página debe ser un número entero' })
+  @IsString({
+    message:
+      'La página debe ser un string que sea un número entero pasado por query',
+  })
   @ApiProperty({ description: 'Página de resultados' })
-    page: number;
+    page: string;
 
   @IsOptional()
   @IsEnum(OrderType, { message: 'Tipo de orden inválido' })

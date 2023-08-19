@@ -14,6 +14,7 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
+import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 @Injectable()
 export class UsersService {
@@ -37,6 +38,8 @@ export class UsersService {
       };
 
       const newUser = await this.userModel.create(data);
+
+      await ShoppingCart.create({ userId: newUser.id });
 
       if (newUser) {
         const response = {
