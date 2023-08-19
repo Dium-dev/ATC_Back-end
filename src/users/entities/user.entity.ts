@@ -3,10 +3,12 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
+import { Review } from '../../reviews/entities/review.entity';
 
 export enum Rol {
   superAdmin = 'superAdmin',
@@ -71,4 +73,7 @@ export class User extends Model<User> {
 
   @HasMany(() => Direction)
     directions: Direction[];
+
+  @HasOne(() => Review)
+    review: Review;
 }
