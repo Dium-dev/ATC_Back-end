@@ -5,9 +5,12 @@ import {
   DataType,
   BelongsTo,
   ForeignKey,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
+import { CartProduct } from 'src/shopping-cart/entities/cart-product.entity';
+import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export enum stateproduct {
@@ -105,4 +108,7 @@ export class Product extends Model<Product> {
 
   @BelongsTo(() => Categories)
     category: Categories;
+
+  @BelongsToMany(() => ShoppingCart, () => CartProduct)
+    products: ShoppingCart[];
 }
