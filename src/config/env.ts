@@ -12,3 +12,4 @@ export const CLIENT_ID = process.env.CLIENT_ID;
 export const CLIENT_SECRET = process.env.CLIENT_SECRET;
 export const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 export const EMAIL_USER = process.env.EMAIL_USER;
+export const PASS_USER = process.env.PASS_USER;

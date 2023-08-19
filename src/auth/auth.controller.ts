@@ -1,9 +1,16 @@
-import { Controller, Patch, Body, HttpCode, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Patch,
+  Body,
+  HttpCode,
+  UseGuards,
+  Headers,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { GetUser } from './get-user.decorator';
+import { GetUser } from './auth-user.decorator';
 import { IError } from 'src/utils/interfaces/error.interface';
 import {
   ApiTags,
@@ -54,7 +61,7 @@ export class AuthController {
       'Ruta para cambiar la contraseña por olvido. Recibe la nueva contraseña del usuario y el token enviado al correo.',
   })
   @ApiHeader({
-    name: 'Authorization',
+    name: 'x-token',
     description:
       'Recibe el token que se encuentra en el link de la vista de cambio de contraseña, enviado al correo usuario. Authorization: Bearer token',
   })
@@ -73,14 +80,14 @@ export class AuthController {
     description: 'Error interno del servidor.',
   })
   /* auth/resetPassword */
-  @UseGuards(JwtAuthGuard)
   @Patch('resetPassword')
   @HttpCode(201)
   async resetPassword(
     @Body() resetPassword: ResetPasswordDto,
-      @GetUser() user: UserChangePasswordDto,
+      @Headers('x-token') token: string,
+      //@GetUser() user: UserChangePasswordDto,
   ): Promise<IResponse | IError> {
-    const response = await this.authService.resetPassword(resetPassword, user);
+    const response = await this.authService.resetPassword(resetPassword, token);
     return response;
   }
 

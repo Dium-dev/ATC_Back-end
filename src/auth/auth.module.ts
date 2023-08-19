@@ -6,10 +6,11 @@ import { JWT_SECRET } from '../config/env';
 import { UsersModule } from 'src/users/users.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { CaslAbilityFactory } from '../casl/casl-ability.factory/casl-ability.factory';
-import { MailService } from '../mail/mail.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
+    MailModule,
     //Both authModule and UsersModule refers each other.
     forwardRef(() => UsersModule),
     JwtModule.register({
@@ -18,7 +19,7 @@ import { MailService } from '../mail/mail.service';
       signOptions: { expiresIn: '12h' },
     }),
   ],
-  providers: [AuthService, JwtStrategy, CaslAbilityFactory, MailService],
+  providers: [AuthService, JwtStrategy, CaslAbilityFactory],
   controllers: [AuthController],
   exports: [AuthService],
 })
