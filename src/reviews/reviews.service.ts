@@ -1,11 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { Review } from './entities/review.entity';
 
 @Injectable()
 export class ReviewsService {
-  create(createReviewDto: CreateReviewDto) {
-    return 'This action adds a new review';
+
+  async create(createReviewDto: CreateReviewDto):Promise<string> {
+    try {
+      const { userId, review, rating } = createReviewDto;
+      await Review.create({ review, rating, userId });
+      return 'Created review successfully';
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   findAll() {
