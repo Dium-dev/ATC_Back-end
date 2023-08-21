@@ -56,6 +56,7 @@ export class Review extends Model {
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
+    allowNull: false,
   })
     userId: string;
 
