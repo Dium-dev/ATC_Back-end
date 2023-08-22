@@ -7,9 +7,9 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
-  @Post()
-  create(@Body() createReviewDto: CreateReviewDto) {
-    return this.reviewsService.create(createReviewDto);
+  @Post('/:id')
+  create(@Param('id') id:string, @Body() createReviewDto: CreateReviewDto) {
+    return this.reviewsService.create(id, createReviewDto);
   }
 
   @Get()
@@ -17,18 +17,18 @@ export class ReviewsController {
     return this.reviewsService.findAll();
   }
 
-  @Get(':id')
+  /* @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reviewsService.findOne(+id);
-  }
+  } */
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
     return this.reviewsService.update(+id, updateReviewDto);
   }
 
-  @Delete(':id')
+  /* @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.reviewsService.remove(+id);
-  }
+    return this.reviewsService.remove(+id); 
+  }*/
 }
