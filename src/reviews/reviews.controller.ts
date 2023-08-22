@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ActivateReviewDto } from './dto/activate-review.dto';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -22,13 +23,13 @@ export class ReviewsController {
     return this.reviewsService.findOne(+id);
   } */
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewsService.update(id, updateReviewDto);
+  @Patch('update')
+  update(@Body() updateReviewDto: UpdateReviewDto) {
+    return this.reviewsService.update(updateReviewDto);
   }
 
-  @Patch('activate/:id')
-  remove(@Param('id') id: string, @Query('activate') activate:boolean) {
-    return this.reviewsService.removeOrActivate(id, activate); 
+  @Patch('activate')
+  remove(@Body() activateReview: ActivateReviewDto) {
+    return this.reviewsService.removeOrActivate(activateReview); 
   }
 }

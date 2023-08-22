@@ -4,26 +4,26 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/review.entity';
 import { User } from 'src/users/entities/user.entity';
 import { IReview } from './interfaces/create-review.interface';
+import { ActivateReviewDto } from './dto/activate-review.dto';
 
 @Injectable()
 export class ReviewsService {
 
   async create(id:string, createReviewDto: CreateReviewDto):Promise<IReview> {
     try {
-      const user = User.findOne({
+      
+      const user = await User.findOne({
         where:{
           id:id,
         },
       });
-      const { review, rating } = createReviewDto;
 
-      //Making sure all needed data was received
-      if (!review || !rating) throw new BadRequestException('Falta información');
+      if (!user) throw new BadRequestException('No existe un usuario con ese id');
 
       let Newreview;
 
       try {
-        Newreview = (await user).$create('review', { review, rating });
+        Newreview = (await user).$create('review', createReviewDto);
       } catch (error) {
         throw new InternalServerErrorException(error.message);
       }
@@ -36,7 +36,7 @@ export class ReviewsService {
         };
         return response;
       } else {
-        throw new InternalServerErrorException('Algo salió mal en el servidor!!');
+        throw new BadRequestException('No se pudo crear la reseña!!');
       }
     } catch (error) {
       console.log(error);
@@ -44,7 +44,7 @@ export class ReviewsService {
     }
   }
 
-  async findAll():Promise<Review[]> {
+  async findAll():Promise<IReview> {
     try {
       const reviews = await Review.findAll({
         include:{
@@ -56,18 +56,18 @@ export class ReviewsService {
           active: true,
         },
       });
-      return reviews;
+      return { statusCode: 200, data: reviews };
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
-  async update(id: string, updateReviewDto: UpdateReviewDto):Promise<Review> {
+  async update(updateReviewDto: UpdateReviewDto):Promise<IReview> {
     try {
       //Update
       await Review.update(updateReviewDto, {
         where: {
-          id: id,
+          id: updateReviewDto.reviewId,
         },
       });
       //Get review
@@ -78,26 +78,30 @@ export class ReviewsService {
         },
         attributes:[ 'review', 'rating', 'updatedOn', 'active' ],
         where:{
-          id: id,
+          id: updateReviewDto.reviewId,
         },
       });
-      return newReview;
+
+      if (!newReview) throw new BadRequestException('No existe una reseña con ese id');
+
+      return { statusCode:200, data:newReview };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
-  async removeOrActivate(id: string, activate: boolean):Promise<string> {
+  async removeOrActivate(activateReviewDto: ActivateReviewDto):Promise<IReview> {
     try {
-      await Review.update({ active: activate }, {
+      const count = await Review.update({ active: activateReviewDto.activate }, {
         where:{
-          id: id,
+          id: activateReviewDto.reviewId,
         },
       });
+      if (!count) throw new BadRequestException('Algo salió, se sugiere verificar el id enviado');
+      return { statusCode:200, data:`${count} reseñas fueron actualizadas` };
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new HttpException(error.message, error.status);
     }
-    return `This action removes a #${id} review`;
   }
 
 }
