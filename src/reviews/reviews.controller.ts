@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -24,11 +24,11 @@ export class ReviewsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewsService.update(+id, updateReviewDto);
+    return this.reviewsService.update(id, updateReviewDto);
   }
 
-  /* @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewsService.remove(+id); 
-  }*/
+  @Patch('activate/:id')
+  remove(@Param('id') id: string, @Query('activate') activate:boolean) {
+    return this.reviewsService.removeOrActivate(id, activate); 
+  }
 }
