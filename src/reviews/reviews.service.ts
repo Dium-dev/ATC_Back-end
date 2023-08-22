@@ -29,7 +29,7 @@ export class ReviewsService {
           model: User,
           attributes: ['firstName', 'lastName'],
         },
-        attributes:[ 'review', 'rating', 'updatedOn' ],
+        attributes:[ 'review', 'rating', 'updatedOn', 'active' ],
         where:{
           active: true,
         },
@@ -54,6 +54,7 @@ export class ReviewsService {
           model: User,
           attributes:['firstName', 'lastName'],
         },
+        attributes:[ 'review', 'rating', 'updatedOn', 'active' ],
         where:{
           id: id,
         },
