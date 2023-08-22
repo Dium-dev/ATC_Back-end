@@ -1,24 +1,46 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/review.entity';
-import { IReview } from './interfaces/getReviews.interface';
 import { User } from 'src/users/entities/user.entity';
+import { IReview } from './interfaces/create-review.interface';
 
 @Injectable()
 export class ReviewsService {
 
-  async create(id:string, createReviewDto: CreateReviewDto):Promise<string> {
+  async create(id:string, createReviewDto: CreateReviewDto):Promise<IReview> {
     try {
       const user = User.findOne({
         where:{
           id:id,
         },
       });
-      (await user).$create('review', createReviewDto);
-      return 'Created review successfully';
+      const { review, rating } = createReviewDto;
+
+      //Making sure all needed data was received
+      if (!review || !rating) throw new BadRequestException('Falta información');
+
+      let Newreview;
+
+      try {
+        Newreview = (await user).$create('review', { review, rating });
+      } catch (error) {
+        throw new InternalServerErrorException(error.message);
+      }
+
+      
+      if (Newreview) {
+        const response = {
+          statusCode: 201,
+          data:'Created review successfully',
+        };
+        return response;
+      } else {
+        throw new InternalServerErrorException('Algo salió mal en el servidor!!');
+      }
     } catch (error) {
-      throw new BadRequestException(error.message);
+      console.log(error);
+      throw new HttpException(error.message, error.status);
     }
   }
 
