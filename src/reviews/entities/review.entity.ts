@@ -55,6 +55,12 @@ export class Review extends Model {
   })
     rating: Rating;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue:true,
+  })
+    active: boolean;
+
   @CreatedAt
   @Column({
     type:DataType.DATEONLY,
