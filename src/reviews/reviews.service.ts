@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/review.entity';
@@ -18,7 +18,7 @@ export class ReviewsService {
         },
       });
 
-      if (!user) throw new BadRequestException('No existe un usuario con ese id');
+      if (!user) throw new NotFoundException('No existe un usuario con ese id');
 
       let Newreview;
 
@@ -46,30 +46,43 @@ export class ReviewsService {
 
   async findAll():Promise<IReview> {
     try {
-      const reviews = await Review.findAll({
-        include:{
-          model: User,
-          attributes: ['firstName', 'lastName'],
-        },
-        attributes:[ 'review', 'rating', 'updatedOn', 'active' ],
-        where:{
-          active: true,
-        },
-      });
+      let reviews;
+
+      try {
+        reviews = await Review.findAll({
+          include:{
+            model: User,
+            attributes: ['firstName', 'lastName'],
+          },
+          attributes:[ 'review', 'rating', 'updatedOn', 'active' ],
+          where:{
+            active: true,
+          },
+        });
+      } catch (error) {
+        throw new InternalServerErrorException(error.message);
+      }
+     
+      if (!reviews.length) throw new NotFoundException('No se encontraron reseñas activas');
       return { statusCode: 200, data: reviews };
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new HttpException(error.message, error.status);
     }
   }
 
   async update(updateReviewDto: UpdateReviewDto):Promise<IReview> {
     try {
       //Update
-      await Review.update(updateReviewDto, {
-        where: {
-          id: updateReviewDto.reviewId,
-        },
-      });
+      try {
+        await Review.update(updateReviewDto, {
+          where: {
+            id: updateReviewDto.reviewId,
+          },
+        });
+      } catch (error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      
       //Get review
       const newReview = await Review.findOne({
         include: {
@@ -86,17 +99,24 @@ export class ReviewsService {
 
       return { statusCode:200, data:newReview };
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new HttpException(error.message, error.status);
     }
   }
 
   async removeOrActivate(activateReviewDto: ActivateReviewDto):Promise<IReview> {
     try {
-      const count = await Review.update({ active: activateReviewDto.activate }, {
-        where:{
-          id: activateReviewDto.reviewId,
-        },
-      });
+      let count;
+
+      try {
+        count = await Review.update({ active: activateReviewDto.activate }, {
+          where:{
+            id: activateReviewDto.reviewId,
+          },
+        });
+      } catch (error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      
       if (!count) throw new BadRequestException('Algo salió, se sugiere verificar el id enviado');
       return { statusCode:200, data:`${count} reseñas fueron actualizadas` };
     } catch (error) {
