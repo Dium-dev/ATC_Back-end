@@ -7,7 +7,7 @@ import {
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
-import { IDirections, IResDirection } from './interfaces/direction.interface';
+import { IDirection, IDirections, IResDirection } from './interfaces/direction.interface';
 import { Op } from 'sequelize';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
