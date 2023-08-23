@@ -3,7 +3,7 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/review.entity';
 import { User } from 'src/users/entities/user.entity';
-import { IReview } from './interfaces/create-review.interface';
+import { IReview } from './interfaces/response-review.interface';
 import { ActivateReviewDto } from './dto/activate-review.dto';
 
 @Injectable()
