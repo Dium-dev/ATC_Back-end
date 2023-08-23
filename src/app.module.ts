@@ -28,6 +28,7 @@ import { CartProduct } from './shopping-cart/entities/cart-product.entity';
 import { MailModule } from './mail/mail.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './reviews/entities/review.entity';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { Review } from './reviews/entities/review.entity';
     ShoppingCartModule,
     MailModule,
     ReviewsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
