@@ -1,5 +1,3 @@
-import * as nodemailer from 'nodemailer';
-
 import {
   CLIENT_ID,
   CLIENT_SECRET,
