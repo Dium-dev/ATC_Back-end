@@ -20,48 +20,34 @@ export class ReviewsService {
 
       if (!user) throw new NotFoundException('No existe un usuario con ese id');
 
-      let Newreview;
+      const Newreview = (await user).$create('review', createReviewDto);
+      if (!Newreview) throw new InternalServerErrorException('Algo salió mal al momento de crear la reseña');
 
-      try {
-        Newreview = (await user).$create('review', createReviewDto);
-      } catch (error) {
-        throw new InternalServerErrorException(error.message);
-      }
-
-      
-      if (Newreview) {
-        const response = {
-          statusCode: 201,
-          data:'Created review successfully',
-        };
-        return response;
-      } else {
-        throw new BadRequestException('No se pudo crear la reseña!!');
-      }
+      const response = {
+        statusCode: 201,
+        data:'Created review successfully',
+      };
+      return response;
+        
     } catch (error) {
-      console.log(error);
       throw new HttpException(error.message, error.status);
     }
   }
 
   async findAll():Promise<IReview> {
     try {
-      let reviews;
 
-      try {
-        reviews = await Review.findAll({
-          include:{
-            model: User,
-            attributes: ['firstName', 'lastName'],
-          },
-          attributes:[ 'review', 'rating', 'updatedOn', 'active' ],
-          where:{
-            active: true,
-          },
-        });
-      } catch (error) {
-        throw new InternalServerErrorException(error.message);
-      }
+      const reviews = await Review.findAll({
+        include:{
+          model: User,
+          attributes: ['firstName', 'lastName'],
+        },
+        attributes:[ 'review', 'rating', 'updatedOn', 'active' ],
+        where:{
+          active: true,
+        },
+      });
+      if (!reviews) throw new InternalServerErrorException('Algo salió mal al tratar de obtener todas las reseñas');
      
       if (!reviews.length) throw new NotFoundException('No se encontraron reseñas activas');
       return { statusCode: 200, data: reviews };
@@ -72,16 +58,15 @@ export class ReviewsService {
 
   async update(updateReviewDto: UpdateReviewDto):Promise<IReview> {
     try {
+      
       //Update
-      try {
-        await Review.update(updateReviewDto, {
-          where: {
-            id: updateReviewDto.reviewId,
-          },
-        });
-      } catch (error) {
-        throw new InternalServerErrorException(error.message);
-      }
+      const count = await Review.update(updateReviewDto, {
+        where: {
+          id: updateReviewDto.reviewId,
+        },
+      });
+      console.log(count, '<------- count');
+      if (count[0] === 0) throw new BadRequestException('No se pudo actualizar la reseña, revisar el id enviado');
       
       //Get review
       const newReview = await Review.findOne({
@@ -95,7 +80,7 @@ export class ReviewsService {
         },
       });
 
-      if (!newReview) throw new BadRequestException('No existe una reseña con ese id');
+      if (!newReview) throw new NotFoundException('No existe una reseña con ese id');
 
       return { statusCode:200, data:newReview };
     } catch (error) {
@@ -105,20 +90,16 @@ export class ReviewsService {
 
   async removeOrActivate(activateReviewDto: ActivateReviewDto):Promise<IReview> {
     try {
-      let count;
 
-      try {
-        count = await Review.update({ active: activateReviewDto.activate }, {
-          where:{
-            id: activateReviewDto.reviewId,
-          },
-        });
-      } catch (error) {
-        throw new InternalServerErrorException(error.message);
-      }
+
+      const count = await Review.update({ active: activateReviewDto.activate }, {
+        where:{
+          id: activateReviewDto.reviewId,
+        },
+      });
       
-      if (!count) throw new BadRequestException('Algo salió, se sugiere verificar el id enviado');
-      return { statusCode:200, data:`${count} reseñas fueron actualizadas` };
+      if (count[0] === 0) throw new BadRequestException('Algo salió mal, se sugiere verificar el id enviado');
+      return { statusCode:200, data:`${count[0]} reseñas fueron actualizadas` };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
