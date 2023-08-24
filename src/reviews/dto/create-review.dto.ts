@@ -37,7 +37,7 @@ export class CreateReviewDto {
     message:'$property no debe estar vacío',
   })
   @IsEnum(Rating, {
-    message:'$value no es un valor permitido, prueba con $constraint1',
+    message:'Hay un número limitado de valores permitidos para $property y $value no lo es',
   })
     rating: Rating;
 }
