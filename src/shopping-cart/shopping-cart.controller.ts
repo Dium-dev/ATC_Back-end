@@ -33,6 +33,7 @@ export class ShoppingCartController {
     description: 'Producto eliminado exitosamente',
   })
   @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiResponse({ status: 404, description: 'No se encontró el registro de CartProduct' })
  
   @Delete(':cartId/:productId')
 async remove(@Param('cartId') cartId: string, @Param('productId') productId: string ){

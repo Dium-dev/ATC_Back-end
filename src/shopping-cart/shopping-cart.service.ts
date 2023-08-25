@@ -114,39 +114,28 @@ export class ShoppingCartService {
 
     try {
 
-      const shoppingCart = await ShoppingCart.findByPk(cartId)
+      const cartProductToDelete = await CartProduct.findOne({
+        where: {
+          cartId: cartId,
+          productId: productId,
+        },
+      });
+      
+      if (cartProductToDelete) {
 
-      if(shoppingCart){
+       await cartProductToDelete.destroy();
 
-     const product = shoppingCart.products.find(item => item.id === productId)
-     
-     if(product){
-
-      await product.destroy()
-
-        return {
+       return {
             statusCode: 204,
             message: 'Producto eliminado exitosamente',
           };
 
-
-     }else{
-
-      throw new NotFoundException('Producto no encontrado');
-
-     }
-
-    
-
-        
-
-
       }else{
-
-        throw new NotFoundException('Carrito no encontrado');
+      
+      throw new NotFoundException('No se encontró el registro de CartProduct');
 
       }
-      
+     
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
