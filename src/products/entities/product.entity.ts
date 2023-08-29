@@ -9,6 +9,8 @@ import {
 } from 'sequelize-typescript';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
+import { Order } from 'src/orders/entities/order.entity';
+import { OrderProduct } from 'src/orders/entities/orderProduct.entity';
 import { CartProduct } from 'src/shopping-cart/entities/cart-product.entity';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 
@@ -111,4 +113,7 @@ export class Product extends Model<Product> {
 
   @BelongsToMany(() => ShoppingCart, () => CartProduct)
     products: ShoppingCart[];
+ 
+  @BelongsToMany(() => Order, () => OrderProduct)
+    order: Order[];
 }

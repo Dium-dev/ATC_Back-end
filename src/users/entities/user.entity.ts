@@ -10,6 +10,7 @@ import {
 import { Direction } from '../../directions/entities/direction.entity';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { Review } from '../../reviews/entities/review.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 export enum Rol {
   superAdmin = 'superAdmin',
@@ -80,4 +81,7 @@ export class User extends Model<User> {
   
   @HasOne(() => Review)
     review: Review;
+
+  @HasMany(() => Order)
+    orders: Order;
 }
