@@ -108,4 +108,47 @@ export class ShoppingCartService {
       }
     }
   }
+
+  async remove(cartId: string, productId: string){
+
+
+    try {
+
+      const cartProductToDelete = await CartProduct.findOne({
+        where: {
+          cartId: cartId,
+          productId: productId,
+        },
+      });
+      
+      if (cartProductToDelete) {
+
+       await cartProductToDelete.destroy();
+
+       return {
+            statusCode: 204,
+            message: 'Producto eliminado exitosamente',
+          };
+
+      }else{
+      
+      throw new NotFoundException('No se encontró el registro de CartProduct');
+
+      }
+     
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
+    }
+  }
 }
+
+
+
+
+
+
+
