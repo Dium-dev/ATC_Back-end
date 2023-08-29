@@ -5,6 +5,8 @@ import {
   Model,
   Table,
   ForeignKey,
+  CreatedAt,
+  UpdatedAt,
 } from 'sequelize-typescript';
 import { User } from 'src/users/entities/user.entity';
 
@@ -53,9 +55,29 @@ export class Review extends Model {
   })
     rating: Rating;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue:true,
+  })
+    active: boolean;
+
+  @CreatedAt
+  @Column({
+    type:DataType.DATEONLY,
+  })
+    creationDate: Date;
+  
+  @UpdatedAt
+  @Column({
+    type:DataType.DATEONLY,
+  })
+    updatedOn: Date;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
+    allowNull: false,
+    unique:true,
   })
     userId: string;
 
