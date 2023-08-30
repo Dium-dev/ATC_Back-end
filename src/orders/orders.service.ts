@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { Order } from './entities/order.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class OrdersService {
@@ -12,8 +14,37 @@ export class OrdersService {
     return `This action returns all orders`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string) {
+
+    try {
+      const orders = await Order.findAll({
+        where: {
+          userId: {
+            [Op.eq]: id,
+          },
+        },
+      });
+
+      if (orders) {
+        return {
+          statusCode: 200,
+          orders,
+        };
+      } else {
+        throw new NotFoundException(
+          'no hay ordenes para el usuario solicitado',
+        );
+      }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(
+          'no hay ordenes para el usuario solicitado',
+        );
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
+    }
+    
   }
 
   update(id: number, updateOrderDto: UpdateOrderDto) {
