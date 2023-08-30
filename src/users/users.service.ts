@@ -56,8 +56,8 @@ export class UsersService {
 
         //Setting up for email sending
         const context = {
-          firstname: createUserDto.firstName,
-          lastname: createUserDto.lastName,
+          name: createUserDto.firstName,
+          link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad
         };
         const mailData = {
           addressee:createUserDto.email,
@@ -65,7 +65,7 @@ export class UsersService {
           context: context,
         };
         //Sending mail
-        await this.mailsService.sendMails(mailData);
+        const mail = await this.mailsService.sendMails(mailData);
 
         return response;
       } else {
@@ -74,6 +74,7 @@ export class UsersService {
         );
       }
     } catch (error) {
+      console.log(error);
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);
