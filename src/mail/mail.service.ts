@@ -30,6 +30,14 @@ export class MailService {
             context: context,
           });
           break;
+        case Cases.PURCHASE:
+          mail = await this.mailerService.sendMail({
+            to: addressee,
+            subject: 'Nueva Compra',
+            template: Templates.purchase,
+            context: context,
+          });
+          break;
           
       }
       //If mail.accepted: [ user_email ]
