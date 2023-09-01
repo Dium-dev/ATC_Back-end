@@ -3,6 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { SendMailDto } from './dto/sendMail.dto';
 import { Cases } from './dto/sendMail.dto';
+import { Templates } from './templates/templates_enum';
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
@@ -16,16 +17,24 @@ export class MailService {
         case Cases.RESET_PASSWORD:
           mail = await this.mailerService.sendMail({
             to: addressee,
-            subject: 'Se ha solicitado recuperar la contraseña de tu cuenta en ATC',
-            template: './recoverPassword', //`./${template}`,
+            subject: 'Se ha solicitado recuperar la contraseña de tu cuenta en ATC.',
+            template: Templates.recoverPassword,
             context: context,
           });
           break;
         case Cases.CREATE_ACCOUNT:
           mail = await this.mailerService.sendMail({
             to: addressee,
-            subject: 'Se ha solicitado recuperar la contraseña de tu cuenta en ATC',
-            template: './recoverPassword', //`./${template}`,
+            subject: 'Nueva cuenta registrada con éxito.',
+            template: Templates.createAccount,
+            context: context,
+          });
+          break;
+        case Cases.PURCHASE:
+          mail = await this.mailerService.sendMail({
+            to: addressee,
+            subject: 'Nueva Compra',
+            template: Templates.purchase,
             context: context,
           });
           break;
