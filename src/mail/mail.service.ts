@@ -4,7 +4,7 @@ import { IResponse } from 'src/utils/interfaces/response.interface';
 import { SendMailDto } from './dto/sendMail.dto';
 import { Cases } from './dto/sendMail.dto';
 import { Templates } from './templates/enums/templates_enum';
-import { Styles } from './templates/enums/styles_enums';
+
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
@@ -20,14 +20,7 @@ export class MailService {
             to: addressee,
             subject: 'Se ha solicitado recuperar la contraseña de tu cuenta en ATC.',
             template: Templates.recoverPassword,
-            context: {
-              ...context,
-              //Styles
-              header: Styles.header,
-              imgLogo: Styles.imgLogo,
-              articleContent: Styles.articleContent,
-              textStyles: Styles.textStyles,
-            },
+            context: context,
             attachments:[{
               filename:'ATCarroLogo.png',
               path:'./src/public/ATCarroLogo.png',
@@ -40,14 +33,7 @@ export class MailService {
             to: addressee,
             subject: 'Nueva cuenta registrada con éxito.',
             template: Templates.createAccount,
-            context: {
-              ...context,
-              //Styles
-              header: Styles.header,
-              imgLogo: Styles.imgLogo,
-              articleContent: Styles.articleContent,
-              textStyles: Styles.textStyles,
-            },
+            context: context,
             attachments:[{
               filename:'ATCarroLogo.png',
               path:'./src/public/ATCarroLogo.png',
@@ -58,7 +44,7 @@ export class MailService {
         case Cases.PURCHASE:
           mail = await this.mailerService.sendMail({
             to: addressee,
-            subject: 'Nueva Compra',
+            subject: 'Nueva compra.',
             template: Templates.purchase,
             context: context,
           });

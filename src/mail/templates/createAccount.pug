@@ -2,17 +2,18 @@ doctype html
 html(lang='es')
     head
         meta(charset='utf-8')
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
         title Nueva cuenta registrada con éxito.
-    <header style=#{header}>
-        <img src='cid:headerATCLogo' style=#{imgLogo}/>
+    <header style='text-align:center; padding-top:4vh; padding-bottom:4vh; background-color:white;'>
+        <img src='cid:headerATCLogo' style='max-width:100%; align-content:center;'/>
     </header>
     body
-        <article style=#{articleContent}>
+        <article style='border-bottom:solid red; padding-bottom:2vh;'>
             <h2 style='color: red; text-align:left'>¡Hola #{name}!</h2>
-            <p style=#{textStyles}>Tú nueva cuenta ha sido registrada con éxito y por ello te damos la bienvenida a <b>ATC</b></p>
-            <p style=#{textStyles}>Ingresa de nuevo a la plataforma y descubre qué cosas puedes ahora como usuario registrado.</p>
-            p(style='text-align:center') <a href=#{link} style="text-align:center">Ir a ActualizaTuCarro.</a>
+            <p style='color:black; text-align:left'>Tú nueva cuenta ha sido registrada con éxito y por ello te damos la bienvenida a <span style="color: red"><b>ATC</b></span></p>
+            <p style='color:black; text-align:left'>Ingresa de nuevo a la plataforma y descubre qué cosas puedes ahora como usuario registrado.</p>
+            p(style='text-align:center; margin:4vh 0 4vh 0;') <a href=#{link} style='font-style:bold; padding:2vh; color:red; background:black; border-radius:1em; text-decoration:none;'>Ir a ActualizaTuCarro.</a>
         </article>
     footer
-        <p style=#{textStyles}>No responda a este remitente</p>
-        <p style=#{textStyles}><b>Atte:</b> Equipo de <span style="color: red"><b>ATC</b></span></p>
+        <p style='color:black; text-align:left'>No responda a este remitente</p>
+        <p style='color:black; text-align:left'><b>Atte:</b> Equipo de <span style="color: red"><b>ATC</b></span></p>
