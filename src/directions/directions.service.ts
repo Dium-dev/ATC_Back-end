@@ -8,7 +8,11 @@ import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
 
-import { IDirection, IDirections, IResDirection } from './interfaces/direction.interface';
+import {
+  IDirection,
+  IDirections,
+  IResDirection,
+} from './interfaces/direction.interface';
 
 import { Op } from 'sequelize';
 import { IResponse } from 'src/utils/interfaces/response.interface';
@@ -81,7 +85,6 @@ export class DireetionsService {
     id: string,
     updateDireetionDto: UpdateDireetionDto,
   ): Promise<{ statusCode: number; direction: IDirection }> {
-
     try {
       const thisDirection = await Direction.findByPk(id);
 

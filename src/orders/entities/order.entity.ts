@@ -1,4 +1,3 @@
-
 import {
   BelongsTo,
   BelongsToMany,
