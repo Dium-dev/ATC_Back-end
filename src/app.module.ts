@@ -56,7 +56,7 @@ import { Order } from './orders/entities/order.entity';
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: false },
+      sync: { force: true },
     }),
 
     ProductsModule,
