@@ -41,8 +41,10 @@ async remove(@Param('cartId') cartId: string, @Param('productId') productId: str
   return response;
 }
 
-
-
-
+@Get(':userId')
+async getCartProducts(@Param('userId') userId: string){
+  const thisShoppingCart= await this.shoppingCartService.getCartProducts(userId);
+  return thisShoppingCart;
+}
 
 }
