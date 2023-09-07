@@ -8,7 +8,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { SendMailDto } from './dto/sendMail.dto';
 import { Cases } from './dto/sendMail.dto';
-import { Templates } from './templates/templates_enum';
+import { Templates } from './templates/enums/templates_enum';
+
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
@@ -26,6 +27,11 @@ export class MailService {
               'Se ha solicitado recuperar la contraseña de tu cuenta en ATC.',
             template: Templates.recoverPassword,
             context: context,
+            attachments:[{
+              filename:'ATCarroLogo.png',
+              path:'./src/public/ATCarroLogo.png',
+              cid:'headerATCLogo',
+            }],
           });
           break;
         case Cases.CREATE_ACCOUNT:
@@ -34,12 +40,17 @@ export class MailService {
             subject: 'Nueva cuenta registrada con éxito.',
             template: Templates.createAccount,
             context: context,
+            attachments:[{
+              filename:'ATCarroLogo.png',
+              path:'./src/public/ATCarroLogo.png',
+              cid:'headerATCLogo',
+            }],
           });
           break;
         case Cases.PURCHASE:
           mail = await this.mailerService.sendMail({
             to: addressee,
-            subject: 'Nueva Compra',
+            subject: 'Nueva compra.',
             template: Templates.purchase,
             context: context,
           });

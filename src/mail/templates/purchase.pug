@@ -2,13 +2,18 @@ doctype html
 html(lang='es')
     head
         meta(charset='utf-8')
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
         title Nueva Compra.
+    <header style='text-align:center; padding-top:4vh; padding-bottom:4vh; background-color:white;'>
+        <img src='cid:headerATCLogo' style='max-width:100%; align-content:center;'/>
+    </header>
     body
-    main
-        h4 #{name} 
-        p Le notificamos que su compra en nuestra plataforma se llevo a cabo con éxito.
-        p Gracias por confiar en nuestros productos y servicios. A continuación, podrá ver más detalles de la transacción y la orden
-        br
+    <article style='border-bottom:solid red; padding-bottom:2vh;'>
+        <h2 style='color: red; text-align:left'>¡Hola #{name}!</h2>
+        <p style='color:black; text-align:left'>Le notificamos que su compra en nuestra plataforma se llevo a cabo con éxito.</p>
+        <p style='color:black; text-align:left'>Gracias por confiar en nuestros productos y servicios. A continuación, podrá ver más detalles de la transacción y la orden</p>
         // Poner acá una tabla o link donde se puedan ver los dichos datos
+    </article>
     footer
-        p Atentamente, <b>Equipo de <i>ATC</i></b>
+        <p style='color:black; text-align:left'>No responda a este remitente</p>
+        <p style='color:black; text-align:left'><b>Atte:</b> Equipo de <span style="color: red"><b>ATC</b></span></p>
