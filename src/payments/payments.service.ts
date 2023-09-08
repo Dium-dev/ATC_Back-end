@@ -1,6 +1,9 @@
+import mercadopago from 'mercadopago';
+import { ACCESS_TOKEN } from 'src/config/env';
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
+mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
 export class PaymentsService {
