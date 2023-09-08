@@ -157,7 +157,7 @@ export class ShoppingCartService {
         throw new NotFoundException('No se encontró el carrito de compras para el usuario.');
       }
   
-      const products = await Promise.all(thisCart.products.map(async (product) => {
+      const products = await Promise.all(thisCart.products?.map(async (product) => {
         // Aquí obtenemos la cantidad de productos en el carrito para este producto específico
         const cartProduct = await CartProduct.findOne({
           where: {
@@ -166,14 +166,13 @@ export class ShoppingCartService {
           },
         });
   
-        const amount = cartProduct ? cartProduct.amount : 0;
-        const subtotal = product.price * amount;
+         const subtotal = product.price * cartProduct.amount;
   
         return {
           id: product.id,
           title: product.title,
           price: product.price,
-          amount,
+          amount: cartProduct.amount,
           subtotal, // Agregar el subtotal para este producto
         };
       }));
