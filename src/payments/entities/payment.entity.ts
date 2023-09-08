@@ -25,7 +25,7 @@ export class Payment extends Model<Payment> {
     type: DataType.NUMBER,
     allowNull:false,
   })
-    amount: number;
+    amount: number; // Cantidad de dinero pagada
 
   //Esto podría cambiar después
   @Column({
@@ -42,6 +42,12 @@ export class Payment extends Model<Payment> {
   })
     user_email: string;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull:false,
+  })
+    link: string; //link del pago
+  
   @CreatedAt
   @Column({
     type:DataType.DATEONLY,
