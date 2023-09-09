@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class OrdersService {
@@ -10,7 +11,7 @@ export class OrdersService {
   }
 
   findAll() {
-    return `This action returns all orders`;
+    return 'This action returns all orders';
   }
 
   findOne(id: number) {
@@ -20,7 +21,19 @@ export class OrdersService {
   async findOneOrder(id: string) {
 
     try {
-      const order = await Order.findByPk(id);
+      const order = await Order.findOne({
+        where:{
+          id: id,
+        },
+        attributes:['id', 'total', 'state'],
+        include:{
+          model: Product,
+          attributes:['title', 'price', 'image', 'model', 'year'],
+          through:{
+            attributes:['amount', 'price'],
+          },
+        },
+      });
 
       if (order) {
         return {
