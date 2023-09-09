@@ -5,8 +5,10 @@ import { ICreateUserContext } from '../interfaces/create-account-context.interfa
 export enum Cases {
   RESET_PASSWORD = 'RESET_PASSWORD',
   CREATE_ACCOUNT = 'CREATE_ACCOUNT',
+  PURCHASE = 'PURCHASE',
 }
 
+//Por si no es necesario el 'context'
 interface INotSend {
   sendExtraData : false
 }
