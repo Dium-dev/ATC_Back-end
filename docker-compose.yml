@@ -1,0 +1,34 @@
+version: '3'
+# los valores del environment para el servicio db son solo valores imaginarios !
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    ports:
+      - "5431:5432"
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ATC_development
+
+# los valores de environment son totalmente ficticios y pueden ser modificados a gusto !
+# pero recuerde qeu los valores referentes a la base de datos deben coincidir !!!
+  atc_backend:
+    container_name: ATC_BackEnd
+    # image: nestjs/cli
+    restart: always
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      - PORT=3001
+      - DBHOST=postgres
+      - DBPORT=5432
+      - DBUSERNAME=postgres
+      - DBPASSWORD=postgres
+      - DBDATABASE=ATC_development
+      - JWT_SECRET=miClaveSecretaSecretita
+    ports:
+      - '3001:3001'
