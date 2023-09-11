@@ -16,6 +16,8 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { IResponse } from 'src/utils/interfaces/response.interface';
+import { MailService } from 'src/mail/mail.service';
+import { Cases } from 'src/mail/dto/sendMail.dto';
 @Injectable()
 export class UsersService {
   constructor(
@@ -23,6 +25,8 @@ export class UsersService {
     private userModel: typeof User,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
+    @Inject(MailService)
+    private mailsService: MailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
@@ -50,6 +54,19 @@ export class UsersService {
           ),
         };
 
+        //Setting up for email sending
+        const context = {
+          name: createUserDto.firstName,
+          link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad
+        };
+        const mailData = {
+          addressee:createUserDto.email,
+          subject: Cases.CREATE_ACCOUNT,
+          context: context,
+        };
+        //Sending mail
+        const mail = await this.mailsService.sendMails(mailData);
+
         return response;
       } else {
         throw new BadRequestException(
@@ -57,6 +74,7 @@ export class UsersService {
         );
       }
     } catch (error) {
+      console.log(error);
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);

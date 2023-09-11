@@ -19,18 +19,24 @@ export class OrdersController {
   }
 
 
-  @ApiOperation({ summary: 'Obtener ordenes' })
+  @ApiOperation({ summary: 'Obtener orden' })
   @ApiResponse({
     status: 200,
-    description: 'Ordenes obtenidas',
+    description: 'Orden obtenida',
   })
-  @ApiResponse({ status: 404, description: 'Ordenes no encontradas' })
+  @ApiResponse({ status: 404, description: 'Orden no encontrada' })
   @ApiResponse({ status: 500, description: 'Error del servidor' })
   @ApiParam({
     name: 'id',
-    description: 'id del usuario del que obtengo las ordenes',
+    description: 'id de la orden que busco',
     type: 'string',
   })
+  @Get(':id')
+  findOneOrder(@Param('id') id: string) {
+    const response = this.ordersService.findOneOrder(id);
+    return response;
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const response = await this.ordersService.findOne(id);

@@ -29,6 +29,8 @@ import { MailModule } from './mail/mail.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './reviews/entities/review.entity';
 import { OrdersModule } from './orders/orders.module';
+import { OrderProduct } from './orders/entities/orderProduct.entity';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { OrdersModule } from './orders/orders.module';
         ShoppingCart,
         CartProduct,
         Review,
+        Order,
+        OrderProduct,
       ],
       autoLoadModels: true,
       synchronize: true,

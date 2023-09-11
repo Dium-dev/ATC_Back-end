@@ -17,6 +17,7 @@ import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from 'src/config/env';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { MailService } from '../mail/mail.service';
+import { Cases } from 'src/mail/dto/sendMail.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -58,17 +59,17 @@ export class AuthService {
         expiresIn: '30m',
       });
 
+      //Setting up for email sending
       const context = {
         name: user.firstName,
         link: `https://link-del-front-pasado-por-env?token=${token}`,
       };
-
-      const mail = await this.mailsService.sendMails(
-        user.email,
-        'RESET_PASSWORD',
-        'recoverPassword',
-        context,
-      );
+      const mailData = {
+        addressee:user.email,
+        subject: Cases.RESET_PASSWORD,
+        context: context,
+      };
+      const mail = await this.mailsService.sendMails(mailData);
 
       return mail;
     } catch (error) {

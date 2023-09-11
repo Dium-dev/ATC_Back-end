@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
-import { Op } from 'sequelize';
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class OrdersService {
@@ -11,40 +11,51 @@ export class OrdersService {
   }
 
   findAll() {
-    return `This action returns all orders`;
+    return 'This action returns all orders';
   }
 
-  async findOne(id: string) {
+  findOne(id: number) {
+    return `This action returns a #${id} order`;
+  }
+
+  async findOneOrder(id: string) {
 
     try {
-      const orders = await Order.findAll({
-        where: {
-          userId: {
-            [Op.eq]: id,
+      const order = await Order.findOne({
+        where:{
+          id: id,
+        },
+        attributes:['id', 'total', 'state'],
+        include:{
+          model: Product,
+          attributes:['title', 'price', 'image', 'model', 'year'],
+          through:{
+            attributes:['amount', 'price'],
           },
         },
       });
 
-      if (orders) {
+      if (order) {
         return {
           statusCode: 200,
-          orders,
+          order,
         };
       } else {
         throw new NotFoundException(
-          'no hay ordenes para el usuario solicitado',
+          'Orden no encontrada',
         );
       }
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(
-          'no hay ordenes para el usuario solicitado',
+          'Orden no encontrada',
         );
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
     }
     
+
   }
 
   update(id: number, updateOrderDto: UpdateOrderDto) {
