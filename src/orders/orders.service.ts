@@ -1,6 +1,4 @@
-import { Injectable, NotFoundException,
-  BadRequestException,
-  InternalServerErrorException, } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
@@ -9,67 +7,46 @@ import { OrderProduct } from './entities/orderProduct.entity';
 
 @Injectable()
 export class OrdersService {
-  async create(total:number, userId:string, productsId: string[]) {
+
+  async findOneOrder(id: string) {
 
     try {
-      const newOrder = await Order.create({
-        total: total,
-        state: OrderStateEnum.PENDIENTE,
-        userId: userId,
-       
+      const order = await Order.findOne({
+        where:{
+          id: id,
+        },
+        attributes:['id', 'total', 'state'],
+        include:{
+          model: Product,
+          attributes:['title', 'price', 'image', 'model', 'year'],
+          through:{
+            attributes:['amount', 'price'],
+          },
+        },
       });
 
-      
-
-      if (!newOrder) {
-        throw new BadRequestException();
-      } else {
-
-        const products = await Product.findAll({
-          where: {
-            id: productsId,
-          },
-        });
-    
-        for (const product of products) {
-          await OrderProduct.create({
-            orderId: newOrder.id,
-            productId: product.id,
-          });
-        }
-    
-    
-
-
-
+      if (order) {
         return {
-          statusCode: 201,
-          Order: newOrder,
+          statusCode: 200,
+          order,
         };
+      } else {
+        throw new NotFoundException(
+          'Orden no encontrada',
+        );
       }
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw new BadRequestException('No se puede crear orden');
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(
+          'Orden no encontrada',
+        );
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
     }
     
+
   }
 
-  findAll() {
-    return `This action returns all orders`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
-
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
-  }
+  
 }
