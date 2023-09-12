@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
@@ -44,9 +44,45 @@ export class OrdersService {
         throw new InternalServerErrorException('Error del servidor');
       }
     }
-    
-
   }
 
-  
+  async create(total:number, userId:string, productsId: string[]) {
+    try {
+      const newOrder = await Order.create({
+        total: total,
+        state: OrderStateEnum.PENDIENTE,
+        userId: userId,
+       
+      });
+
+      if (!newOrder) {
+        throw new BadRequestException();
+      } else {
+
+        const products = await Product.findAll({
+          where: {
+            id: productsId,
+          },
+        });
+    
+        for (const product of products) {
+          await OrderProduct.create({
+            orderId: newOrder.id,
+            productId: product.id,
+          });
+        }
+        return {
+          statusCode: 201,
+          Order: newOrder,
+        };
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException('No se puede crear orden');
+      } else {
+        throw new InternalServerErrorException('Error del servidor');
+      }
+    }
+    
+  }
 }

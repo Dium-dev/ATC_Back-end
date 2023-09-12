@@ -26,9 +26,9 @@ export class OrdersController {
     const response = await this.ordersService.findOneOrder(id);
     return response;
   }
-  
+
   @Post()
-  create(@Body() total: number, @Body() userId: string, @Body() productsId: string[], ) {
+  create(@Body() total: number, @Body() userId: string, @Body() productsId: string[] ) {
     return this.ordersService.create(total, userId, productsId);
   }
 }
