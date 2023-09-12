@@ -14,7 +14,6 @@ export class OrderProduct extends Model<OrderProduct> {
   })
     id: string;
 
-      
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
