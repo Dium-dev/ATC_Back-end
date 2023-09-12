@@ -3,6 +3,7 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { IOrder } from './interfaces/response-order.interface';
 
 @Controller('orders')
 export class OrdersController {
@@ -22,8 +23,15 @@ export class OrdersController {
     type: 'string',
   })
   @Get(':id')
-  async findOneOrder(@Param('id') id: string) {
+  async findOneOrder(@Param('id') id: string):Promise<IOrder> {
     const response = await this.ordersService.findOneOrder(id);
+    return response;
+  }
+
+  //Obtener órdenes por usuario
+  @Get('user-orders/:id')
+  async findAlByUser(@Param('id') id:string):Promise<IOrder> {
+    const response = await this.ordersService.findAllByUser(id);
     return response;
   }
 
