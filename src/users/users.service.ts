@@ -60,7 +60,7 @@ export class UsersService {
           link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad
         };
         const mailData = {
-          addressee:createUserDto.email,
+          addressee: createUserDto.email,
           subject: Cases.CREATE_ACCOUNT,
           context: context,
         };

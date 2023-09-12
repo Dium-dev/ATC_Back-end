@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, InternalServerErrorException, HttpException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+  HttpException,
+} from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { SendMailDto } from './dto/sendMail.dto';
@@ -18,14 +23,17 @@ export class MailService {
         case Cases.RESET_PASSWORD:
           mail = await this.mailerService.sendMail({
             to: addressee,
-            subject: 'Se ha solicitado recuperar la contraseña de tu cuenta en ATC.',
+            subject:
+              'Se ha solicitado recuperar la contraseña de tu cuenta en ATC.',
             template: Templates.recoverPassword,
             context: context,
-            attachments:[{
-              filename:'ATCarroLogo.png',
-              path:'./src/public/ATCarroLogo.png',
-              cid:'headerATCLogo',
-            }],
+            attachments: [
+              {
+                filename: 'ATCarroLogo.png',
+                path: './src/public/ATCarroLogo.png',
+                cid: 'headerATCLogo',
+              },
+            ],
           });
           break;
         case Cases.CREATE_ACCOUNT:
@@ -34,11 +42,13 @@ export class MailService {
             subject: 'Nueva cuenta registrada con éxito.',
             template: Templates.createAccount,
             context: context,
-            attachments:[{
-              filename:'ATCarroLogo.png',
-              path:'./src/public/ATCarroLogo.png',
-              cid:'headerATCLogo',
-            }],
+            attachments: [
+              {
+                filename: 'ATCarroLogo.png',
+                path: './src/public/ATCarroLogo.png',
+                cid: 'headerATCLogo',
+              },
+            ],
           });
           break;
         case Cases.PURCHASE:
@@ -49,16 +59,20 @@ export class MailService {
             context: context,
           });
           break;
-          
       }
       //If mail.accepted: [ user_email ]
-      if (mail.accepted.length) return { statusCode: 200, message: 'El link para recuperar la contraseña ha sido enviado' };
+      if (mail.accepted.length)
+        return {
+          statusCode: 200,
+          message: 'El link para recuperar la contraseña ha sido enviado',
+        };
       // if mail.rejected: [ user_email ]
-      if (mail.rejected.length) throw new InternalServerErrorException('Error al enviar el correo de recuperación');
+      if (mail.rejected.length)
+        throw new InternalServerErrorException(
+          'Error al enviar el correo de recuperación',
+        );
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
-    
-
   }
 }

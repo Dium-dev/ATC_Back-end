@@ -10,7 +10,6 @@ import {
 } from 'sequelize-typescript';
 import { User } from 'src/users/entities/user.entity';
 
-
 export enum Rating {
   zero = '0',
   zeroPoint = '0.5',
@@ -39,7 +38,7 @@ export class Review extends Model {
     allowNull: false,
   })
     id: string;
-    
+
   @Column({
     type: DataType.STRING(255),
     allowNull: false,
@@ -57,19 +56,19 @@ export class Review extends Model {
 
   @Column({
     type: DataType.BOOLEAN,
-    defaultValue:true,
+    defaultValue: true,
   })
     active: boolean;
 
   @CreatedAt
   @Column({
-    type:DataType.DATEONLY,
+    type: DataType.DATEONLY,
   })
     creationDate: Date;
-  
+
   @UpdatedAt
   @Column({
-    type:DataType.DATEONLY,
+    type: DataType.DATEONLY,
   })
     updatedOn: Date;
 
@@ -77,7 +76,7 @@ export class Review extends Model {
   @Column({
     type: DataType.UUID,
     allowNull: false,
-    unique:true,
+    unique: true,
   })
     userId: string;
 

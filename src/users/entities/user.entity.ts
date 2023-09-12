@@ -78,7 +78,7 @@ export class User extends Model<User> {
 
   @HasOne(() => ShoppingCart)
     cart: ShoppingCart;
-  
+
   @HasOne(() => Review)
     review: Review;
 
