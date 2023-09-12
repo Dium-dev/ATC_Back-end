@@ -29,31 +29,32 @@ export class Order extends Model<Order> {
     allowNull: false,
     unique: true,
   })
-  id: string;
+    id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  total: number;
+    total: number;
 
   @Column({
     type: DataType.ENUM(...Object.values(OrderStateEnum)),
     allowNull: false,
     defaultValue: OrderStateEnum.PENDIENTE,
   })
-  state: OrderStateEnum;
+    state: OrderStateEnum;
 
   @BelongsToMany(() => Product, () => OrderProduct)
-  products: Product[];
+    products: Product[];
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  userId: string;
+    userId: string;
 
   @BelongsTo(() => User)
-  user: User;
+    user: User;
 }
+

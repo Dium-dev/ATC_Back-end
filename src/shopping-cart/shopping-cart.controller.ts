@@ -37,6 +37,12 @@ export class ShoppingCartController {
     return response;
   }
 
+@Get(':userId')
+async getCartProducts(@Param('userId') userId: string){
+  const thisShoppingCart= await this.shoppingCartService.getCartProducts(userId);
+  return thisShoppingCart;
+}
+
   /* prueba // testeo de la eliminación y agregado de nuevo carrito al ususario */
   /* @Delete(':cartId')
     async removeShoppingCartAndCreateNewOne(@Param('cartId') cartId: string): Promise<any> {

@@ -10,6 +10,7 @@ import {
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @Controller('orders')
 export class OrdersController {
@@ -23,6 +24,25 @@ export class OrdersController {
   @Get()
   findAll() {
     return this.ordersService.findAll();
+  }
+
+
+  @ApiOperation({ summary: 'Obtener orden' })
+  @ApiResponse({
+    status: 200,
+    description: 'Orden obtenida',
+  })
+  @ApiResponse({ status: 404, description: 'Orden no encontrada' })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiParam({
+    name: 'id',
+    description: 'id de la orden que busco',
+    type: 'string',
+  })
+  @Get(':id')
+  findOneOrder(@Param('id') id: string) {
+    const response = this.ordersService.findOneOrder(id);
+    return response;
   }
 
   @Get(':id')
