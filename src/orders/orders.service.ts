@@ -74,43 +74,34 @@ export class OrdersService {
     }
   }
 
-
-  async create(total:number, userId:string, productsId: string[]) {
+  //Crear Orden
+  async create(createReviewDto: CreateOrderDto):Promise<IOrder> {
+    const { total, userId, products } = createReviewDto;
     try {
       const newOrder = await Order.create({
         total: total,
-        state: OrderStateEnum.PENDIENTE,
         userId: userId,
-       
       });
 
       if (!newOrder) {
-        throw new BadRequestException();
+        throw new InternalServerErrorException('Algo salió mal en el servidor');
       } else {
-
-        const products = await Product.findAll({
-          where: {
-            id: productsId,
-          },
-        });
     
+        //Se crean instancias en la tabla intermedia haciendo uso del orderId y 
+        //products:Array<{productId; amount; price}>
         for (const product of products) {
           await OrderProduct.create({
             orderId: newOrder.id,
-            productId: product.id,
+            ...product,
           });
         }
         return {
           statusCode: 201,
-          Order: newOrder,
+          data: `Nueva orden creada exitosamente con el id ${newOrder.id}`,
         };
       }
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw new BadRequestException('No se puede crear orden');
-      } else {
-        throw new InternalServerErrorException('Error del servidor');
-      }
+      throw new HttpException(error.message, error.status);
     }
     
   }

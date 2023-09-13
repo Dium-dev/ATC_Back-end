@@ -36,7 +36,7 @@ export class OrdersController {
   }
 
   @Post()
-  create(@Body() total: number, @Body() userId: string, @Body() productsId: string[] ) {
-    return this.ordersService.create(total, userId, productsId);
+  create(@Body() createOrderDto:CreateOrderDto) {
+    return this.ordersService.create(createOrderDto);
   }
 }
