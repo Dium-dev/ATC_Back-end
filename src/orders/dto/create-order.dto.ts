@@ -12,13 +12,13 @@ export class CreateOrderDto {
   })
     total: number;
 
-  @IsUUID(4, {
+  /* @IsUUID(4, {
     message: '$property debe ser un UUID válido y registrado',
   })
   @IsNotEmpty({
     message:'$property no puede estar vacío',
   })
-    userId: string;
+    userId: string; */
 
   @IsArray({
     message:'$property debe ser un array válido',
