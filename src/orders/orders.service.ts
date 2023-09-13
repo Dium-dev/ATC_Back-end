@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { Order } from './entities/order.entity';
 
 @Injectable()
 export class OrdersService {
@@ -9,7 +10,11 @@ export class OrdersService {
   }
 
   findAll() {
-    return `This action returns all orders`;
+    try {
+      return Order.findAll();
+    } catch (error) {
+      throw new HttpException('Error al buscar todas las ordenes', 400);
+    }
   }
 
   findOne(id: number) {
