@@ -75,8 +75,8 @@ export class OrdersService {
   }
 
   //Crear Orden
-  async create(createReviewDto: CreateOrderDto):Promise<IOrder> {
-    const { total, userId, products } = createReviewDto;
+  async create(userId:string, createReviewDto: CreateOrderDto):Promise<IOrder> {
+    const { total, products } = createReviewDto;
     try {
       const newOrder = await Order.create({
         total: total,
