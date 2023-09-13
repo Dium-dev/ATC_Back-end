@@ -28,7 +28,6 @@ export class Order extends Model<Order> {
     defaultValue: DataType.UUIDV4,
     primaryKey: true,
     allowNull: false,
-    unique: true,
   })
     id: string;
 
