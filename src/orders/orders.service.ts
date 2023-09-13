@@ -43,8 +43,14 @@ export class OrdersService {
         throw new InternalServerErrorException('Error del servidor');
       }
     }
-    
+
 
   }
 
+  async updateOneOrder(order: UpdateOrderDto) {
+    try {
+    } catch (error) {
+      
+    }
+  }
 }
