@@ -45,8 +45,12 @@ export class OrdersController {
     const response = await this.ordersService.create(userId, createOrderDto);
     return response;
   }
+
+
+  //Actualizar el estado de una orden
   @Patch()
-  async updateOneOrder(@Body() updateOrder: UpdateOrderDto) {
-    // const response = await this.ordersService.findOneOrder()
+  async updateOneOrder(@Body() updateDto: UpdateOrderDto) {
+    const response = await this.updateOneOrder(updateDto);
+    return response;
   }
 }

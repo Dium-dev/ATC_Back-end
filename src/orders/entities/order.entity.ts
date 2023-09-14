@@ -12,8 +12,11 @@ import { OrderProduct } from './orderProduct.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export enum OrderStateEnum {
-  PENDIENTE = 'PENDIENTE',
-  PAGO = 'PAGO',
+  APROBADO = 'APROBADO',
+  ENPROCESO = 'EN PROCESO',
+  ENDESPACHO = 'EN DESPACHO',
+  ENTREGADO = 'ENTREGADO',
+  CANCELADO = 'CANCELADO',
 }
 
 @Table({
@@ -39,7 +42,7 @@ export class Order extends Model<Order> {
   @Column({
     type: DataType.ENUM(...Object.values(OrderStateEnum)),
     allowNull: false,
-    defaultValue: OrderStateEnum.PENDIENTE,
+    defaultValue: OrderStateEnum.ENPROCESO,
   })
     state: OrderStateEnum;
 
