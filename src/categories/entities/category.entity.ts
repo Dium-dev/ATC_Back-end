@@ -13,15 +13,15 @@ export class Categories extends Model<Categories> {
     allowNull: false,
     primaryKey: true,
   })
-    id: string;
+  id: string;
 
   @HasMany(() => Product)
-    products: Product[];
+  products: Product[];
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
     unique: true,
   })
-    name: string;
+  name: string;
 }

@@ -11,7 +11,7 @@ export class ChangePasswordDto {
     description:
       'Contraseña actual. Debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial.',
   })
-    oldPassword: string;
+  oldPassword: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
@@ -22,5 +22,5 @@ export class ChangePasswordDto {
     description:
       'Nueva contraseña. Debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial.',
   })
-    newPassword: string;
+  newPassword: string;
 }
