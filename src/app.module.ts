@@ -31,6 +31,7 @@ import { Review } from './reviews/entities/review.entity';
 import { OrdersModule } from './orders/orders.module';
 import { OrderProduct } from './orders/entities/orderProduct.entity';
 import { Order } from './orders/entities/order.entity';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { Order } from './orders/entities/order.entity';
     MailModule,
     ReviewsModule,
     OrdersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
