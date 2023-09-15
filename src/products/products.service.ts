@@ -154,45 +154,27 @@ export class ProductsService {
   }
 
   async findOne(id: string) {
+    try {
+      const product = await Product.findByPk(id);
 
-    try{
-
-      const product = await Product.findByPk(id)
-
-      if(product){
-
-        return{
+      if (product) {
+        return {
           statusCode: 200,
-          product
-        }
-
-      }else{
-
+          product,
+        };
+      } else {
         throw new NotFoundException('producto no encontrado');
-
-
       }
-
-
-    }catch(error){
-
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException('producto no encontrado');
       } else {
         throw new InternalServerErrorException('Error del servidor');
       }
-
-
-
     }
-    
-
-
   }
 
-
-
-  async remove(id: string){
+  async remove(id: string) {
     try {
       const product = await Product.findByPk(id);
 
@@ -213,10 +195,4 @@ export class ProductsService {
       }
     }
   }
-
-
-
-
-
 }
-

@@ -1,5 +1,4 @@
 import {
-  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
@@ -15,8 +14,16 @@ import { User } from 'src/users/entities/user.entity';
   tableName: 'ShoppingCart',
   timestamps: true,
   underscored: true,
+  hooks: {
+    async beforeDestroy(instance: ShoppingCart) {
+      await CartProduct.destroy({
+        where: { cartId: instance.id },
+        force: true,
+      });
+    },
+  },
 })
-export class ShoppingCart extends Model<ShoppingCart> {
+export class ShoppingCart extends Model {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -24,11 +31,11 @@ export class ShoppingCart extends Model<ShoppingCart> {
     allowNull: false,
     unique: true,
   })
-    id: string;
+  id: string;
 
   @BelongsToMany(() => Product, () => CartProduct)
-    products: Product[];
+  products: Product[];
 
   @ForeignKey(() => User)
-    userId: string;
+  userId: string;
 }
