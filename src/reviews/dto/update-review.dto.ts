@@ -62,7 +62,7 @@ export class UpdateReviewDto {
   @IsEnum(Rating, {
     message: '$value no es un valor permitido, prueba con $constraint1',
   })
-    rating: Rating;
+  rating: Rating;
 
   //active
   /* @IsOptional()

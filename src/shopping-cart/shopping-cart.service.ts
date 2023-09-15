@@ -3,14 +3,24 @@ import {
   NotFoundException,
   InternalServerErrorException,
   BadRequestException,
+  HttpException,
+  HttpStatus,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { Product, stateproduct } from 'src/products/entities/product.entity';
 import { IError } from 'src/utils/interfaces/error.interface';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ShoppingCartService {
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+  ) {}
+
   public async createCartProduct(userId: string) {
     try {
       const newCartUser = await ShoppingCart.create({ userId });
@@ -138,6 +148,46 @@ export class ShoppingCartService {
       }
     }
   }
+
+  public async CreateShoppingCart(
+    userId: string,
+    transaction: any,
+  ): Promise<void> {
+    try {
+      const newShoppingCart = await ShoppingCart.create({ userId });
+
+      if (!newShoppingCart)
+        throw new HttpException(
+          'No se pudo llevar a cabo la creación del nuevo carrito de compras',
+          HttpStatus.EXPECTATION_FAILED,
+        );
+      return;
+    } catch (error) {
+      throw new HttpException(error.message, error.status, error.error);
+    }
+  }
+
+  public async destroyShoppingCart(
+    userId: string,
+    transaction: any,
+  ): Promise<void> {
+    try {
+      const destroyThisShoppingCart = await ShoppingCart.destroy({
+        where: { userId },
+        force: true,
+      });
+
+      if (destroyThisShoppingCart === 0)
+        throw new HttpException(
+          'No se pudo llevar a cabo el borrado del carrito de compras',
+          HttpStatus.EXPECTATION_FAILED,
+        );
+      return;
+    } catch (error) {
+      throw new HttpException(error.message, error.status, error.error);
+    }
+  }
+}
 
   async getCartProducts(userId: string) {
     try {

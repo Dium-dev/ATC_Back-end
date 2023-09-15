@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
@@ -16,7 +8,7 @@ export class ShoppingCartController {
 
   @Post()
   async postProductoInShoppingCart(
-  @Body() data: { productId: string; cartId: string; amount: number },
+    @Body() data: { productId: string; cartId: string; amount: number },
   ) {
     const postThisProduct = await this.shoppingCartService.postProductInCart(
       data.productId,

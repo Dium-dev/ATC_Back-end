@@ -121,7 +121,7 @@ export class UsersController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-      @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ): Promise<IResponse | IError> {
     const response = this.usersService.update(id, updateUserDto);
     return response;

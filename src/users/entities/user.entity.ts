@@ -1,5 +1,4 @@
 import {
-  AllowNull,
   Column,
   DataType,
   HasMany,
@@ -23,6 +22,16 @@ export enum Rol {
   underscored: true,
   timestamps: true,
   paranoid: true,
+  hooks: {
+    async beforeDestroy(instance: User) {
+      await ShoppingCart.destroy({
+        where: { userId: instance.id },
+        force: true,
+      });
+      await Direction.destroy({ where: { userId: instance.id }, force: true });
+      await Review.destroy({ where: { userId: instance.id }, force: true });
+    },
+  },
 })
 export class User extends Model<User> {
   @Column({
@@ -31,38 +40,38 @@ export class User extends Model<User> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    firstName: string;
+  firstName: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    lastName: string;
+  lastName: string;
 
   @Column({
     type: DataType.STRING,
     unique: true,
     allowNull: false,
   })
-    email: string;
+  email: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    password: string;
+  password: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    phone: string;
+  phone: string;
 
   @Column({
     type: DataType.ENUM({
@@ -71,10 +80,10 @@ export class User extends Model<User> {
     defaultValue: Rol.user,
     allowNull: false,
   })
-    rol: Rol;
+  rol: Rol;
 
-  @HasMany(() => Direction)
-    directions: Direction[];
+  @HasMany(() => Direction, { onDelete: 'CASCADE', hooks: true })
+  directions: Direction[];
 
   @HasOne(() => ShoppingCart)
     cart: ShoppingCart;
@@ -82,6 +91,9 @@ export class User extends Model<User> {
   @HasOne(() => Review)
     review: Review;
 
-  @HasMany(() => Order)
-    orders: Order;
+  @HasOne(() => Review, { onDelete: 'CASCADE', hooks: true })
+  review: Review;
+
+  @HasMany(() => Order, { onDelete: 'CASCADE', hooks: true })
+  orders: Order;
 }

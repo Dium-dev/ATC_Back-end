@@ -17,6 +17,9 @@ import { DatabaseModule } from './database/database.module';
 import { User } from './users/entities/user.entity';
 import { ShoppingCart } from './shopping-cart/entities/shopping-cart.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { OrderProduct } from './orders/entities/orderProduct.entity';
+import { Order } from './orders/entities/order.entity';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -34,6 +37,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
     OrdersModule,
     DatabaseModule,
     /* SequelizeModule.forFeature([User, ShoppingCart]), */
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
