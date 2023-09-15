@@ -22,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { ICreateUser } from './interfaces/create-user.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
+import { User } from './entities/user.entity';
 
 @ApiTags('users')
 @Controller('users')
@@ -125,5 +126,13 @@ export class UsersController {
   ): Promise<IResponse | IError> {
     const response = this.usersService.update(id, updateUserDto);
     return response;
+  }
+
+  @ApiOperation({
+    summary: 'Ruta para ver todos los usuarios.',
+  })
+  @Get()
+  getUsers(): Promise<User[]> {
+    return this.usersService.getAll();
   }
 }

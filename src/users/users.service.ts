@@ -6,6 +6,7 @@ import {
   Inject,
   forwardRef,
   UnauthorizedException,
+  HttpException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -204,6 +205,15 @@ export class UsersService {
             'Error del servidor, intente mas tarde',
           );
       }
+    }
+  }
+
+  async getAll() {
+    try {
+      const users = await this.userModel.findAll();
+      return users;
+    } catch (error) {
+      throw new HttpException('Error al buscar usuarios.', 404);
     }
   }
 }
