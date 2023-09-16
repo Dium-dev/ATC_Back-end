@@ -17,7 +17,7 @@ export class OrderProduct extends Model<OrderProduct> {
     allowNull: false,
   })
     id: string;
-      
+
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
@@ -44,5 +44,4 @@ export class OrderProduct extends Model<OrderProduct> {
     allowNull: false,
   })
     productId: string;
-
 }

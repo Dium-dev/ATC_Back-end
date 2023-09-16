@@ -30,29 +30,18 @@ export class ShoppingCartController {
   })
   @Delete(':cartId/:productId')
   async remove(
-    @Param('cartId') cartId: string,
+  @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
     const response = await this.shoppingCartService.remove(cartId, productId);
     return response;
   }
 
-@Get(':userId')
-async getCartProducts(@Param('userId') userId: string){
-  const thisShoppingCart= await this.shoppingCartService.getCartProducts(userId);
-  return thisShoppingCart;
-}
-
-  /* prueba // testeo de la eliminación y agregado de nuevo carrito al ususario */
-  /* @Delete(':cartId')
-    async removeShoppingCartAndCreateNewOne(@Param('cartId') cartId: string): Promise<any> {
-      const anyresponse = await this.shoppingCartService.destroyShoppingCart(cartId, null)
-      .then(async() => {
-        await this.shoppingCartService.CreateShoppingCart(cartId, null)
-        console.log('se borró y creo con exito el nuevo carrito!');
-        
-      }).catch((err) => {
-        
-      });
-    } */
+  @Get(':userId')
+  async getCartProducts(@Param('userId') userId: string) {
+    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
+      userId,
+    );
+    return thisShoppingCart;
+  }
 }

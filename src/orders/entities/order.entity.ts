@@ -56,4 +56,3 @@ export class Order extends Model<Order> {
   @BelongsTo(() => User)
     user: User;
 }
-

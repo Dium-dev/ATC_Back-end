@@ -85,8 +85,11 @@ export class User extends Model<User> {
   @HasMany(() => Direction, { onDelete: 'CASCADE', hooks: true })
   directions: Direction[];
 
-  @HasOne(() => ShoppingCart, { onDelete: 'CASCADE', hooks: true })
-  cart: ShoppingCart;
+  @HasOne(() => ShoppingCart)
+    cart: ShoppingCart;
+
+  @HasOne(() => Review)
+    review: Review;
 
   @HasOne(() => Review, { onDelete: 'CASCADE', hooks: true })
   review: Review;

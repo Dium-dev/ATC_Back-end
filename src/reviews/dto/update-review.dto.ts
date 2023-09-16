@@ -21,7 +21,7 @@ export class UpdateReviewDto {
   @IsUUID(4, {
     message: '$property must be a valid uuid version $constraint1',
   })
-  reviewId: string;
+    reviewId: string;
 
   //review
   @ApiProperty({
@@ -43,7 +43,7 @@ export class UpdateReviewDto {
     message:
       '$property is too long, maximum length must be $constraint1, but actual is $value',
   })
-  review: string;
+    review: string;
 
   //rating
   @ApiProperty({
