@@ -73,15 +73,18 @@ export class User extends Model<User> {
   })
     rol: Rol;
 
-  @HasMany(() => Direction)
+  @Column({})
+    isActive: boolean;
+
+  @HasMany(() => Direction, { onDelete: 'CASCADE', hooks: true })
     directions: Direction[];
 
-  @HasOne(() => ShoppingCart)
+  @HasOne(() => ShoppingCart, { onDelete: 'CASCADE', hooks: true })
     cart: ShoppingCart;
-  
-  @HasOne(() => Review)
+
+  @HasOne(() => Review, { onDelete: 'CASCADE', hooks: true })
     review: Review;
 
-  @HasMany(() => Order)
+  @HasMany(() => Order, { onDelete: 'CASCADE', hooks: true })
     orders: Order;
 }
