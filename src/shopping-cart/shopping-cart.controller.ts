@@ -30,7 +30,7 @@ export class ShoppingCartController {
   })
   @Delete(':cartId/:productId')
   async remove(
-  @Param('cartId') cartId: string,
+    @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
     const response = await this.shoppingCartService.remove(cartId, productId);

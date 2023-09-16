@@ -1,4 +1,10 @@
-import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
@@ -8,7 +14,6 @@ import { IOrder } from './interfaces/response-order.interface';
 
 @Injectable()
 export class OrdersService {
-  
   async findOneOrder(id: string) {
     try {
       const order = await Order.findOne({
@@ -43,23 +48,29 @@ export class OrdersService {
   }
 
   //Obtener todas las órdenes de un usuario en particular
-  async findAllByUser(id: string):Promise<IOrder> {
+  async findAllByUser(id: string): Promise<IOrder> {
     try {
       const orders = await Order.findAll({
-        where:{
+        where: {
           userId: id,
         },
-        attributes:['id', 'total', 'state'],
-        include:{
+        attributes: ['id', 'total', 'state'],
+        include: {
           model: Product,
-          attributes:['title', 'price', 'image', 'model', 'year'],
-          through:{
-            attributes:['amount', 'price'],
+          attributes: ['title', 'price', 'image', 'model', 'year'],
+          through: {
+            attributes: ['amount', 'price'],
           },
         },
       });
-      if (!orders) throw new InternalServerErrorException('Algo salió mal al momento de buscar las órdenes. Revisar id enviado');
-      if (!orders.length) throw new NotFoundException('No se encontraron órdenes asociadas a este usuario');
+      if (!orders)
+        throw new InternalServerErrorException(
+          'Algo salió mal al momento de buscar las órdenes. Revisar id enviado',
+        );
+      if (!orders.length)
+        throw new NotFoundException(
+          'No se encontraron órdenes asociadas a este usuario',
+        );
       return {
         statusCode: 200,
         data: orders,
@@ -70,7 +81,10 @@ export class OrdersService {
   }
 
   //Crear Orden
-  async create(userId:string, createReviewDto: CreateOrderDto):Promise<IOrder> {
+  async create(
+    userId: string,
+    createReviewDto: CreateOrderDto,
+  ): Promise<IOrder> {
     const { total, products } = createReviewDto;
     try {
       const newOrder = await Order.create({
@@ -81,8 +95,7 @@ export class OrdersService {
       if (!newOrder) {
         throw new InternalServerErrorException('Algo salió mal en el servidor');
       } else {
-    
-        //Se crean instancias en la tabla intermedia haciendo uso del orderId y 
+        //Se crean instancias en la tabla intermedia haciendo uso del orderId y
         //products:Array<{productId; amount; price}>
         for (const product of products) {
           await OrderProduct.create({
@@ -99,5 +112,4 @@ export class OrdersService {
       throw new HttpException(error.message, error.status);
     }
   }
-  
 }

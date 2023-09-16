@@ -39,5 +39,5 @@ export class SendMailDto {
   @IsDefined({
     message: '$property debe estar definido, revisa los parámetros requeridos',
   })
-    context: IResetPasswordContext | ICreateUserContext | INotSend;
+  context: IResetPasswordContext | ICreateUserContext | INotSend;
 }

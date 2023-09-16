@@ -37,7 +37,7 @@ export class Review extends Model {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING(255),
@@ -64,8 +64,8 @@ export class Review extends Model {
   @Column({
     type: DataType.DATEONLY,
   })
-    creationDate: Date;
-  
+  creationDate: Date;
+
   @UpdatedAt
   @Column({
     type: DataType.DATEONLY,
