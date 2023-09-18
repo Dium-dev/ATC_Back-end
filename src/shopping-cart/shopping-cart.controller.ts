@@ -37,11 +37,11 @@ export class ShoppingCartController {
     return response;
   }
 
-  @Get(':userId')
-  async getCartProducts(@Param('userId') userId: string) {
-    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
-      userId,
-    );
-    return thisShoppingCart;
-  }
+  @Get(':cartId') // Cambiar el parámetro a cartId
+async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
+  const thisShoppingCart = await this.shoppingCartService.getCartProducts(
+    cartId, // Pasar el cartId como parámetro
+  );
+  return thisShoppingCart;
+}
 }
