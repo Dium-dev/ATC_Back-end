@@ -37,7 +37,14 @@ export class ShoppingCartController {
     return response;
   }
 
-<<<<<<<<< Temporary merge branch 1
+  @Get(':userId')
+  async getCartProducts(@Param('userId') userId: string) {
+    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
+      userId,
+    );
+    return thisShoppingCart;
+
+  }
 
 
   @ApiOperation({ summary: 'Actualizar la cantidad de un producto en el carrito' })
@@ -60,15 +67,8 @@ export class ShoppingCartController {
       newQuantity,
     );
     return response;
-=========
-  @Get(':userId')
-  async getCartProducts(@Param('userId') userId: string) {
-    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
-      userId,
-    );
-    return thisShoppingCart;
->>>>>>>>> Temporary merge branch 2
-  }
+
+  
 }
 
-
+}
