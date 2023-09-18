@@ -37,6 +37,7 @@
     "dotenv": "^16.3.1",
     "googleapis": "^124.0.0",
     "jsonwebtoken": "^9.0.1",
+    "mercadopago": "^1.5.17",
     "nodemailer": "^6.9.4",
     "papaparse": "^5.4.1",
     "passport": "^0.6.0",

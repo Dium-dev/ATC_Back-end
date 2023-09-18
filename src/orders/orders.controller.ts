@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -26,21 +35,24 @@ export class OrdersController {
     type: 'string',
   })
   @Get(':id')
-  async findOneOrder(@Param('id') id: string):Promise<IOrder> {
+  async findOneOrder(@Param('id') id: string): Promise<IOrder> {
     const response = await this.ordersService.findOneOrder(id);
     return response;
   }
 
   //Obtener órdenes por usuario
   @Get('user-orders/:id')
-  async findAlByUser(@Param('id') id:string):Promise<IOrder> {
+  async findAlByUser(@Param('id') id: string): Promise<IOrder> {
     const response = await this.ordersService.findAllByUser(id);
     return response;
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@GetUser() user:UserChangePasswordDto, @Body() createOrderDto:CreateOrderDto) {
+  async create(
+    @GetUser() user: UserChangePasswordDto,
+    @Body() createOrderDto: CreateOrderDto,
+  ) {
     const { userId } = user;
     const response = await this.ordersService.create(userId, createOrderDto);
     return response;

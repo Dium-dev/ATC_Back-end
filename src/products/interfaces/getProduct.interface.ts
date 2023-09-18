@@ -1,6 +1,6 @@
-import { Product } from "../entities/product.entity";
+import { Product } from '../entities/product.entity';
 
-export interface IProduct{
-    statusCode: number;
-    product: Product;
-  }
+export interface IProduct {
+  statusCode: number;
+  product: Product;
+}

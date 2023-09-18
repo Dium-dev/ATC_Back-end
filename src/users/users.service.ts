@@ -20,6 +20,8 @@ import { IResponse } from 'src/utils/interfaces/response.interface';
 import { MailService } from 'src/mail/mail.service';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
+import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -29,6 +31,8 @@ export class UsersService {
     private authService: AuthService,
     @Inject(MailService)
     private mailsService: MailService,
+    @Inject(forwardRef(() => ShoppingCartService))
+    private shopCartService: ShoppingCartService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
@@ -46,7 +50,7 @@ export class UsersService {
 
       const newUser = await this.userModel.create(data);
 
-      await ShoppingCart.create({ userId: newUser.id });
+      await this.shopCartService.CreateShoppingCart(newUser.id, null);
 
       if (newUser) {
         const response = {
@@ -63,7 +67,7 @@ export class UsersService {
           link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad
         };
         const mailData = {
-          addressee:createUserDto.email,
+          addressee: createUserDto.email,
           subject: Cases.CREATE_ACCOUNT,
           context: context,
         };

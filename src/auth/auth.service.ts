@@ -65,7 +65,7 @@ export class AuthService {
         link: `https://link-del-front-pasado-por-env?token=${token}`,
       };
       const mailData = {
-        addressee:user.email,
+        addressee: user.email,
         subject: Cases.RESET_PASSWORD,
         context: context,
       };
