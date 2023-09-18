@@ -187,7 +187,6 @@ export class ShoppingCartService {
       throw new HttpException(error.message, error.status, error.error);
     }
   }
-}
 
   async getCartProducts(userId: string) {
     try {
@@ -196,34 +195,41 @@ export class ShoppingCartService {
         attributes: ['id'],
         include: [{ model: Product, attributes: ['id', 'title', 'price'] }],
       });
-  
+
       if (!thisCart) {
-        throw new NotFoundException('No se encontró el carrito de compras para el usuario.');
+        throw new NotFoundException(
+          'No se encontró el carrito de compras para el usuario.',
+        );
       }
-  
-      const products = await Promise.all(thisCart.products?.map(async (product) => {
-        // Aquí obtenemos la cantidad de productos en el carrito para este producto específico
-        const cartProduct = await CartProduct.findOne({
-          where: {
-            cartId: thisCart.id,
-            productId: product.id,
-          },
-        });
-  
-         const subtotal = product.price * cartProduct.amount;
-  
-        return {
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          amount: cartProduct.amount,
-          subtotal, // Agregar el subtotal para este producto
-        };
-      }));
-  
+
+      const products = await Promise.all(
+        thisCart.products?.map(async (product) => {
+          // Aquí obtenemos la cantidad de productos en el carrito para este producto específico
+          const cartProduct = await CartProduct.findOne({
+            where: {
+              cartId: thisCart.id,
+              productId: product.id,
+            },
+          });
+
+          const subtotal = product.price * cartProduct.amount;
+
+          return {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            amount: cartProduct.amount,
+            subtotal, // Agregar el subtotal para este producto
+          };
+        }),
+      );
+
       // Calcula el total como la suma de todos los subtotales
-      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
-  
+      const total = products.reduce(
+        (acc, product) => acc + product.subtotal,
+        0,
+      );
+
       return {
         id: thisCart.id,
         products,
@@ -233,7 +239,9 @@ export class ShoppingCartService {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       } else {
-        throw new InternalServerErrorException('Error del servidor al obtener el carrito de compras.');
+        throw new InternalServerErrorException(
+          'Error del servidor al obtener el carrito de compras.',
+        );
       }
     }
   }

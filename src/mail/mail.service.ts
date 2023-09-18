@@ -27,11 +27,13 @@ export class MailService {
               'Se ha solicitado recuperar la contraseña de tu cuenta en ATC.',
             template: Templates.recoverPassword,
             context: context,
-            attachments:[{
-              filename:'ATCarroLogo.png',
-              path:'./src/public/ATCarroLogo.png',
-              cid:'headerATCLogo',
-            }],
+            attachments: [
+              {
+                filename: 'ATCarroLogo.png',
+                path: './src/public/ATCarroLogo.png',
+                cid: 'headerATCLogo',
+              },
+            ],
           });
           break;
         case Cases.CREATE_ACCOUNT:
@@ -40,11 +42,13 @@ export class MailService {
             subject: 'Nueva cuenta registrada con éxito.',
             template: Templates.createAccount,
             context: context,
-            attachments:[{
-              filename:'ATCarroLogo.png',
-              path:'./src/public/ATCarroLogo.png',
-              cid:'headerATCLogo',
-            }],
+            attachments: [
+              {
+                filename: 'ATCarroLogo.png',
+                path: './src/public/ATCarroLogo.png',
+                cid: 'headerATCLogo',
+              },
+            ],
           });
           break;
         case Cases.PURCHASE:

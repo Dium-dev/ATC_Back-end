@@ -1,4 +1,4 @@
-import mercadopago from 'mercadopago';
+import * as mercadopago from 'mercadopago';
 import { ACCESS_TOKEN } from 'src/config/env';
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -12,7 +12,7 @@ export class PaymentsService {
   }
 
   findAll() {
-    return `This action returns all payments`;
+    return 'This action returns all payments';
   }
 
   findOne(id: number) {
