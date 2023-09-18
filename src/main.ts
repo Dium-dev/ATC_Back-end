@@ -15,10 +15,14 @@ async function bootstrap() {
     .setTitle('ATC_api')
     .setDescription('ATC api documentation')
     .setVersion('1.0')
-    .addBearerAuth({ 
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT' }, 'Bearer')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'Bearer',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

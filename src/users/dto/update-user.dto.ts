@@ -8,7 +8,7 @@ export class UpdateUserDto {
     description:
       'Recibe el $property del usuario y verifica si es un string. Opcional',
   })
-    firstName: string;
+  firstName: string;
 
   @IsOptional()
   @IsString({ message: '$property debe ser un string' })
@@ -16,7 +16,7 @@ export class UpdateUserDto {
     description:
       'Recibe el $property del usuario y verifica si es un string. Opcional',
   })
-    lastName: string;
+  lastName: string;
 
   @IsOptional()
   @IsString({ message: '$property debe ser un string' })
@@ -25,7 +25,7 @@ export class UpdateUserDto {
     description:
       'Recibe el $property del usuario y verifica si es el formato adecuado. Opcional',
   })
-    email: string;
+  email: string;
 
   @IsOptional()
   @IsString({ message: '$property debe ser un string' })
@@ -33,5 +33,5 @@ export class UpdateUserDto {
     description:
       'Recibe el $property del usuario y verifica si es el formato adecuado. Opcional',
   })
-    phone: string;
+  phone: string;
 }

@@ -1,8 +1,12 @@
-import { Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Order } from './order.entity';
 import { Product } from 'src/products/entities/product.entity';
-
-
 
 @Table({})
 export class OrderProduct extends Model<OrderProduct> {
@@ -12,34 +16,32 @@ export class OrderProduct extends Model<OrderProduct> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
-      
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
     defaultValue: 1,
   })
-    amount: number;
+  amount: number;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-    price: number;
+  price: number;
 
   @ForeignKey(() => Order)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-    orderId: string;
+  orderId: string;
 
   @ForeignKey(() => Product)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-    productId: string;
-
+  productId: string;
 }
