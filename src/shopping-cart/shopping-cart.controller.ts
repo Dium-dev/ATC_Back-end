@@ -37,12 +37,38 @@ export class ShoppingCartController {
     return response;
   }
 
-@Get(':userId')
-async getCartProducts(@Param('userId') userId: string){
-  const thisShoppingCart= await this.shoppingCartService.getCartProducts(userId);
-  return thisShoppingCart;
-}
+<<<<<<<<< Temporary merge branch 1
 
+
+  @ApiOperation({ summary: 'Actualizar la cantidad de un producto en el carrito' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cantidad de producto actualizada con éxito',
+  })
+  @ApiResponse({ status: 500, description: 'Error del servidor' })
+  @ApiResponse({ status: 404, description: 'No se encontró el registro de CartProduct' })
+  @Patch(':userId/products/:productId')
+  async updateProductQuantity(
+    @Param('userId') userId: string,
+    @Param('productId') productId: string,
+    @Body() data: { newQuantity: number },
+  ) {
+    const { newQuantity } = data;
+    const response = await this.shoppingCartService.updateProductQuantity(
+      userId,
+      productId,
+      newQuantity,
+    );
+    return response;
+=========
+  @Get(':userId')
+  async getCartProducts(@Param('userId') userId: string) {
+    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
+      userId,
+    );
+    return thisShoppingCart;
+>>>>>>>>> Temporary merge branch 2
+  }
 }
 
 
