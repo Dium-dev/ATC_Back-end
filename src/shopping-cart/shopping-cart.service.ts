@@ -187,7 +187,6 @@ export class ShoppingCartService {
       throw new HttpException(error.message, error.status, error.error);
     }
   }
-}
 
   async getCartProducts(userId: string) {
     try {

@@ -112,8 +112,7 @@ export class Product extends Model<Product> {
   category: Categories;
 
   @BelongsToMany(() => ShoppingCart, () => CartProduct)
-    products: ShoppingCart[];
-
+  products: ShoppingCart[];
 
   @BelongsToMany(() => Order, () => OrderProduct)
   order: Order[];
