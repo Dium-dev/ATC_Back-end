@@ -294,6 +294,4 @@ export class ShoppingCartService {
       }
     }
   }  
-=========
-}
->>>>>>>>> Temporary merge branch 2
+
