@@ -237,52 +237,37 @@ export class ShoppingCartService {
     }
   }
   
-    async updateProductQuantity(
-      userId: string,
-      productId: string,
-      newQuantity: number,
-    ): Promise<{ statusCode: number; message: string }> {
-      try {
-        const thisCart = await ShoppingCart.findOne({
-          where: { userId },
-        });
-  
-        if (!thisCart) {
-          throw new NotFoundException('No se encontró el carrito de compras para el usuario.');
-        }
-  
-        const cartProductToUpdate = await CartProduct.findOne({
-          where: {
-            cartId: thisCart.id,
-            productId,
-          },
-        });
-  
-        if (!cartProductToUpdate) {
-          throw new NotFoundException('No se encontró el registro de CartProduct');
-        }
-  
-        const thisProduct: boolean | IError = await this.getThisProduct(
-          productId,
-          newQuantity,
-        );
-  
-        if (thisProduct === true) {
-          cartProductToUpdate.amount = newQuantity;
-          await cartProductToUpdate.save();
-  
-          return {
-            statusCode: 200,
-            message: 'Cantidad de producto actualizada con éxito!',
-          };
-        }
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          throw new NotFoundException(error.message);
-        } else {
-          throw new InternalServerErrorException('Error del servidor al actualizar la cantidad de producto.');
-        }
+ 
+
+  async updateProductQuantity(updateInfo: { cartProductId: string; newQuantity: number }): Promise<{ statusCode: number; message: string }> {
+    try {
+      const cartProductToUpdate = await CartProduct.findByPk(updateInfo.cartProductId);
+
+      if (!cartProductToUpdate) {
+        throw new NotFoundException('No se encontró el registro de CartProduct');
+      }
+
+      const thisProduct: boolean | IError = await this.getThisProduct(
+        cartProductToUpdate.productId, // Usar el productId de la tabla intermedia
+        updateInfo.newQuantity,
+      );
+
+      if (thisProduct === true) {
+        cartProductToUpdate.amount = updateInfo.newQuantity;
+        await cartProductToUpdate.save();
+
+        return {
+          statusCode: 200,
+          message: 'Cantidad de producto actualizada con éxito!',
+        };
+      }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException('Error del servidor al actualizar la cantidad de producto.');
       }
     }
-  }  
+  }
+}  
 
