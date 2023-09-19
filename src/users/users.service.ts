@@ -218,7 +218,7 @@ export class UsersService {
     try {
       page --;
       const allUsers = await this.userModel.findAll();
-      const limitOfPages = Math.floor(allUsers.length / limit);
+      const limitOfPages = Math.ceil(allUsers.length / limit);
 
       if (page < 0 || page > limitOfPages) { throw new HttpException('This page not exist.', 400);}
 
