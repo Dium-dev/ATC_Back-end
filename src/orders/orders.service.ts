@@ -95,7 +95,7 @@ export class OrdersService {
       if (!newOrder) {
         throw new InternalServerErrorException('Algo salió mal en el servidor');
       } else {
-        //Se crean instancias en la tabla intermedia haciendo uso del orderId y
+
         //products:Array<{productId; amount; price}>
         for (const product of products) {
           await OrderProduct.create({
