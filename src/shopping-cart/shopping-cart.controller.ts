@@ -8,7 +8,7 @@ export class ShoppingCartController {
 
   @Post()
   async postProductoInShoppingCart(
-    @Body() data: { productId: string; cartId: string; amount: number },
+  @Body() data: { productId: string; cartId: string; amount: number },
   ) {
     const postThisProduct = await this.shoppingCartService.postProductInCart(
       data.productId,
@@ -30,7 +30,7 @@ export class ShoppingCartController {
   })
   @Delete(':cartId/:productId')
   async remove(
-    @Param('cartId') cartId: string,
+  @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
     const response = await this.shoppingCartService.remove(cartId, productId);
