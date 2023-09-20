@@ -7,6 +7,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -129,10 +130,24 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Ruta para ver todos los usuarios.',
+    summary: 'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
   })
   @Get()
-  getUsers(): Promise<User[]> {
-    return this.usersService.getAll();
+  getUsers(
+  @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    return this.usersService.getAll(+page, +limit);
   }
+
+  @ApiOperation({
+    summary: 'Ruta para eliminar un usuario.',
+  })
+  @Delete(':id')
+  deleteUser(
+  @Param('id') id: string,
+  ) {
+    return this.usersService.deleteUser(id);
+  }
+
 }

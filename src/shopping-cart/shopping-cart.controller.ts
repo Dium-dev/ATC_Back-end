@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Param, Delete } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
@@ -37,22 +37,23 @@ export class ShoppingCartController {
     return response;
   }
 
-@Get(':userId')
-async getCartProducts(@Param('userId') userId: string){
-  const thisShoppingCart= await this.shoppingCartService.getCartProducts(userId);
+  @Get(':cartId') // Cambiar el parámetro a cartId
+async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
+  const thisShoppingCart = await this.shoppingCartService.getCartProducts(
+    cartId, // Pasar el cartId como parámetro
+  );
   return thisShoppingCart;
 }
 
-  /* prueba // testeo de la eliminación y agregado de nuevo carrito al ususario */
-  /* @Delete(':cartId')
-    async removeShoppingCartAndCreateNewOne(@Param('cartId') cartId: string): Promise<any> {
-      const anyresponse = await this.shoppingCartService.destroyShoppingCart(cartId, null)
-      .then(async() => {
-        await this.shoppingCartService.CreateShoppingCart(cartId, null)
-        console.log('se borró y creo con exito el nuevo carrito!');
-        
-      }).catch((err) => {
-        
-      });
-    } */
+@Patch()
+  async updateProductQuantity(@Body() updateInfo: { cartProductId: string; newQuantity: number }) {
+    const response = await this.shoppingCartService.updateProductQuantity(updateInfo);
+    return response;
+  }
+
 }
+  
+
+
+
+
