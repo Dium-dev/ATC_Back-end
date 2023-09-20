@@ -12,10 +12,11 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { IOrder } from './interfaces/response-order.interface';
+import { IGetOrders, IOrder } from './interfaces/response-order.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
+import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -50,11 +51,17 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @GetUser() user: UserChangePasswordDto,
+  @GetUser() user: UserChangePasswordDto,
     @Body() createOrderDto: CreateOrderDto,
   ) {
     const { userId } = user;
     const response = await this.ordersService.create(userId, createOrderDto);
+    return response;
+  }
+
+  @Get()
+  async getAllOrders(@Body() getAllOrders:GetAllOrdersDto):Promise<IGetOrders> {
+    const response = await this.ordersService.findAll(getAllOrders);
     return response;
   }
 }
