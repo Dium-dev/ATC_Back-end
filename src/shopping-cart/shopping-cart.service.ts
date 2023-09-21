@@ -216,7 +216,7 @@ export class ShoppingCartService {
             amount: cartProduct.amount,
             subtotal, // Agregar el subtotal para este producto
           };
-        })
+        }),
       );
   
       const total = products.reduce((acc, product) => acc + product.subtotal, 0);
@@ -231,7 +231,7 @@ export class ShoppingCartService {
         throw new NotFoundException(error.message);
       } else {
         throw new InternalServerErrorException(
-          'Error del servidor al obtener el carrito de compras.'
+          'Error del servidor al obtener el carrito de compras.',
         );
       }
     }

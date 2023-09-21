@@ -1,14 +1,16 @@
 import { Controller, Get, Patch, Post, Body, Param, Delete } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Shopping cart')
 @Controller('shopping-cart')
 export class ShoppingCartController {
   constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
+  @ApiOperation({ summary: 'Agregar producto al carrito' })
   @Post()
   async postProductoInShoppingCart(
-    @Body() data: { productId: string; cartId: string; amount: number },
+  @Body() data: { productId: string; cartId: string; amount: number },
   ) {
     const postThisProduct = await this.shoppingCartService.postProductInCart(
       data.productId,
@@ -30,30 +32,27 @@ export class ShoppingCartController {
   })
   @Delete(':cartId/:productId')
   async remove(
-    @Param('cartId') cartId: string,
+  @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
     const response = await this.shoppingCartService.remove(cartId, productId);
     return response;
   }
 
+  @ApiOperation({ summary: 'Obtener un carrito por id' })
   @Get(':cartId') // Cambiar el parámetro a cartId
-async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
-  const thisShoppingCart = await this.shoppingCartService.getCartProducts(
-    cartId, // Pasar el cartId como parámetro
-  );
-  return thisShoppingCart;
-}
+  async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
+    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
+      cartId, // Pasar el cartId como parámetro
+    );
+    return thisShoppingCart;
+  }
 
-@Patch()
+  @ApiOperation({ summary: 'Actualizar cantidad de un producto determinado' })
+  @Patch()
   async updateProductQuantity(@Body() updateInfo: { cartProductId: string; newQuantity: number }) {
     const response = await this.shoppingCartService.updateProductQuantity(updateInfo);
     return response;
   }
 
 }
-  
-
-
-
-

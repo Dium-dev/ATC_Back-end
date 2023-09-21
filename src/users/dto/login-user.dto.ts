@@ -8,7 +8,7 @@ export class LoginUserDto {
     description:
       'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
   })
-  email: string;
+    email: string;
 
   @IsString({ message: '$property debe ser un string' })
   @IsNotEmpty({ message: '$property es requerida para iniciar sesión' })
@@ -23,5 +23,5 @@ export class LoginUserDto {
     description:
       'Recibe una contraseña que debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial. Requerido',
   })
-  password: string;
+    password: string;
 }
