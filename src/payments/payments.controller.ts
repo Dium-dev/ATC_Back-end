@@ -39,4 +39,21 @@ export class PaymentsController {
   remove(@Param('id') id: string) {
     return this.paymentsService.remove(+id);
   }
+ 
+
+  @Post('create-payment')
+  async createPayment(@Body() createPaymentDto: CreatePaymentDto) {
+    const paymentUrl = await this.paymentsService.createPayment(createPaymentDto);
+
+    if (paymentUrl) {
+      return { payment_url: paymentUrl };
+    } else {
+      return { message: 'No se pudo crear el pago' };
+    }
+  }
+
+  
 }
+
+
+
