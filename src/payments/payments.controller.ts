@@ -3,42 +3,63 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  Res,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @ApiTags('Payments')
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentsService.create(createPaymentDto);
+  // Ruta para crear un pago
+  @ApiOperation({
+    summary:
+    'Ruta para realizar pagos.',
+  })
+  @Post('create-payment')
+  async createPayment(@Body() createPaymentDto: CreatePaymentDto, @Res() res: Response) {
+    try {
+      const paymentUrl = await this.paymentsService.createPayment(createPaymentDto);
+      // Redirige al usuario a la URL de pago generada por Mercado Pago
+      res.redirect(paymentUrl);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al crear el pago' });
+    }
   }
 
-  @Get()
-  findAll() {
-    return this.paymentsService.findAll();
+  // Ruta para manejar un pago exitoso
+  @ApiOperation({
+    summary:
+    'Ruta para manejar un pago exitoso.',
+  })
+  @Get('success')
+  handleSuccessPayment(@Res() res: Response) {
+    res.redirect('http://tu-sitio.com/payment/success');
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentsService.findOne(+id);
+  // Ruta para manejar un pago fallido
+  @ApiOperation({
+    summary:
+    'Ruta para manejar un pago fallido.',
+  })
+  @Get('failure')
+  handleFailurePayment(@Res() res: Response) {
+    res.redirect('http://tu-sitio.com/payment/failure');
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentsService.update(+id, updatePaymentDto);
+  // Ruta para manejar un pago pendiente
+  @ApiOperation({
+    summary:
+    'Ruta para manejar un pago pendient.',
+  })
+  @Get('pending')
+  handlePendingPayment(@Res() res: Response) {
+    res.redirect('http://tu-sitio.com/payment/pending');
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentsService.remove(+id);
-  }
 }

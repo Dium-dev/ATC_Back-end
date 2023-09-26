@@ -7,23 +7,37 @@ mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
 export class PaymentsService {
-  create(createPaymentDto: CreatePaymentDto) {
-    return 'This action adds a new payment';
+  constructor() {
+    mercadopago.configure({
+      access_token: process.env.ACCESS_TOKEN,
+    });
   }
 
-  findAll() {
-    return 'This action returns all payments';
+  async createPayment(paymentData: CreatePaymentDto): Promise<string> {
+    try {
+      // Crea un objeto de preferencia con los detalles del pago
+      const preference = {
+        items: [
+          {
+            title: 'Descripción del producto',
+            quantity: 1,
+            currency_id: 'ARS', // Moneda (Asegúrate de usar la moneda correcta)
+            unit_price: paymentData.amount, // Monto del pago
+          },
+        ],
+        payer: {
+          email: paymentData.email, // Correo del comprador
+        },
+      };
+
+      // Crea la preferencia en Mercado Pago
+      const response = await mercadopago.preferences.create(preference);
+      // Devuelve la URL de pago generada
+      return response.body.init_point;
+    } catch (error) {
+      console.error('Error al crear el pago:', error);
+      throw error;
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
-  }
-
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
-  }
 }
