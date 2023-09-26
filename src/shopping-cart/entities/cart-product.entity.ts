@@ -21,26 +21,26 @@ export class CartProduct extends Model<CartProduct> {
     allowNull: false,
     unique: true,
   })
-  id: string;
+    id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
     defaultValue: 1,
   })
-  amount: number;
+    amount: number;
 
   @ForeignKey(() => ShoppingCart)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  cartId: string;
+    cartId: string;
 
   @ForeignKey(() => Product)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  productId: string;
+    productId: string;
 }

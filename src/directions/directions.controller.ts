@@ -81,7 +81,7 @@ export class DireetionsController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateDireetionDto: UpdateDireetionDto,
+      @Body() updateDireetionDto: UpdateDireetionDto,
   ): Promise<IResDirection | IError> {
     const response = await this.direetionsService.update(
       id,

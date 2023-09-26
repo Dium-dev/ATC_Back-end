@@ -25,13 +25,13 @@ export class Payment extends Model<Payment> {
     primaryKey: true,
     allowNull: false,
   })
-  id: string;
+    id: string;
 
   @Column({
     type: DataType.NUMBER,
     allowNull: false,
   })
-  amount: number; // Cantidad de dinero pagada
+    amount: number; // Cantidad de dinero pagada
 
   //Esto podría cambiar después
   @Column({
@@ -39,24 +39,24 @@ export class Payment extends Model<Payment> {
     allowNull: false,
     defaultValue: PaymentState.PENDING,
   })
-  payment_state: PaymentState;
+    payment_state: PaymentState;
 
   //Esto puede cambiar después
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  user_email: string;
+    user_email: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  link: string; //link del pago
+    link: string; //link del pago
 
   @CreatedAt
   @Column({
     type: DataType.DATEONLY,
   })
-  creationDate: Date;
+    creationDate: Date;
 }
