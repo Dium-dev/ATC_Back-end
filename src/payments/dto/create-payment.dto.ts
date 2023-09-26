@@ -1,9 +1,9 @@
 import { IsNumber, IsString, IsEmail } from 'class-validator';
 
 export class CreatePaymentDto {
-    @IsNumber()
+  @IsNumber()
     amount: number;
-  
-    @IsEmail()
+
+  @IsEmail()
     email: string;
 }
