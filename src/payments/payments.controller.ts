@@ -55,7 +55,7 @@ export class PaymentsController {
   // Ruta para manejar un pago pendiente
   @ApiOperation({
     summary:
-    'Ruta para manejar un pago pendient.',
+    'Ruta para manejar un pago pendiente.',
   })
   @Get('pending')
   handlePendingPayment(@Res() res: Response) {
