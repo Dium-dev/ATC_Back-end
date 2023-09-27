@@ -3,14 +3,24 @@ import {
   NotFoundException,
   InternalServerErrorException,
   BadRequestException,
+  HttpException,
+  HttpStatus,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { Product, stateproduct } from 'src/products/entities/product.entity';
 import { IError } from 'src/utils/interfaces/error.interface';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ShoppingCartService {
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+  ) {}
+
   public async createCartProduct(userId: string) {
     try {
       const newCartUser = await ShoppingCart.create({ userId });
@@ -109,33 +119,27 @@ export class ShoppingCartService {
     }
   }
 
-  async remove(cartId: string, productId: string){
-
-
+  async remove(cartId: string, productId: string) {
     try {
-
       const cartProductToDelete = await CartProduct.findOne({
         where: {
           cartId: cartId,
           productId: productId,
         },
       });
-      
+
       if (cartProductToDelete) {
+        await cartProductToDelete.destroy();
 
-       await cartProductToDelete.destroy();
-
-       return {
-            statusCode: 204,
-            message: 'Producto eliminado exitosamente',
-          };
-
-      }else{
-      
-      throw new NotFoundException('No se encontró el registro de CartProduct');
-
+        return {
+          statusCode: 204,
+          message: 'Producto eliminado exitosamente',
+        };
+      } else {
+        throw new NotFoundException(
+          'No se encontró el registro de CartProduct',
+        );
       }
-     
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
@@ -145,39 +149,76 @@ export class ShoppingCartService {
     }
   }
 
-  async getCartProducts(userId: string) {
+  public async CreateShoppingCart(
+    userId: string,
+    transaction: any,
+  ): Promise<void> {
     try {
-      const thisCart = await ShoppingCart.findOne({
+      const newShoppingCart = await ShoppingCart.create({ userId });
+
+      if (!newShoppingCart)
+        throw new HttpException(
+          'No se pudo llevar a cabo la creación del nuevo carrito de compras',
+          HttpStatus.EXPECTATION_FAILED,
+        );
+      return;
+    } catch (error) {
+      throw new HttpException(error.message, error.status, error.error);
+    }
+  }
+
+  public async destroyShoppingCart(
+    userId: string,
+    transaction: any,
+  ): Promise<void> {
+    try {
+      const destroyThisShoppingCart = await ShoppingCart.destroy({
         where: { userId },
-        attributes: ['id'],
+        force: true,
+      });
+
+      if (destroyThisShoppingCart === 0)
+        throw new HttpException(
+          'No se pudo llevar a cabo el borrado del carrito de compras',
+          HttpStatus.EXPECTATION_FAILED,
+        );
+      return;
+    } catch (error) {
+      throw new HttpException(error.message, error.status, error.error);
+    }
+  }
+
+  async getCartProducts(cartId: string) {
+    try {
+      const thisCart = await ShoppingCart.findByPk(cartId, {
         include: [{ model: Product, attributes: ['id', 'title', 'price'] }],
       });
   
       if (!thisCart) {
-        throw new NotFoundException('No se encontró el carrito de compras para el usuario.');
+        throw new NotFoundException('No se encontró el carrito de compras.');
       }
   
-      const products = await Promise.all(thisCart.products?.map(async (product) => {
-        // Aquí obtenemos la cantidad de productos en el carrito para este producto específico
-        const cartProduct = await CartProduct.findOne({
-          where: {
-            cartId: thisCart.id,
-            productId: product.id,
-          },
-        });
+      const products = await Promise.all(
+        thisCart.products?.map(async (product) => {
+          const cartProduct = await CartProduct.findOne({
+            where: {
+              cartId: thisCart.id,
+              productId: product.id,
+            },
+          });
   
-         const subtotal = product.price * cartProduct.amount;
+          const subtotal = product.price * cartProduct.amount;
   
-        return {
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          amount: cartProduct.amount,
-          subtotal, // Agregar el subtotal para este producto
-        };
-      }));
+          return {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            amount: cartProduct.amount,
+            subtotal, // Agregar el subtotal para este producto
+          };
+        })
+      );
   
-      // Calcula el total como la suma de todos los subtotales
       const total = products.reduce((acc, product) => acc + product.subtotal, 0);
   
       return {
@@ -189,8 +230,44 @@ export class ShoppingCartService {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       } else {
-        throw new InternalServerErrorException('Error del servidor al obtener el carrito de compras.');
+        throw new InternalServerErrorException(
+          'Error del servidor al obtener el carrito de compras.'
+        );
+      }
+    }
+  }
+  
+ 
+
+  async updateProductQuantity(updateInfo: { cartProductId: string; newQuantity: number }): Promise<{ statusCode: number; message: string }> {
+    try {
+      const cartProductToUpdate = await CartProduct.findByPk(updateInfo.cartProductId);
+
+      if (!cartProductToUpdate) {
+        throw new NotFoundException('No se encontró el registro de CartProduct');
+      }
+
+      const thisProduct: boolean | IError = await this.getThisProduct(
+        cartProductToUpdate.productId, // Usar el productId de la tabla intermedia
+        updateInfo.newQuantity,
+      );
+
+      if (thisProduct === true) {
+        cartProductToUpdate.amount = updateInfo.newQuantity;
+        await cartProductToUpdate.save();
+
+        return {
+          statusCode: 200,
+          message: 'Cantidad de producto actualizada con éxito!',
+        };
+      }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException('Error del servidor al actualizar la cantidad de producto.');
       }
     }
   }
 }  
+

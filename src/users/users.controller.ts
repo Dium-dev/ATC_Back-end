@@ -7,6 +7,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { ICreateUser } from './interfaces/create-user.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
+import { User } from './entities/user.entity';
 
 @ApiTags('users')
 @Controller('users')
@@ -121,9 +123,31 @@ export class UsersController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-      @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ): Promise<IResponse | IError> {
     const response = this.usersService.update(id, updateUserDto);
     return response;
   }
+
+  @ApiOperation({
+    summary: 'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
+  })
+  @Get()
+  getUsers(
+  @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    return this.usersService.getAll(+page, +limit);
+  }
+
+  @ApiOperation({
+    summary: 'Ruta para eliminar un usuario.',
+  })
+  @Delete(':id')
+  deleteUser(
+  @Param('id') id: string,
+  ) {
+    return this.usersService.deleteUser(id);
+  }
+
 }

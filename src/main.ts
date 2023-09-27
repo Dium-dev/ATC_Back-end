@@ -15,16 +15,21 @@ async function bootstrap() {
     .setTitle('ATC_api')
     .setDescription('ATC api documentation')
     .setVersion('1.0')
-    .addBearerAuth({ 
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT' }, 'Bearer')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'Bearer',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   await app.listen(PORT);
+  console.log('Server raised in port:', PORT);
 }
 bootstrap().then(async () => {
   const allCategories: { id: string; name: string }[] =

@@ -7,12 +7,12 @@ export class UserChangePasswordDto {
   @ApiProperty({
     description: 'Id del usuario extraido del token',
   })
-    userId: string;
+  userId: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Email del usuario extraido del token.',
   })
-    username: string;
+  username: string;
 }

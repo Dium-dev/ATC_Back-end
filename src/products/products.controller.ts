@@ -20,7 +20,6 @@ import { IProductXcategory } from './interfaces/product-x-category.interface';
 import { IProduct } from './interfaces/getProduct.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
-
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
@@ -91,8 +90,6 @@ export class ProductsController {
     return thisData;
   }
 
-
-
   @ApiOperation({ summary: 'Obtener producto por id' })
   @ApiResponse({
     status: 200,
@@ -106,8 +103,8 @@ export class ProductsController {
     type: 'string',
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise < IProduct| IError> {
-    return await this.productsService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<IProduct | IError> {
+    return this.productsService.findOne(id);
   }
 
   @ApiOperation({ summary: 'Eliminar un producto' })
@@ -128,12 +125,3 @@ export class ProductsController {
     return response;
   }
 }
-
-
-
-
-
-
-
-
-

@@ -67,6 +67,15 @@ export class OrdersService {
           },
         },
       });
+
+      if (!orders)
+        throw new InternalServerErrorException(
+          'Algo salió mal al momento de buscar las órdenes. Revisar id enviado',
+        );
+      if (!orders.length)
+        throw new NotFoundException(
+          'No se encontraron órdenes asociadas a este usuario',
+        );
       if (!orders)
         throw new InternalServerErrorException(
           'Algo salió mal al momento de buscar las órdenes. Revisar id enviado',
