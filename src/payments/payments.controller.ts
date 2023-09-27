@@ -39,7 +39,7 @@ export class PaymentsController {
   })
   @Get('success')
   handleSuccessPayment(@Res() res: Response) {
-    res.redirect('http://tu-sitio.com/payment/success');
+    res.redirect('http://localhost:3000/payment/success');
   }
 
   // Ruta para manejar un pago fallido
@@ -49,7 +49,7 @@ export class PaymentsController {
   })
   @Get('failure')
   handleFailurePayment(@Res() res: Response) {
-    res.redirect('http://tu-sitio.com/payment/failure');
+    res.redirect('http://localhost:3000/payment/failure');
   }
 
   // Ruta para manejar un pago pendiente
@@ -59,7 +59,7 @@ export class PaymentsController {
   })
   @Get('pending')
   handlePendingPayment(@Res() res: Response) {
-    res.redirect('http://tu-sitio.com/payment/pending');
+    res.redirect('http://localhost:3000/payment/pending');
   }
 
 }
