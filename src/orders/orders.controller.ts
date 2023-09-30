@@ -43,6 +43,7 @@ export class OrdersController {
     return response;
   }
 
+  @ApiOperation({ summary: 'Crear orden', description: 'Es necesario tener un producto en el carrito.' })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
