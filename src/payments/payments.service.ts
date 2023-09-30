@@ -14,7 +14,11 @@ export class PaymentsService {
     });
   }
 
+<<<<<<< HEAD
   async createPayment(amount: number,  userId: string, orderId?: string) {
+=======
+  async createPayment(paymentData: CreatePaymentDto): Promise<string> {
+>>>>>>> 09cdee52d0cfdf9b7d88ef1f29cc5b8924848224
     try {
       const user = await User.findByPk(userId);
       // Crea un objeto de preferencia con los detalles del pago
@@ -38,6 +42,10 @@ export class PaymentsService {
           pending: `http://localhost:3000/payments/pending/${orderId}`,
         },
       };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 09cdee52d0cfdf9b7d88ef1f29cc5b8924848224
       // Crea la preferencia en Mercado Pago
       const response = await mercadopago.preferences.create(preference);
 

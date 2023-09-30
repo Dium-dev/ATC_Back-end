@@ -10,12 +10,17 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+<<<<<<< HEAD
+=======
+import { UpdateOrderDto } from './dto/update-order.dto';
+>>>>>>> 09cdee52d0cfdf9b7d88ef1f29cc5b8924848224
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IOrder } from './interfaces/response-order.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 
+@ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
@@ -50,6 +55,10 @@ export class OrdersController {
   @Post()
   async create(
   @GetUser() user: UserChangePasswordDto,
+<<<<<<< HEAD
+=======
+    @Body() createOrderDto: CreateOrderDto,
+>>>>>>> 09cdee52d0cfdf9b7d88ef1f29cc5b8924848224
   ) {
     const { userId } = user;
     const response = await this.ordersService.create(userId);

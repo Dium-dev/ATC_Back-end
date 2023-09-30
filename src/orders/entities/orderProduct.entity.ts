@@ -16,30 +16,30 @@ export class OrderProduct extends Model<OrderProduct> {
     primaryKey: true,
     allowNull: false,
   })
-  id: string;
+    id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
     defaultValue: 1,
   })
-  amount: number;
+    amount: number;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  price: number;
+    price: number;
 
   @ForeignKey(() => Order)
   @Column({
     allowNull: false,
   })
-  orderId: string;
+    orderId: string;
 
   @ForeignKey(() => Product)
   @Column({
     allowNull: false,
   })
-  productId: string;
+    productId: string;
 }

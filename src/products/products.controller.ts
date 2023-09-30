@@ -25,6 +25,10 @@ import { IResponse } from 'src/utils/interfaces/response.interface';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @ApiOperation({
+    summary:
+      'Obtener productos',
+  })
   @Get()
   async getProducts(
     @Query() queryProducts: QueryProductsDto,
