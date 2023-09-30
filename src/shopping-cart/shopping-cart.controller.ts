@@ -1,6 +1,9 @@
-import { Controller, Get, Patch, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { GetUser } from 'src/auth/auth-user.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
+import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 
 @Controller('shopping-cart')
 export class ShoppingCartController {
@@ -8,7 +11,7 @@ export class ShoppingCartController {
 
   @Post()
   async postProductoInShoppingCart(
-    @Body() data: { productId: string; cartId: string; amount: number },
+  @Body() data: { productId: string; cartId: string; amount: number },
   ) {
     const postThisProduct = await this.shoppingCartService.postProductInCart(
       data.productId,
@@ -30,7 +33,7 @@ export class ShoppingCartController {
   })
   @Delete(':cartId/:productId')
   async remove(
-    @Param('cartId') cartId: string,
+  @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
     const response = await this.shoppingCartService.remove(cartId, productId);
@@ -38,21 +41,29 @@ export class ShoppingCartController {
   }
 
   @Get(':cartId') // Cambiar el parámetro a cartId
-async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
-  const thisShoppingCart = await this.shoppingCartService.getCartProducts(
-    cartId, // Pasar el cartId como parámetro
-  );
-  return thisShoppingCart;
-}
+  async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
+    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
+      cartId, // Pasar el cartId como parámetro
+    );
+    return thisShoppingCart;
+  }
 
-@Patch()
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getCart(
+  @GetUser() { userId }: UserChangePasswordDto,
+  ) {
+    const cart = await this.shoppingCartService.getCart(userId);
+    return cart;
+  }
+
+  @Patch()
   async updateProductQuantity(@Body() updateInfo: { cartProductId: string; newQuantity: number }) {
     const response = await this.shoppingCartService.updateProductQuantity(updateInfo);
     return response;
   }
 
 }
-  
 
 
 

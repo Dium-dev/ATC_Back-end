@@ -15,7 +15,7 @@ export class AmountPricePerProduct {
     message: '$property debe ser un UUID válido y registrado',
   })
   @Length(12, 12)
-  productId: string;
+    id: string;
 
   @IsNumber(
     {},
@@ -26,7 +26,7 @@ export class AmountPricePerProduct {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-  amount: number;
+    amount: number;
 
   @IsNumber(
     {},
@@ -37,5 +37,5 @@ export class AmountPricePerProduct {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-  price: number;
+    price: number;
 }
