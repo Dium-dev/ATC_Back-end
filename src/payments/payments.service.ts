@@ -14,11 +14,7 @@ export class PaymentsService {
     });
   }
 
-<<<<<<< HEAD
   async createPayment(amount: number,  userId: string, orderId?: string) {
-=======
-  async createPayment(paymentData: CreatePaymentDto): Promise<string> {
->>>>>>> 09cdee52d0cfdf9b7d88ef1f29cc5b8924848224
     try {
       const user = await User.findByPk(userId);
       // Crea un objeto de preferencia con los detalles del pago
@@ -42,10 +38,6 @@ export class PaymentsService {
           pending: `http://localhost:3000/payments/pending/${orderId}`,
         },
       };
-<<<<<<< HEAD
-=======
-
->>>>>>> 09cdee52d0cfdf9b7d88ef1f29cc5b8924848224
       // Crea la preferencia en Mercado Pago
       const response = await mercadopago.preferences.create(preference);
 
@@ -69,7 +61,6 @@ export class PaymentsService {
     }
   }
 
-
   async actualizePayment(state: string, orderId: string) {
     const order = await Order.findByPk(orderId);
     state == 'success' ? order.state = OrderStateEnum.PAGO :
@@ -82,7 +73,6 @@ export class PaymentsService {
       state == 'pending' ? payment.state = PaymentState.PENDING :
         await payment.destroy();
     await payment.save();
-
 
     return `the orden of state is:${state}`;
   }
