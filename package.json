@@ -52,8 +52,6 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.22.20",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
