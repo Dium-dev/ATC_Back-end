@@ -3,40 +3,83 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  UseGuards,
   Param,
-  Delete,
+  Res,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { GetUser } from 'src/auth/auth-user.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 
+@ApiTags('Payments')
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentsService.create(createPaymentDto);
+  // Ruta para crear un pago
+  @ApiOperation({
+    summary:
+    'Ruta para realizar pagos.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('create-payment')
+  async createPayment(
+  @GetUser() { userId }: any,
+    @Body() { amount, orderId }: CreatePaymentDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const payment = await this.paymentsService.createPayment(amount, userId, orderId);
+      // Redirige al usuario a la URL de pago generada por Mercado Pago
+
+      res.send(payment.url);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al crear el pago' });
+    }
   }
 
-  @Get()
-  findAll() {
-    return this.paymentsService.findAll();
+  // Ruta para manejar un pago exitoso
+  @ApiOperation({
+    summary:
+    'Ruta para manejar un pago exitoso.',
+  })
+  @Get('success/:orderid')
+  async handleSuccessPayment(
+  @Param('orderid') orderid: string,
+    @Res() res: Response,
+  ) {
+    const actualize = await this.paymentsService.actualizePayment('success', orderid);
+    res.send(actualize);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentsService.findOne(+id);
+  // Ruta para manejar un pago fallido
+  @ApiOperation({
+    summary:
+    'Ruta para manejar un pago fallido.',
+  })
+  @Get('failure/:orderid')
+  async handleFailurePayment(
+  @Param('orderid') orderid: string,
+    @Res() res: Response,
+  ) {
+    const actualize = await this.paymentsService.actualizePayment('failure', orderid);
+    res.send(actualize);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentsService.update(+id, updatePaymentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentsService.remove(+id);
+  // Ruta para manejar un pago pendiente
+  @ApiOperation({
+    summary:
+    'Ruta para manejar un pago pendiente.',
+  })
+  @Get('pending/:orderid')
+  async handlePendingPayment(
+  @Param('orderid') orderid: string,
+    @Res() res: Response,
+  ) {
+    const actualize = await this.paymentsService.actualizePayment('pending', orderid);
+    res.send(actualize);
   }
 }

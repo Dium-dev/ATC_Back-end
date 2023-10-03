@@ -31,7 +31,6 @@ export class Product extends Model<Product> {
     allowNull: false,
     primaryKey: true,
     unique: true,
-    defaultValue: DataType.UUIDV4,
   })
     id: string;
 

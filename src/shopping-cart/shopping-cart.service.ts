@@ -13,6 +13,7 @@ import { IError } from 'src/utils/interfaces/error.interface';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ShoppingCartService {
@@ -188,23 +189,67 @@ export class ShoppingCartService {
     }
   }
 
-  async getCartProducts(userId: string) {
+  async getCart(userId: string) {
     try {
-      const thisCart = await ShoppingCart.findOne({
-        where: { userId },
-        attributes: ['id'],
+      const user = await User.findByPk(userId, {
+        include: [{
+          model: ShoppingCart,
+        }],
+      });
+      const cart = await ShoppingCart.findByPk(user.cart.dataValues.id, {
+        include: [{
+          model: Product,
+          attributes: ['id', 'title', 'price'],
+        }],
+      });
+
+      const products = await Promise.all(
+        cart.products?.map(async (product) => {
+          const cartProduct = await CartProduct.findOne({
+            where: {
+              cartId: cart.id,
+              productId: product.id,
+            },
+          });
+
+          const subtotal = product.price * cartProduct.amount;
+
+          return {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            amount: cartProduct.amount,
+            subtotal, // Agregar el subtotal para este producto
+          };
+        }),
+      );
+
+      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
+
+      return {
+        id: cart.id,
+        products,
+        total,
+      };
+
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+
+  }
+
+  async getCartProducts(cartId: string) {
+    try {
+      const thisCart = await ShoppingCart.findByPk(cartId, {
         include: [{ model: Product, attributes: ['id', 'title', 'price'] }],
       });
 
       if (!thisCart) {
-        throw new NotFoundException(
-          'No se encontró el carrito de compras para el usuario.',
-        );
+        throw new NotFoundException('No se encontró el carrito de compras.');
       }
 
       const products = await Promise.all(
         thisCart.products?.map(async (product) => {
-          // Aquí obtenemos la cantidad de productos en el carrito para este producto específico
           const cartProduct = await CartProduct.findOne({
             where: {
               cartId: thisCart.id,
@@ -224,11 +269,7 @@ export class ShoppingCartService {
         }),
       );
 
-      // Calcula el total como la suma de todos los subtotales
-      const total = products.reduce(
-        (acc, product) => acc + product.subtotal,
-        0,
-      );
+      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
 
       return {
         id: thisCart.id,
@@ -242,6 +283,38 @@ export class ShoppingCartService {
         throw new InternalServerErrorException(
           'Error del servidor al obtener el carrito de compras.',
         );
+      }
+    }
+  }
+
+
+  async updateProductQuantity(updateInfo: { cartProductId: string; newQuantity: number }): Promise<{ statusCode: number; message: string }> {
+    try {
+      const cartProductToUpdate = await CartProduct.findByPk(updateInfo.cartProductId);
+
+      if (!cartProductToUpdate) {
+        throw new NotFoundException('No se encontró el registro de CartProduct');
+      }
+
+      const thisProduct: boolean | IError = await this.getThisProduct(
+        cartProductToUpdate.productId, // Usar el productId de la tabla intermedia
+        updateInfo.newQuantity,
+      );
+
+      if (thisProduct === true) {
+        cartProductToUpdate.amount = updateInfo.newQuantity;
+        await cartProductToUpdate.save();
+
+        return {
+          statusCode: 200,
+          message: 'Cantidad de producto actualizada con éxito!',
+        };
+      }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException('Error del servidor al actualizar la cantidad de producto.');
       }
     }
   }

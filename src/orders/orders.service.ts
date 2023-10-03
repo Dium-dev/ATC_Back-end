@@ -13,9 +13,18 @@ import { OrderProduct } from './entities/orderProduct.entity';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';
 import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 import { Op } from 'sequelize';
+import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
+import { User } from 'src/users/entities/user.entity';
+import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+import { PaymentsService } from 'src/payments/payments.service';
 
 @Injectable()
 export class OrdersService {
+  constructor(
+    private readonly shoppingCartService: ShoppingCartService,
+    private readonly paymentsService: PaymentsService,
+  ) {}
+
   async findOneOrder(id: string) {
     try {
       const order = await Order.findOne({
@@ -85,29 +94,41 @@ export class OrdersService {
   //Crear Orden
   async create(
     userId: string,
-    createReviewDto: CreateOrderDto,
-  ): Promise<IOrder> {
-    const { total, products } = createReviewDto;
+  ): Promise<object> {
+    //Obtenemos el id del carrito del usuario que realiza la peticion
+    const { cart } = await User.findByPk(userId, {
+      include: [{
+        model: ShoppingCart,
+      }],
+    });
+    //Aqui obtenemos el monto total y los productos para realizar la orden
+    const { total, products } = await this.shoppingCartService.getCartProducts(cart.id);
+
     try {
       const newOrder = await Order.create({
-        total: total,
+        total,
         userId: userId,
       });
 
       if (!newOrder) {
         throw new InternalServerErrorException('Algo salió mal en el servidor');
       } else {
-        //Se crean instancias en la tabla intermedia haciendo uso del orderId y
-        //products:Array<{productId; amount; price}>
+
         for (const product of products) {
           await OrderProduct.create({
             orderId: newOrder.id,
-            ...product,
+            productId: product.id,
+            price: product.price,
+            amount: product.amount,
           });
         }
+
+        const urlBuy = await this.paymentsService.createPayment(total, userId, newOrder.id);
+
         return {
           statusCode: 201,
           data: `Nueva orden creada exitosamente con el id ${newOrder.id}`,
+          url: urlBuy,
         };
       }
     } catch (error) {

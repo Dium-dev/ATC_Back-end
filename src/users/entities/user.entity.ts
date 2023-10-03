@@ -82,6 +82,9 @@ export class User extends Model<User> {
   })
     rol: Rol;
 
+  @Column({})
+    isActive: boolean;
+
   @HasMany(() => Direction, { onDelete: 'CASCADE', hooks: true })
     directions: Direction[];
 

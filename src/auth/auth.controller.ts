@@ -23,7 +23,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guarg';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

@@ -6,6 +6,7 @@ import {
   Inject,
   forwardRef,
   UnauthorizedException,
+  HttpException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,7 +19,9 @@ import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { MailService } from 'src/mail/mail.service';
 import { Cases } from 'src/mail/dto/sendMail.dto';
+import { HttpStatusCode } from 'axios';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -42,6 +45,7 @@ export class UsersService {
           createUserDto.password,
         ),
         phone: createUserDto.phone,
+        isActive: true,
       };
 
       const newUser = await this.userModel.create(data);
@@ -207,6 +211,46 @@ export class UsersService {
             'Error del servidor, intente mas tarde',
           );
       }
+    }
+  }
+
+  async getAll(page: number, limit: number) {
+    try {
+      page --;
+      const allUsers = await this.userModel.findAll();
+      const limitOfPages = Math.ceil(allUsers.length / limit);
+
+      if (page < 0 || page > limitOfPages) { throw new HttpException('This page not exist.', 400);}
+
+      return {
+        prevPage: page === 0 ? null : page - 1,
+        page: page + 1,
+        nextPage: page === limitOfPages ? null : page + 1,
+        users: allUsers.slice(page * limit, (page + 1) * limit),
+      };
+    } catch (error) {
+      throw new HttpException('Error al buscar usuarios.', 404);
+    }
+  }
+
+  async deleteUser(id: string) {
+    try {
+      const user = await this.userModel.findByPk(id);
+      user.isActive = !user.isActive;
+      await user.save();
+      if (!user.isActive) {
+        return {
+          message: 'Usuario eliminado correctamente.',
+          status: HttpStatusCode.NoContent,
+        };
+      } else {
+        return {
+          message: 'Usuario reactivado.',
+          status: HttpStatusCode.Ok,
+        };
+      }
+    } catch (error) {
+      throw new HttpException('Error al eliminar un usuario.', 404);
     }
   }
 }

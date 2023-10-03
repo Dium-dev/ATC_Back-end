@@ -2,7 +2,6 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
-  IsUUID,
   Length,
 } from 'class-validator';
 
@@ -15,7 +14,7 @@ export class AmountPricePerProduct {
     message: '$property debe ser un UUID válido y registrado',
   })
   @Length(12, 12)
-    productId: string;
+    id: string;
 
   @IsNumber(
     {},
