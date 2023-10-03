@@ -30,7 +30,7 @@ export class CreateReviewDto {
     message:
       '$property is too long, maximum length must be $constraint1, but actual is $value',
   })
-  review: string;
+    review: string;
 
   //rating
   @ApiProperty({
@@ -49,5 +49,5 @@ export class CreateReviewDto {
     message:
       'Hay un número limitado de valores permitidos para $property y $value no lo es',
   })
-  rating: Rating;
+    rating: Rating;
 }

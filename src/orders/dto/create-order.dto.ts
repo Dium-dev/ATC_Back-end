@@ -20,15 +20,8 @@ export class CreateOrderDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-  total: number;
+    total: number;
 
-  /* @IsUUID(4, {
-    message: '$property debe ser un UUID válido y registrado',
-  })
-  @IsNotEmpty({
-    message:'$property no puede estar vacío',
-  })
-    userId: string; */
 
   @IsArray({
     message: '$property debe ser un array válido',
@@ -40,5 +33,5 @@ export class CreateOrderDto {
     each: true,
   })
   @Type(() => AmountPricePerProduct)
-  products: AmountPricePerProduct[];
+    products: AmountPricePerProduct[];
 }

@@ -23,7 +23,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guarg';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -84,8 +84,8 @@ export class AuthController {
   @HttpCode(201)
   async resetPassword(
     @Body() resetPassword: ResetPasswordDto,
-    @Headers('x-token') token: string,
-    //@GetUser() user: UserChangePasswordDto,
+      @Headers('x-token') token: string,
+      //@GetUser() user: UserChangePasswordDto,
   ): Promise<IResponse | IError> {
     const response = await this.authService.resetPassword(resetPassword, token);
     return response;
@@ -120,7 +120,7 @@ export class AuthController {
   @HttpCode(201)
   async changePassword(
     @Body() changePassword: ChangePasswordDto,
-    @GetUser() user: UserChangePasswordDto,
+      @GetUser() user: UserChangePasswordDto,
   ): Promise<IResponse | IError> {
     const response = await this.authService.changePassword(
       changePassword,

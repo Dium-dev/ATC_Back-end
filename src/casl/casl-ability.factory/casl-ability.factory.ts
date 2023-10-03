@@ -32,7 +32,7 @@ type AppAbility = PureAbility<[Action, Subject]>;
 export class CaslAbilityFactory {
   createForUser(user: UserPayload) {
     const { can, cannot, build } = new AbilityBuilder<
-      PureAbility<[Action, Subject]>
+    PureAbility<[Action, Subject]>
     >(PureAbility as AbilityClass<AppAbility>);
 
     //Permisses
