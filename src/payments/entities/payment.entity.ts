@@ -45,4 +45,5 @@ export class Payment extends Model<Payment> {
     allowNull: false,
   })
     user_email: string;
+
 }
