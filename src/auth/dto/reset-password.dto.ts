@@ -11,5 +11,5 @@ export class ResetPasswordDto {
     description:
       'Contraseña nueva. Debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial.',
   })
-  password: string;
+    password: string;
 }

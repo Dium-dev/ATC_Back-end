@@ -12,9 +12,9 @@ import { OrderProduct } from './orderProduct.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export enum OrderStateEnum {
+  PENDIENTE = 'EN PROCESO',
   APROBADO = 'APROBADO',
-  ENPROCESO = 'EN PROCESO',
-  ENDESPACHO = 'EN DESPACHO',
+  DESPACHO = 'EN DESPACHO',
   ENTREGADO = 'ENTREGADO',
   CANCELADO = 'CANCELADO',
 }
@@ -31,31 +31,31 @@ export class Order extends Model<Order> {
     primaryKey: true,
     allowNull: false,
   })
-  id: string;
+    id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  total: number;
+    total: number;
 
   @Column({
     type: DataType.ENUM(...Object.values(OrderStateEnum)),
     allowNull: false,
     defaultValue: OrderStateEnum.ENPROCESO,
   })
-  state: OrderStateEnum;
+    state: OrderStateEnum;
 
   @BelongsToMany(() => Product, () => OrderProduct)
-  products: Product[];
+    products: Product[];
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  userId: string;
+    userId: string;
 
   @BelongsTo(() => User)
-  user: User;
+    user: User;
 }

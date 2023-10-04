@@ -11,6 +11,7 @@ import { Review } from 'src/reviews/entities/review.entity';
 import { CartProduct } from 'src/shopping-cart/entities/cart-product.entity';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 @Module({
   imports: [
@@ -32,11 +33,12 @@ import { User } from 'src/users/entities/user.entity';
         Review,
         Order,
         OrderProduct,
+        Payment,
       ],
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: true },
+      sync: { force: false },
     }),
   ],
   exports: [SequelizeModule],
