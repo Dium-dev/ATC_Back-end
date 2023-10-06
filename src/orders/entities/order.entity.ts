@@ -12,8 +12,11 @@ import { OrderProduct } from './orderProduct.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export enum OrderStateEnum {
-  PENDIENTE = 'PENDIENTE',
+  PENDIENTE = 'EN PROCESO',
   PAGO = 'PAGO',
+  RECHAZADO = 'RECHAZADO',
+  DESPACHO = 'EN DESPACHO',
+  ENTREGADO = 'ENTREGADO',
 }
 
 @Table({

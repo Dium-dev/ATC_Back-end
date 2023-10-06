@@ -126,7 +126,8 @@ export class OrdersService {
         return {
           statusCode: 201,
           data: `Nueva orden creada exitosamente con el id ${newOrder.id}`,
-          url: urlBuy,
+          orderId: newOrder.id,
+          ...urlBuy,
         };
       }
     } catch (error) {
