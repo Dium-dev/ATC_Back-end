@@ -41,9 +41,9 @@ export class ReviewsService {
     }
   }
 
-  async findAll(): Promise<IReview> {
+  async findAll(): Promise<IReview | HttpException> {
     try {
-      const reviews = await Review.findAll({
+      const reviews = await this.reviewModel.findAll({
         include: {
           model: User,
           attributes: ['firstName', 'lastName'],
@@ -60,9 +60,10 @@ export class ReviewsService {
 
       if (!reviews.length)
         throw new NotFoundException('No se encontraron reseñas activas');
+
       return { statusCode: 200, data: reviews };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 

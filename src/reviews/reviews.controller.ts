@@ -83,7 +83,7 @@ export class ReviewsController {
     description: 'Hubo un problema en el servidor',
   })
   //Controller------------------------------------------------------------------
-  async findAll(): Promise<IReview | IError> {
+  async findAll(): Promise<IReview | HttpException> {
     const response = await this.reviewsService.findAll();
     return response;
   }
