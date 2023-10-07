@@ -2,7 +2,6 @@ import {
   IsEnum,
   IsNotEmpty,
   IsString,
-  IsUUID,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -34,7 +33,7 @@ export class CreateReviewDto {
 
   //rating
   @ApiProperty({
-    enum: ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
+    enum: Object.values(Rating), //['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
     description:
       'Valor númerico de que solo admite cierto valores según un enum. /nEstos valores van desde el 0 al 5, pasando por los valores intermedios',
     example: '4.5',
