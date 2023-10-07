@@ -11,32 +11,33 @@ import { Review } from './entities/review.entity';
 import { User } from 'src/users/entities/user.entity';
 import { IReview } from './interfaces/response-review.interface';
 import { ActivateReviewDto } from './dto/activate-review.dto';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class ReviewsService {
-  async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview> {
+  constructor(
+    @InjectModel(Review) private reviewModel:typeof Review,
+  ) {}
+
+  async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview | HttpException> {
     try {
-      const user = await User.findOne({
-        where: {
-          id: id,
-        },
+
+      const newReview = await this.reviewModel.create({
+        ...createReviewDto,
+        userId:id,
       });
-
-      if (!user) throw new NotFoundException('No existe un usuario con ese id');
-
-      const Newreview = (await user).$create('review', createReviewDto);
-      if (!Newreview)
+      if (!newReview)
         throw new InternalServerErrorException(
           'Algo salió mal al momento de crear la reseña',
         );
 
       const response = {
         statusCode: 201,
-        data: 'Created review successfully',
+        data: newReview,
       };
       return response;
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 
