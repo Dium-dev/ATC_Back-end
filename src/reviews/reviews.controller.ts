@@ -60,7 +60,7 @@ export class ReviewsController {
   async create(
     @GetUser() user: UserChangePasswordDto,
       @Body() createReviewDto: CreateReviewDto,
-  ): Promise<IReview | IError> {
+  ): Promise<IReview | HttpException> {
     //Se extrae el id del objeto req.user que nos retorna el decorador @GetUser
     const { userId } = user;
     const response = await this.reviewsService.create(userId, createReviewDto);
