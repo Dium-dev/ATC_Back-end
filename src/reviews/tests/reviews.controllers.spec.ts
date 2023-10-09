@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewsController } from '../reviews.controller';
 import { ReviewsService } from '../reviews.service';
 import { createUserObject, generateFakeReviewData, newReview } from './faker';
-import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
+import { UserChangePasswordDto } from '../../auth/dto/user-change-password.dto';
 import { CreateReviewDto } from '../dto/create-review.dto';
 import { faker } from '@faker-js/faker';
 

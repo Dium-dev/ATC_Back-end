@@ -1,11 +1,16 @@
-import { Controller, Get, Patch, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { GetUser } from 'src/auth/auth-user.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
+import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Shopping cart')
 @Controller('shopping-cart')
 export class ShoppingCartController {
   constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
+  @ApiOperation({ summary: 'Agregar producto al carrito' })
   @Post()
   async postProductoInShoppingCart(
   @Body() data: { productId: string; cartId: string; amount: number },
@@ -37,6 +42,7 @@ export class ShoppingCartController {
     return response;
   }
 
+  @ApiOperation({ summary: 'Obtener un carrito por id' })
   @Get(':cartId') // Cambiar el parámetro a cartId
   async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
     const thisShoppingCart = await this.shoppingCartService.getCartProducts(
@@ -45,15 +51,18 @@ export class ShoppingCartController {
     return thisShoppingCart;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getCart(
+  @GetUser() { userId }: UserChangePasswordDto,
+  ) {
+    const cart = await this.shoppingCartService.getCart(userId);
+    return cart;
+  }
+
   @Patch()
   async updateProductQuantity(@Body() updateInfo: { cartProductId: string; newQuantity: number }) {
     const response = await this.shoppingCartService.updateProductQuantity(updateInfo);
     return response;
   }
-
 }
-  
-
-
-
-

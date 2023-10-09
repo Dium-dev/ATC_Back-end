@@ -13,6 +13,7 @@ import { IError } from 'src/utils/interfaces/error.interface';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ShoppingCartService {
@@ -188,27 +189,31 @@ export class ShoppingCartService {
     }
   }
 
-  async getCartProducts(cartId: string) {
+  async getCart(userId: string) {
     try {
-      const thisCart = await ShoppingCart.findByPk(cartId, {
-        include: [{ model: Product, attributes: ['id', 'title', 'price'] }],
+      const user = await User.findByPk(userId, {
+        include: [{
+          model: ShoppingCart,
+        }],
       });
-  
-      if (!thisCart) {
-        throw new NotFoundException('No se encontró el carrito de compras.');
-      }
-  
+      const cart = await ShoppingCart.findByPk(user.cart.dataValues.id, {
+        include: [{
+          model: Product,
+          attributes: ['id', 'title', 'price'],
+        }],
+      });
+
       const products = await Promise.all(
-        thisCart.products?.map(async (product) => {
+        cart.products?.map(async (product) => {
           const cartProduct = await CartProduct.findOne({
             where: {
-              cartId: thisCart.id,
+              cartId: cart.id,
               productId: product.id,
             },
           });
-  
+
           const subtotal = product.price * cartProduct.amount;
-  
+
           return {
             id: product.id,
             title: product.title,
@@ -218,9 +223,54 @@ export class ShoppingCartService {
           };
         }),
       );
-  
+
       const total = products.reduce((acc, product) => acc + product.subtotal, 0);
-  
+
+      return {
+        id: cart.id,
+        products,
+        total,
+      };
+
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+
+  }
+
+  async getCartProducts(cartId: string) {
+    try {
+      const thisCart = await ShoppingCart.findByPk(cartId, {
+        include: [{ model: Product, attributes: ['id', 'title', 'price'] }],
+      });
+
+      if (!thisCart) {
+        throw new NotFoundException('No se encontró el carrito de compras.');
+      }
+
+      const products = await Promise.all(
+        thisCart.products?.map(async (product) => {
+          const cartProduct = await CartProduct.findOne({
+            where: {
+              cartId: thisCart.id,
+              productId: product.id,
+            },
+          });
+
+          const subtotal = product.price * cartProduct.amount;
+
+          return {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            amount: cartProduct.amount,
+            subtotal, // Agregar el subtotal para este producto
+          };
+        }),
+      );
+
+      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
+
       return {
         id: thisCart.id,
         products,
@@ -236,8 +286,7 @@ export class ShoppingCartService {
       }
     }
   }
-  
- 
+
 
   async updateProductQuantity(updateInfo: { cartProductId: string; newQuantity: number }): Promise<{ statusCode: number; message: string }> {
     try {
@@ -269,5 +318,4 @@ export class ShoppingCartService {
       }
     }
   }
-}  
-
+}

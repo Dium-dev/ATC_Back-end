@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
+import { UserChangePasswordDto } from '../../auth/dto/user-change-password.dto';
 import { CreateReviewDto } from '../dto/create-review.dto';
-import { Rating, Review } from '../entities/review.entity';
+import { Rating } from '../entities/review.entity';
 
 //Generates the kind of user data that is extracted from JWT (check the dto)
 export const createUserObject = ():UserChangePasswordDto => {
