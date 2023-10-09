@@ -123,7 +123,7 @@ export class ReviewsController {
     description:
       'Si todo sale bien, obtendrás el número de reviews actualizadas',
   })
-  async remove(
+  async removeOrActivate(
     @Body() activateReview: ActivateReviewDto,
   ): Promise<IReview | HttpException> {
     const response = await this.reviewsService.removeOrActivate(activateReview);
