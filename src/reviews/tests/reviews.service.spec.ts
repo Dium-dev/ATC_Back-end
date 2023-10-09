@@ -7,7 +7,7 @@ import { HttpException } from '@nestjs/common';
 import { CreateReviewDto } from '../dto/create-review.dto';
 
 const testReview: CreateReviewDto = { review:'review', rating: Rating.zero };
-const testUserId = 'idDeMentirajaja';
+const testId = 'idDeMentirajaja';
 
 describe('ReviewsService', () => {
   let reviewsService: ReviewsService;
@@ -22,6 +22,8 @@ describe('ReviewsService', () => {
           useValue:{
             create:jest.fn( newReview => newReview),
             findAll:jest.fn(() => [testReview]),
+            update:jest.fn(),
+            findOne:jest.fn(() => testReview),
           },
         },
       ],
@@ -39,9 +41,9 @@ describe('ReviewsService', () => {
     it('Must have called the "create" method with the passed in data', 
       async () => {
         const { create } = review;
-        await reviewsService.create(testUserId, testReview);
+        await reviewsService.create(testId, testReview);
 
-        expect(create).toBeCalledWith({ ...testReview, userId:testUserId });
+        expect(create).toBeCalledWith({ ...testReview, userId:testId });
       },
     );
 
@@ -51,12 +53,12 @@ describe('ReviewsService', () => {
         const iReview = {
           data: {
             ...testReview,
-            userId: testUserId,
+            userId: testId,
           },
           statusCode:201,
         };
 
-        const newReview = await reviewsService.create(testUserId, testReview);
+        const newReview = await reviewsService.create(testId, testReview);
 
         expect(newReview).toEqual(iReview);
 
@@ -68,7 +70,7 @@ describe('ReviewsService', () => {
         //review.create = () => undefined;
         jest.spyOn(review, 'create').mockReset();
 
-        const result = await reviewsService.create(testUserId, testReview);
+        const result = await reviewsService.create(testId, testReview);
 
         expect(result).toBeInstanceOf(HttpException);
         expect(result).toHaveProperty('response', 'Algo salió mal al momento de crear la reseña');
@@ -108,5 +110,55 @@ describe('ReviewsService', () => {
         expect(result).toHaveProperty('status', 500);
       },
     );
+  });
+
+  //Update method ----------------------------------------------------------
+  describe('Update method', () => {
+
+    it('Must return an exception with 400 status code when updating isn`t possible', 
+      async () => {
+        const update = jest.spyOn(review, 'update').mockImplementationOnce(async () => [0]);
+
+        const result = await reviewsService.update({ ...testReview, reviewId: testId });
+
+        expect(update).toHaveBeenCalledWith(
+          { ...testReview, reviewId: testId },
+          {
+            where: {
+              id: testId,
+            },
+          },
+        );
+        expect(result).toBeInstanceOf(HttpException);
+        expect(result).toHaveProperty('response', 'No se pudo actualizar la reseña, revisar el id enviado');
+        expect(result).toHaveProperty('status', 400);
+
+      });
+
+    it('Must return a new updated review', async () => {
+      jest.spyOn(review, 'update').mockImplementationOnce(async () => [1]);
+      const findOne = jest.spyOn(review, 'findOne');
+
+      const result = await reviewsService.update({ ...testReview, reviewId: testId });
+
+      expect(findOne).toHaveBeenCalled();
+      expect(result).toHaveProperty('data', testReview);
+      expect(result).toHaveProperty('statusCode', 200);
+    });
+  });
+
+  //removeOrActivate method ------------------------------------------------
+  describe('removeOrActivate method', () => {
+
+    it('Must return an exception when updating isn`t possible', async () => {
+      const update = jest.spyOn(review, 'update').mockImplementationOnce( async () => [0]);
+
+      const result = await reviewsService.removeOrActivate({ reviewId: testId, activate:true });
+
+      expect(update).toBeCalled();
+      expect(result).toBeInstanceOf(HttpException);
+      expect(result).toHaveProperty('response', 'Algo salió mal, se sugiere verificar el id enviado');
+      expect(result).toHaveProperty('status', 400);
+    });
   });
 });
