@@ -106,7 +106,7 @@ export class ReviewsController {
   //Controller-----------------------------------------------------------------
   async update(
     @Body() updateReviewDto: UpdateReviewDto,
-  ): Promise<IReview | IError> {
+  ): Promise<IReview | HttpException> {
     const response = await this.reviewsService.update(updateReviewDto);
     return response;
   }
@@ -125,7 +125,7 @@ export class ReviewsController {
   })
   async remove(
     @Body() activateReview: ActivateReviewDto,
-  ): Promise<IReview | IError> {
+  ): Promise<IReview | HttpException> {
     const response = await this.reviewsService.removeOrActivate(activateReview);
     return response;
   }

@@ -67,22 +67,22 @@ export class ReviewsService {
     }
   }
 
-  async update(updateReviewDto: UpdateReviewDto): Promise<IReview> {
+  async update(updateReviewDto: UpdateReviewDto): Promise<IReview | HttpException> {
     try {
       //Update
-      const count = await Review.update(updateReviewDto, {
+      const count = await this.reviewModel.update(updateReviewDto, {
         where: {
           id: updateReviewDto.reviewId,
         },
       });
-      console.log(count, '<------- count');
+
       if (count[0] === 0)
         throw new BadRequestException(
           'No se pudo actualizar la reseña, revisar el id enviado',
         );
 
       //Get review
-      const newReview = await Review.findOne({
+      const newReview = await this.reviewModel.findOne({
         include: {
           model: User,
           attributes: ['firstName', 'lastName'],
@@ -93,20 +93,17 @@ export class ReviewsService {
         },
       });
 
-      if (!newReview)
-        throw new NotFoundException('No existe una reseña con ese id');
-
       return { statusCode: 200, data: newReview };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 
   async removeOrActivate(
     activateReviewDto: ActivateReviewDto,
-  ): Promise<IReview> {
+  ): Promise<IReview | HttpException> {
     try {
-      const count = await Review.update(
+      const count = await this.reviewModel.update(
         { active: activateReviewDto.activate },
         {
           where: {
@@ -124,7 +121,7 @@ export class ReviewsService {
         data: `${count[0]} reseñas fueron actualizadas`,
       };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 }
