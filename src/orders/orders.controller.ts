@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Body,
   Post,
   Param,
   UseGuards,

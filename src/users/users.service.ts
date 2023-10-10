@@ -15,12 +15,13 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
-import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { MailService } from 'src/mail/mail.service';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+import { FindOptions } from 'sequelize';
+import { EModelsTable } from 'src/utils/custom/EmodelsTable.enum';
 
 @Injectable()
 export class UsersService {
@@ -253,4 +254,56 @@ export class UsersService {
       throw new HttpException('Error al eliminar un usuario.', 404);
     }
   }
+
+
+    /* Public functions a utilizar en diferentes modulos */
+
+    public async genericUser(method: EModelsTable, options: FindOptions) {
+      try {
+        const genericResponseUser = await User[method](options);
+        if (!genericResponseUser) throw new BadRequestException(`No se encontraron datos para la solucitud de tipo ${method}`)
+        return genericResponseUser;
+      } catch (error) {
+        switch (error.constructor) {
+          case BadRequestException:
+            throw new BadRequestException(error.message)
+          default:
+            throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ${method}`)
+        }
+      }
+    }
+    
+    public async findAndCountAllGenericUser(options: FindOptions) {
+      try {
+        const genericResponseUser = await User.findAndCountAll(options);
+        if (!genericResponseUser) throw new BadRequestException(`No se encontraron datos para la solucitud de tipo findAndCountAll`)
+        return genericResponseUser;
+      } catch (error) {
+        switch (error.constructor) {
+          case BadRequestException:
+            throw new BadRequestException(error.message)
+          default:
+            throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por findAndCountAll`)
+        }
+      }
+    }
+  
+    public async findOneGenericUser(userId: string, options: FindOptions) {
+      try {
+        const genericResponseUser = await User.findByPk(userId, options)
+        if (!genericResponseUser) throw new BadRequestException('No se encontro al usuario al consultar por su carrito de compras')
+        return genericResponseUser;
+      } catch (error) {
+        switch (error.constructor) {
+          case BadRequestException:
+            throw new BadRequestException(error.message)
+          default:
+            throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ususario particular`)
+        }
+      }
+  
+    }
+  
+
+
 }
