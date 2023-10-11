@@ -60,7 +60,7 @@ export class ReviewsController {
   async create(
     @GetUser() user: UserChangePasswordDto,
       @Body() createReviewDto: CreateReviewDto,
-  ): Promise<IReview | IError> {
+  ): Promise<IReview | HttpException> {
     //Se extrae el id del objeto req.user que nos retorna el decorador @GetUser
     const { userId } = user;
     const response = await this.reviewsService.create(userId, createReviewDto);
@@ -83,7 +83,7 @@ export class ReviewsController {
     description: 'Hubo un problema en el servidor',
   })
   //Controller------------------------------------------------------------------
-  async findAll(): Promise<IReview | IError> {
+  async findAll(): Promise<IReview | HttpException> {
     const response = await this.reviewsService.findAll();
     return response;
   }
@@ -106,7 +106,7 @@ export class ReviewsController {
   //Controller-----------------------------------------------------------------
   async update(
     @Body() updateReviewDto: UpdateReviewDto,
-  ): Promise<IReview | IError> {
+  ): Promise<IReview | HttpException> {
     const response = await this.reviewsService.update(updateReviewDto);
     return response;
   }
@@ -123,9 +123,9 @@ export class ReviewsController {
     description:
       'Si todo sale bien, obtendrás el número de reviews actualizadas',
   })
-  async remove(
+  async removeOrActivate(
     @Body() activateReview: ActivateReviewDto,
-  ): Promise<IReview | IError> {
+  ): Promise<IReview | HttpException> {
     const response = await this.reviewsService.removeOrActivate(activateReview);
     return response;
   }

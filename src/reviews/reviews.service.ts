@@ -11,38 +11,39 @@ import { Review } from './entities/review.entity';
 import { User } from 'src/users/entities/user.entity';
 import { IReview } from './interfaces/response-review.interface';
 import { ActivateReviewDto } from './dto/activate-review.dto';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class ReviewsService {
-  async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview> {
+  constructor(
+    @InjectModel(Review) private reviewModel:typeof Review,
+  ) {}
+
+  async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview | HttpException> {
     try {
-      const user = await User.findOne({
-        where: {
-          id: id,
-        },
+
+      const newReview = await this.reviewModel.create({
+        ...createReviewDto,
+        userId:id,
       });
-
-      if (!user) throw new NotFoundException('No existe un usuario con ese id');
-
-      const Newreview = (await user).$create('review', createReviewDto);
-      if (!Newreview)
+      if (!newReview)
         throw new InternalServerErrorException(
           'Algo salió mal al momento de crear la reseña',
         );
 
       const response = {
         statusCode: 201,
-        data: 'Created review successfully',
+        data: newReview,
       };
       return response;
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 
-  async findAll(): Promise<IReview> {
+  async findAll(): Promise<IReview | HttpException> {
     try {
-      const reviews = await Review.findAll({
+      const reviews = await this.reviewModel.findAll({
         include: {
           model: User,
           attributes: ['firstName', 'lastName'],
@@ -59,28 +60,29 @@ export class ReviewsService {
 
       if (!reviews.length)
         throw new NotFoundException('No se encontraron reseñas activas');
+
       return { statusCode: 200, data: reviews };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 
-  async update(updateReviewDto: UpdateReviewDto): Promise<IReview> {
+  async update(updateReviewDto: UpdateReviewDto): Promise<IReview | HttpException> {
     try {
       //Update
-      const count = await Review.update(updateReviewDto, {
+      const count = await this.reviewModel.update(updateReviewDto, {
         where: {
           id: updateReviewDto.reviewId,
         },
       });
-      console.log(count, '<------- count');
+
       if (count[0] === 0)
         throw new BadRequestException(
           'No se pudo actualizar la reseña, revisar el id enviado',
         );
 
       //Get review
-      const newReview = await Review.findOne({
+      const newReview = await this.reviewModel.findOne({
         include: {
           model: User,
           attributes: ['firstName', 'lastName'],
@@ -91,20 +93,17 @@ export class ReviewsService {
         },
       });
 
-      if (!newReview)
-        throw new NotFoundException('No existe una reseña con ese id');
-
       return { statusCode: 200, data: newReview };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 
   async removeOrActivate(
     activateReviewDto: ActivateReviewDto,
-  ): Promise<IReview> {
+  ): Promise<IReview | HttpException> {
     try {
-      const count = await Review.update(
+      const count = await this.reviewModel.update(
         { active: activateReviewDto.activate },
         {
           where: {
@@ -122,7 +121,7 @@ export class ReviewsService {
         data: `${count[0]} reseñas fueron actualizadas`,
       };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      return new HttpException(error.message, error.status);
     }
   }
 }

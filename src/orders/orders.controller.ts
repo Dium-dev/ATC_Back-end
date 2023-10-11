@@ -49,6 +49,7 @@ export class OrdersController {
   @Post()
   async create(
   @GetUser() user: UserChangePasswordDto,
+    @Body() createOrderDto: CreateOrderDto,
   ) {
     const { userId } = user;
     const response = await this.ordersService.create(userId);
