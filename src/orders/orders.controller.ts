@@ -4,6 +4,7 @@ import {
   Post,
   Param,
   UseGuards,
+  Body
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';

@@ -5,11 +5,21 @@ import { User } from 'src/users/entities/user.entity';
 import { Payment, PaymentState } from './entities/payment.entity';
 import { Order, OrderStateEnum } from 'src/orders/entities/order.entity';
 import { CreatePreferencePayload } from 'mercadopago/models/preferences/create-payload.model';
+import { UsersService } from '../users/users.service'; // Importa el servicio de usuarios
+import { MailService } from '../mail/mail.service'; // Importa el servicio de correo
+import { Cases } from 'src/mail/dto/sendMail.dto';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { IPurchaseContext } from '../mail/interfaces/purchase-context.interface';
+import { Product } from 'src/products/entities/product.entity';
+
 mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
 export class PaymentsService {
-  constructor() {
+  constructor(
+    private readonly mailsService: MailService,
+    private readonly usersService: UsersService,
+  ) {
     mercadopago.configure({
       access_token: process.env.ACCESS_TOKEN,
     });
@@ -77,7 +87,37 @@ export class PaymentsService {
         payment.state = PaymentState.FAILED;
     await payment.save();
 
-    return `the orden of state is:${state}`;
+    if (state === 'success') {
+    const order = await Order.findByPk(orderId);
+    const user = await User.findByPk(order.userId);
+
+    const products = await Product.findAll({
+      include: [
+        {
+          model: Order,
+          where: { id: order.id },
+          through: { attributes: ['amount', 'price'] },
+        },
+      ],
+    });
+
+    const context: IPurchaseContext = {
+      name: user.firstName,
+      productName: products[0].title, // Suponiendo que solo hay un producto en la orden
+      price: products[0].price, // Suponiendo que solo hay un producto en la orden
+      purchaseDate: order.createdAt.toISOString(), // Fecha de creación de la orden
+    };
+
+  const mailData = {
+    addressee: user.email,
+    subject: Cases.PURCHASE,
+    context: context,
+  };
+
+    await this.mailsService.sendMails(mailData); 
+    }
+
+    return `El estado de la orden es:${state}`;
   }
 
   async actualizeOrder(paymentid: number, orderId: string) {
