@@ -5,11 +5,20 @@ import { User } from 'src/users/entities/user.entity';
 import { Payment, PaymentState } from './entities/payment.entity';
 import { Order, OrderStateEnum } from 'src/orders/entities/order.entity';
 import { CreatePreferencePayload } from 'mercadopago/models/preferences/create-payload.model';
+import { UsersService } from '../users/users.service'; // Importa el servicio de usuarios
+import { MailService } from '../mail/mail.service'; // Importa el servicio de correo
+import { Cases } from 'src/mail/dto/sendMail.dto';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { IPurchaseContext } from '../mail/interfaces/purchase-context.interface';
+import { Product } from 'src/products/entities/product.entity';
+
 mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
 export class PaymentsService {
-  constructor() {
+  constructor(
+    private readonly mailsService: MailService,
+  ) {
     mercadopago.configure({
       access_token: process.env.ACCESS_TOKEN,
     });
@@ -37,7 +46,7 @@ export class PaymentsService {
           failure: `http://localhost:3000/payments/failure/${orderId}`,
           pending: `http://localhost:3000/payments/pending/${orderId}`,
         },
-        notification_url: `https://4f88-190-173-189-49.ngrok-free.app/payments/webhook/${orderId}`,
+        notification_url: `https://430b-2802-8010-8200-ee00-b58b-b516-5a1e-f60.ngrok-free.app/payments/webhook/${orderId}`,
       };
       // Crea la preferencia en Mercado Pago
       const response = await mercadopago.preferences.create(preference);
@@ -77,7 +86,8 @@ export class PaymentsService {
         payment.state = PaymentState.FAILED;
     await payment.save();
 
-    return `the orden of state is:${state}`;
+    if (state == 'success') {}
+    return `El estado de la orden es:${state}`;
   }
 
   async actualizeOrder(paymentid: number, orderId: string) {
@@ -85,10 +95,48 @@ export class PaymentsService {
       const payment = await mercadopago.payment.findById(paymentid);
 
       const status = payment.body.status;
+      const cuotes = payment.body.installments;
+      const cuotesValue = payment.body.transaction_details.installment_amount;
 
-      if (status == 'approved') await this.actualizePayment('success', orderId);
       if (status == 'rejected') await this.actualizePayment('failure', orderId);
       if (status == 'in_process') await this.actualizePayment('pending', orderId);
+      if (status == 'approved') {
+        const order = await Order.findByPk(orderId);
+        const user = await User.findByPk(order.userId);
+
+        const products = await Product.findAll({
+          include: [
+            {
+              model: Order,
+              where: { id: order.id },
+              through: { attributes: ['amount', 'price'] },
+            },
+          ],
+        });
+
+        const context: IPurchaseContext = {
+          name: user.firstName,
+          products: products.map(({ title, price }) => {
+            return {
+              productName: title,
+              price,
+            };
+          }),
+          total: payment.body.transaction_details.total_paid_amount,
+          purchaseDate: order.createdAt, // Fecha de creación de la orden
+          cuotes,
+          cuotesValue,
+        };
+
+        const mailData = {
+          addressee: user.email,
+          subject: Cases.PURCHASE,
+          context: context,
+        };
+
+        await this.mailsService.sendMails(mailData);
+        await this.actualizePayment('success', orderId);
+      }
     } catch (error) {
       console.log(error.message);
       throw error;
