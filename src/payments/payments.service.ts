@@ -46,7 +46,7 @@ export class PaymentsService {
           failure: `http://localhost:3000/payments/failure/${orderId}`,
           pending: `http://localhost:3000/payments/pending/${orderId}`,
         },
-        notification_url: `https://430b-2802-8010-8200-ee00-b58b-b516-5a1e-f60.ngrok-free.app/payments/webhook/${orderId}`,
+        notification_url: `https://af6f-190-173-138-188.ngrok-free.app/payments/webhook/${orderId}`, //Cambiar por el host del servidor deployado
       };
       // Crea la preferencia en Mercado Pago
       const response = await mercadopago.preferences.create(preference);
