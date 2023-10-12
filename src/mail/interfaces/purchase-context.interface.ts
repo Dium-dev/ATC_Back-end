@@ -5,5 +5,7 @@ export interface IPurchaseContext {
     price: number;
   }[];
   purchaseDate: string;
-  total: number
+  cuotes: number;
+  cuotesValue: number;
+  total: number;
 }

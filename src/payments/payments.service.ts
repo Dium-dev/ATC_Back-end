@@ -95,6 +95,8 @@ export class PaymentsService {
       const payment = await mercadopago.payment.findById(paymentid);
 
       const status = payment.body.status;
+      const cuotes = payment.body.installments;
+      const cuotesValue = payment.body.transaction_details.installment_amount;
 
       if (status == 'rejected') await this.actualizePayment('failure', orderId);
       if (status == 'in_process') await this.actualizePayment('pending', orderId);
@@ -122,6 +124,8 @@ export class PaymentsService {
           }),
           total: payment.body.transaction_details.total_paid_amount,
           purchaseDate: order.createdAt, // Fecha de creación de la orden
+          cuotes,
+          cuotesValue,
         };
 
         const mailData = {
