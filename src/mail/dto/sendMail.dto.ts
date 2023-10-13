@@ -8,11 +8,15 @@ import {
 import { IResetPasswordContext } from '../interfaces/reset-password-context.interface';
 import { ICreateUserContext } from '../interfaces/create-account-context.interface';
 import {IPurchaseContext} from '../interfaces/purchase-context.interface';
+import{IContactFormAdminContext} from '../interfaces/contact-form-admin-context.interface';
+import{IContactFormUserContext} from '../interfaces/contact-form-user-cotext.interface';
 
 export enum Cases {
   RESET_PASSWORD = 'RESET_PASSWORD',
   CREATE_ACCOUNT = 'CREATE_ACCOUNT',
-  PURCHASE = 'PURCHASE'
+  PURCHASE = 'PURCHASE',
+  CONTACT_FORM_ADMIN = 'CONTACT_FORM_ADMIN',
+  CONTACT_FORM_USER = 'CONTACT_FORM_USER'
 }
 
 //Por si no es necesario el 'context'
