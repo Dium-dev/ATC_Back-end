@@ -1,14 +1,18 @@
 import * as mercadopago from 'mercadopago';
 import { ACCESS_TOKEN } from 'src/config/env';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { Payment, PaymentState } from './entities/payment.entity';
 import { Order, OrderStateEnum } from 'src/orders/entities/order.entity';
+import { UsersService } from 'src/users/users.service';
 mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
 export class PaymentsService {
-  constructor() {
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+  ) {
     mercadopago.configure({
       access_token: process.env.ACCESS_TOKEN,
     });
@@ -16,7 +20,7 @@ export class PaymentsService {
 
   async createPayment(amount: number,  userId: string, orderId?: string) {
     try {
-      const user = await User.findByPk(userId);
+      const user = await this.userService.findByPkGenericUser(userId, {});
       // Crea un objeto de preferencia con los detalles del pago
       const preference = {
         items: [

@@ -1,12 +1,18 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { DirectionsService } from './directions.service';
 import { DireetionsController } from './directions.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Direction } from './entities/direction.entity';
+import { UsersService } from 'src/users/users.service';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Direction])],
+  imports: [
+    forwardRef(() => UsersModule),
+    SequelizeModule.forFeature([Direction])
+  ],
   controllers: [DireetionsController],
-  providers: [DirectionsService],
+  providers: [DirectionsService, /* UsersService */],
+  exports: [DirectionsService]
 })
-export class DireetionsModule {}
+export class DirectionsModule {}

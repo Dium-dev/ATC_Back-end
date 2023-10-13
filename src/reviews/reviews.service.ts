@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   HttpException,
+  Inject,
+  forwardRef,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,20 +13,20 @@ import { Review } from './entities/review.entity';
 import { User } from 'src/users/entities/user.entity';
 import { IReview } from './interfaces/response-review.interface';
 import { ActivateReviewDto } from './dto/activate-review.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ReviewsService {
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+  ) { }
+
   async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview> {
     try {
-      const user = await User.findOne({
-        where: {
-          id: id,
-        },
-      });
+      const user = await this.userService.findByPkGenericUser(id, {})
 
-      if (!user) throw new NotFoundException('No existe un usuario con ese id');
-
-      const Newreview = (await user).$create('review', createReviewDto);
+      const Newreview = await user.$create('review', createReviewDto);
       if (!Newreview)
         throw new InternalServerErrorException(
           'Algo salió mal al momento de crear la reseña',

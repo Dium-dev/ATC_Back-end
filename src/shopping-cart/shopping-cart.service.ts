@@ -191,7 +191,7 @@ export class ShoppingCartService {
 
   async getCart(userId: string) {
     try {
-      const user = await this.userService.findOneGenericUser(userId, {
+      const user = await this.userService.findByPkGenericUser(userId, {
         include: [{
           model: ShoppingCart,
         }],

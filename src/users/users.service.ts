@@ -20,8 +20,12 @@ import { MailService } from 'src/mail/mail.service';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
-import { FindOptions } from 'sequelize';
+import { FindOptions, or } from 'sequelize';
 import { EModelsTable } from 'src/utils/custom/EmodelsTable.enum';
+import { DirectionsService } from 'src/directions/directions.service';
+import { ReviewsService } from 'src/reviews/reviews.service';
+import { OrdersService } from 'src/orders/orders.service';
+import { PaymentsService } from 'src/payments/payments.service';
 
 @Injectable()
 export class UsersService {
@@ -34,6 +38,14 @@ export class UsersService {
     private mailsService: MailService,
     @Inject(forwardRef(() => ShoppingCartService))
     private shopCartService: ShoppingCartService,
+    @Inject(forwardRef(() => DirectionsService))
+    private directionService: DirectionsService,
+    @Inject(forwardRef(() => ReviewsService))
+    private reviewService: ReviewsService,
+    @Inject(forwardRef(() => OrdersService))
+    private orderService: OrdersService,
+    @Inject(forwardRef(() => PaymentsService))
+    private paymentService: PaymentsService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
@@ -288,10 +300,10 @@ export class UsersService {
       }
     }
   
-    public async findOneGenericUser(userId: string, options: FindOptions) {
+    public async findByPkGenericUser(userId: string, options: FindOptions) {
       try {
         const genericResponseUser = await User.findByPk(userId, options)
-        if (!genericResponseUser) throw new BadRequestException('No se encontro al usuario al consultar por su carrito de compras')
+        if (!genericResponseUser) throw new BadRequestException('No ha sido posible encontro al usuario')
         return genericResponseUser;
       } catch (error) {
         switch (error.constructor) {

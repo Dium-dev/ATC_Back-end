@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   HttpException,
+  Inject,
+  forwardRef,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -17,13 +19,16 @@ import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
 import { PaymentsService } from 'src/payments/payments.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly shoppingCartService: ShoppingCartService,
     private readonly paymentsService: PaymentsService,
-  ) {}
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+  ) { }
 
   async findOneOrder(id: string) {
     try {
@@ -96,7 +101,7 @@ export class OrdersService {
     userId: string,
   ): Promise<object> {
     //Obtenemos el id del carrito del usuario que realiza la peticion
-    const { cart } = await User.findByPk(userId, {
+    const { cart } = await this.userService.findByPkGenericUser(userId, {
       include: [{
         model: ShoppingCart,
       }],
@@ -136,7 +141,7 @@ export class OrdersService {
     }
   }
 
-  async findAll(getAllOrdersDto: GetAllOrdersDto):Promise<IGetOrders> {
+  async findAll(getAllOrdersDto: GetAllOrdersDto): Promise<IGetOrders> {
     try {
       const { page, status } = getAllOrdersDto;
       //Preparing requirements for querying data using the method findAndCountAll
@@ -148,13 +153,13 @@ export class OrdersService {
       } = this.generateObject(getAllOrdersDto);
 
       //Querying
-      const { rows:orders, count:totalOrders } = await Order.findAndCountAll({
+      const { rows: orders, count: totalOrders } = await Order.findAndCountAll({
         limit,
         offset,
         order,
         attributes,
-        where:{
-          state:{
+        where: {
+          state: {
             [Op.or]: status,
           },
         },
@@ -164,21 +169,21 @@ export class OrdersService {
 
       const totalPages = Math.ceil(totalOrders / limit);
 
-      return { statusCode:200, data: { orders, totalOrders, totalPages, page } };
+      return { statusCode: 200, data: { orders, totalOrders, totalPages, page } };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
   //Method used to prepare query data
-  generateObject(getAllOrders:GetAllOrdersDto) {
+  generateObject(getAllOrders: GetAllOrdersDto) {
     //Returns an array of type:['created_at','ASC']
     const newOrder = getAllOrders.order.split(' ');
     const queryObject = {
       limit: getAllOrders.limit,
       offset: (getAllOrders.page - 1) * getAllOrders.limit,
       order: [],
-      attributes:['id', 'state', 'created_at'],
+      attributes: ['id', 'state', 'created_at'],
     };
 
     queryObject.order.push([newOrder[0], newOrder[1]]);

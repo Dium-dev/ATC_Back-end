@@ -9,11 +9,19 @@ import { AuthService } from 'src/auth/auth.service';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { MailService } from 'src/mail/mail.service';
 import { ShoppingCartModule } from 'src/shopping-cart/shopping-cart.module';
+import { DirectionsModule } from 'src/directions/directions.module';
+import { ReviewsModule } from 'src/reviews/reviews.module';
+import { OrdersModule } from 'src/orders/orders.module';
+import { PaymentsModule } from 'src/payments/payments.module';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
     forwardRef(() => ShoppingCartModule),
+    forwardRef(() => DirectionsModule),
+    forwardRef(() => ReviewsModule),
+    forwardRef(() => OrdersModule),
+    forwardRef(() => PaymentsModule),
     SequelizeModule.forFeature([User, Direction, ShoppingCart]),
   ],
   providers: [UsersService, AuthService, MailService],
