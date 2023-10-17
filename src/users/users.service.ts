@@ -26,6 +26,7 @@ import { DirectionsService } from 'src/directions/directions.service';
 import { ReviewsService } from 'src/reviews/reviews.service';
 import { OrdersService } from 'src/orders/orders.service';
 import { PaymentsService } from 'src/payments/payments.service';
+import { GenericPaginateUserInt } from './interfaces/genericsIntUsers.interface';
 
 @Injectable()
 export class UsersService {
@@ -229,11 +230,13 @@ export class UsersService {
 
   async getAll(page: number, limit: number) {
     try {
-      page --;
+      page--;
       const allUsers = await this.userModel.findAll();
       const limitOfPages = Math.ceil(allUsers.length / limit);
 
-      if (page < 0 || page > limitOfPages) { throw new HttpException('This page not exist.', 400);}
+      if (page < 0 || page > limitOfPages) {
+        throw new HttpException('This page not exist.', 400);
+      }
 
       return {
         prevPage: page === 0 ? null : page - 1,
@@ -267,55 +270,77 @@ export class UsersService {
     }
   }
 
+  /* Public functions a utilizar en diferentes modulos */
 
-    /* Public functions a utilizar en diferentes modulos */
-
-    public async genericUser(method: EModelsTable, options: FindOptions) {
-      try {
-        const genericResponseUser = await User[method](options);
-        if (!genericResponseUser) throw new BadRequestException(`No se encontraron datos para la solucitud de tipo ${method}`)
-        return genericResponseUser;
-      } catch (error) {
-        switch (error.constructor) {
-          case BadRequestException:
-            throw new BadRequestException(error.message)
-          default:
-            throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ${method}`)
-        }
+  public async genericUser(
+    method: EModelsTable,
+    options: FindOptions,
+  ): Promise<User[] | User> {
+    try {
+      const genericResponseUser = await User[method](options);
+      if (!genericResponseUser)
+        throw new BadRequestException(
+          `No se encontraron datos para la solucitud de tipo ${method}`,
+        );
+      return genericResponseUser;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            `Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ${method}`,
+          );
       }
     }
-    
-    public async findAndCountAllGenericUser(options: FindOptions) {
-      try {
-        const genericResponseUser = await User.findAndCountAll(options);
-        if (!genericResponseUser) throw new BadRequestException(`No se encontraron datos para la solucitud de tipo findAndCountAll`)
-        return genericResponseUser;
-      } catch (error) {
-        switch (error.constructor) {
-          case BadRequestException:
-            throw new BadRequestException(error.message)
-          default:
-            throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por findAndCountAll`)
-        }
+  }
+
+  public async findAndCountAllGenericUser(
+    options: FindOptions,
+    page: number,
+  ): Promise<GenericPaginateUserInt> {
+    try {
+      const genericResponseUser = await User.findAndCountAll(options);
+      if (!genericResponseUser)
+        throw new BadRequestException(
+          'No se encontraron datos para la solucitud de tipo findAndCountAll',
+        );
+      return {
+        data: genericResponseUser.rows,
+        page,
+        totalPages: Math.ceil(genericResponseUser.count / options.limit),
+        totalUsers: genericResponseUser.count,
+      };
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrio un error al trabajar la entidad usuario a la hora de indagar por findAndCountAll',
+          );
       }
     }
-  
-    public async findByPkGenericUser(userId: string, options: FindOptions) {
-      try {
-        const genericResponseUser = await User.findByPk(userId, options)
-        if (!genericResponseUser) throw new BadRequestException('No ha sido posible encontro al usuario')
-        return genericResponseUser;
-      } catch (error) {
-        switch (error.constructor) {
-          case BadRequestException:
-            throw new BadRequestException(error.message)
-          default:
-            throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ususario particular`)
-        }
+  }
+
+  public async findByPkGenericUser(
+    userId: string,
+    options: FindOptions,
+  ): Promise<User> {
+    try {
+      const genericResponseUser = await User.findByPk(userId, options);
+      if (!genericResponseUser)
+        throw new BadRequestException('No ha sido posible encontro al usuario');
+      return genericResponseUser;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ususario particular',
+          );
       }
-  
     }
-  
-
-
+  }
 }

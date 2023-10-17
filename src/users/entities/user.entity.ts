@@ -40,38 +40,38 @@ export class User extends Model<User> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    firstName: string;
+  firstName: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    lastName: string;
+  lastName: string;
 
   @Column({
     type: DataType.STRING,
     unique: true,
     allowNull: false,
   })
-    email: string;
+  email: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    password: string;
+  password: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    phone: string;
+  phone: string;
 
   @Column({
     type: DataType.ENUM({
@@ -80,20 +80,20 @@ export class User extends Model<User> {
     defaultValue: Rol.user,
     allowNull: false,
   })
-    rol: Rol;
+  rol: Rol;
 
   @Column({})
-    isActive: boolean;
+  isActive: boolean;
 
   @HasMany(() => Direction, { onDelete: 'CASCADE', hooks: true })
-    directions: Direction[];
+  directions: Direction[];
 
   @HasOne(() => ShoppingCart, { onDelete: 'CASCADE', hooks: true })
-    cart: ShoppingCart;
+  cart: ShoppingCart;
 
   @HasOne(() => Review, { onDelete: 'CASCADE', hooks: true })
-    review: Review;
+  review: Review;
 
   @HasMany(() => Order, { onDelete: 'CASCADE', hooks: true })
-    orders: Order;
+  orders: Order[];
 }

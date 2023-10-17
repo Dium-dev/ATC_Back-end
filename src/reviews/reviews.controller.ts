@@ -30,7 +30,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 import { IReview } from './interfaces/response-review.interface';
-import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -59,8 +58,8 @@ export class ReviewsController {
   //Controller------------------------------------------------------------------------------
   async create(
     @GetUser() user: UserChangePasswordDto,
-      @Body() createReviewDto: CreateReviewDto,
-  ): Promise<IReview | IError> {
+    @Body() createReviewDto: CreateReviewDto,
+  ): Promise<IReview> {
     //Se extrae el id del objeto req.user que nos retorna el decorador @GetUser
     const { userId } = user;
     const response = await this.reviewsService.create(userId, createReviewDto);
@@ -83,7 +82,7 @@ export class ReviewsController {
     description: 'Hubo un problema en el servidor',
   })
   //Controller------------------------------------------------------------------
-  async findAll(): Promise<IReview | IError> {
+  async findAll(): Promise<IReview> {
     const response = await this.reviewsService.findAll();
     return response;
   }
@@ -104,9 +103,7 @@ export class ReviewsController {
       'Hubo un error en el servidor al momento de actualizar la review. Revisa una vez más los datos enviados',
   })
   //Controller-----------------------------------------------------------------
-  async update(
-    @Body() updateReviewDto: UpdateReviewDto,
-  ): Promise<IReview | IError> {
+  async update(@Body() updateReviewDto: UpdateReviewDto): Promise<IReview> {
     const response = await this.reviewsService.update(updateReviewDto);
     return response;
   }
@@ -123,9 +120,7 @@ export class ReviewsController {
     description:
       'Si todo sale bien, obtendrás el número de reviews actualizadas',
   })
-  async remove(
-    @Body() activateReview: ActivateReviewDto,
-  ): Promise<IReview | IError> {
+  async remove(@Body() activateReview: ActivateReviewDto): Promise<IReview> {
     const response = await this.reviewsService.removeOrActivate(activateReview);
     return response;
   }

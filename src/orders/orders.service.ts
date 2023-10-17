@@ -28,7 +28,7 @@ export class OrdersService {
     private readonly paymentsService: PaymentsService,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
-  ) { }
+  ) {}
 
   async findOneOrder(id: string) {
     try {
@@ -97,17 +97,19 @@ export class OrdersService {
   }
 
   //Crear Orden
-  async create(
-    userId: string,
-  ): Promise<object> {
+  async create(userId: string): Promise<object> {
     //Obtenemos el id del carrito del usuario que realiza la peticion
     const { cart } = await this.userService.findByPkGenericUser(userId, {
-      include: [{
-        model: ShoppingCart,
-      }],
+      include: [
+        {
+          model: ShoppingCart,
+        },
+      ],
     });
     //Aqui obtenemos el monto total y los productos para realizar la orden
-    const { total, products } = await this.shoppingCartService.getCartProducts(cart.id);
+    const { total, products } = await this.shoppingCartService.getCartProducts(
+      cart.id,
+    );
 
     try {
       const newOrder = await Order.create({
@@ -118,7 +120,6 @@ export class OrdersService {
       if (!newOrder) {
         throw new InternalServerErrorException('Algo salió mal en el servidor');
       } else {
-
         for (const product of products) {
           await OrderProduct.create({
             orderId: newOrder.id,
@@ -128,7 +129,11 @@ export class OrdersService {
           });
         }
 
-        const urlBuy = await this.paymentsService.createPayment(total, userId, newOrder.id);
+        const urlBuy = await this.paymentsService.createPayment(
+          total,
+          userId,
+          newOrder.id,
+        );
 
         return {
           statusCode: 201,
@@ -145,12 +150,8 @@ export class OrdersService {
     try {
       const { page, status } = getAllOrdersDto;
       //Preparing requirements for querying data using the method findAndCountAll
-      const {
-        limit,
-        offset,
-        order,
-        attributes,
-      } = this.generateObject(getAllOrdersDto);
+      const { limit, offset, order, attributes } =
+        this.generateObject(getAllOrdersDto);
 
       //Querying
       const { rows: orders, count: totalOrders } = await Order.findAndCountAll({
@@ -165,11 +166,15 @@ export class OrdersService {
         },
       });
 
-      if (!orders.length) throw new NotFoundException('No se encontraron órdenes en esta página');
+      if (!orders.length)
+        throw new NotFoundException('No se encontraron órdenes en esta página');
 
       const totalPages = Math.ceil(totalOrders / limit);
 
-      return { statusCode: 200, data: { orders, totalOrders, totalPages, page } };
+      return {
+        statusCode: 200,
+        data: { orders, totalOrders, totalPages, page },
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }

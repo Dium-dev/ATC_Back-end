@@ -20,8 +20,7 @@ export class CreateOrderDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-    total: number;
-
+  total: number;
 
   @IsArray({
     message: '$property debe ser un array válido',
@@ -33,5 +32,5 @@ export class CreateOrderDto {
     each: true,
   })
   @Type(() => AmountPricePerProduct)
-    products: AmountPricePerProduct[];
+  products: AmountPricePerProduct[];
 }

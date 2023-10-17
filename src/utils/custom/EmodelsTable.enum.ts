@@ -1,4 +1,4 @@
 export enum EModelsTable {
-    findAll = 'findAll',
-    findOne = 'findOne',
+  findAll = 'findAll',
+  findOne = 'findOne',
 }

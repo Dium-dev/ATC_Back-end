@@ -18,7 +18,7 @@ export class PaymentsService {
     });
   }
 
-  async createPayment(amount: number,  userId: string, orderId?: string) {
+  async createPayment(amount: number, userId: string, orderId?: string) {
     try {
       const user = await this.userService.findByPkGenericUser(userId, {});
       // Crea un objeto de preferencia con los detalles del pago
@@ -67,15 +67,19 @@ export class PaymentsService {
 
   async actualizePayment(state: string, orderId: string) {
     const order = await Order.findByPk(orderId);
-    state == 'success' ? order.state = OrderStateEnum.PAGO :
-      state == 'pending' ? order.state = OrderStateEnum.PENDIENTE :
-        await order.destroy();
+    state == 'success'
+      ? (order.state = OrderStateEnum.PAGO)
+      : state == 'pending'
+      ? (order.state = OrderStateEnum.PENDIENTE)
+      : await order.destroy();
     await order.save();
 
     const payment = await Payment.findOne({ where: { orderId } });
-    state == 'success' ? payment.state = PaymentState.SUCCESS :
-      state == 'pending' ? payment.state = PaymentState.PENDING :
-        await payment.destroy();
+    state == 'success'
+      ? (payment.state = PaymentState.SUCCESS)
+      : state == 'pending'
+      ? (payment.state = PaymentState.PENDING)
+      : await payment.destroy();
     await payment.save();
 
     return `the orden of state is:${state}`;

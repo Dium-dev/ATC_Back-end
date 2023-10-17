@@ -20,11 +20,11 @@ export class ReviewsService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
-  ) { }
+  ) {}
 
   async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview> {
     try {
-      const user = await this.userService.findByPkGenericUser(id, {})
+      const user = await this.userService.findByPkGenericUser(id, {});
 
       const Newreview = await user.$create('review', createReviewDto);
       if (!Newreview)

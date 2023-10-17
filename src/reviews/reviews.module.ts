@@ -4,11 +4,9 @@ import { ReviewsController } from './reviews.controller';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [
-    forwardRef(() => UsersModule),
-  ],
+  imports: [forwardRef(() => UsersModule)],
   controllers: [ReviewsController],
   providers: [ReviewsService],
-  exports: [ReviewsService]
+  exports: [ReviewsService],
 })
 export class ReviewsModule {}

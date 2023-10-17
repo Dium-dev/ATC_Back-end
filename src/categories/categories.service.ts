@@ -6,11 +6,10 @@ import {
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Categories } from './entities/category.entity';
-import { IError } from 'src/utils/interfaces/error.interface';
 
 @Injectable()
 export class CategoriesService {
-  async findAllCategories(): Promise<{ id: string; name: string }[] | IError> {
+  async findAllCategories(): Promise<{ id: string; name: string }[]> {
     try {
       const allCategories = await Categories.findAll();
       if (!allCategories.length)

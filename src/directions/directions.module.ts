@@ -9,10 +9,10 @@ import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     forwardRef(() => UsersModule),
-    SequelizeModule.forFeature([Direction])
+    SequelizeModule.forFeature([Direction]),
   ],
   controllers: [DireetionsController],
-  providers: [DirectionsService, /* UsersService */],
-  exports: [DirectionsService]
+  providers: [DirectionsService /* UsersService */],
+  exports: [DirectionsService],
 })
 export class DirectionsModule {}

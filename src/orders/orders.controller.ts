@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Post,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Body, Post, Param, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -45,19 +38,22 @@ export class OrdersController {
     return response;
   }
 
-  @ApiOperation({ summary: 'Crear orden', description: 'Es necesario tener un producto en el carrito.' })
+  @ApiOperation({
+    summary: 'Crear orden',
+    description: 'Es necesario tener un producto en el carrito.',
+  })
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(
-  @GetUser() user: UserChangePasswordDto,
-  ) {
+  async create(@GetUser() user: UserChangePasswordDto) {
     const { userId } = user;
     const response = await this.ordersService.create(userId);
     return response;
   }
 
   @Get()
-  async getAllOrders(@Body() getAllOrders:GetAllOrdersDto):Promise<IGetOrders> {
+  async getAllOrders(
+    @Body() getAllOrders: GetAllOrdersDto,
+  ): Promise<IGetOrders> {
     const response = await this.ordersService.findAll(getAllOrders);
     return response;
   }

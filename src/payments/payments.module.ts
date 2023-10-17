@@ -4,9 +4,7 @@ import { PaymentsController } from './payments.controller';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports:[
-    forwardRef(() => UsersModule)
-  ],
+  imports: [forwardRef(() => UsersModule)],
   controllers: [PaymentsController],
   providers: [PaymentsService],
   exports: [PaymentsService],
