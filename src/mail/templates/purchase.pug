@@ -12,7 +12,14 @@ html(lang='es')
         <h2 style='color: red; text-align:left'>¡Hola #{name}!</h2>
         <p style='color:black; text-align:left'>Le notificamos que su compra en nuestra plataforma se llevo a cabo con éxito.</p>
         <p style='color:black; text-align:left'>Gracias por confiar en nuestros productos y servicios. A continuación, podrá ver más detalles de la transacción y la orden</p>
-        // Poner acá una tabla o link donde se puedan ver los dichos datos
+        ul
+            each product in products
+                li
+                    | Producto: #{product.productName}, Precio: $#{product.price}
+
+        p(style='color:black; text-align:left') <b>Valor total:</b> $#{total}
+        p(style='color:black; text-align:left') <b>Plan de pago:</b> #{cuotes} cuotas de $#{cuotesValue}
+        p(style='color:black; text-align:left') <b>Fecha de compra:</b> #{purchaseDate}
     </article>
     footer
         <p style='color:black; text-align:left'>No responda a este remitente</p>
