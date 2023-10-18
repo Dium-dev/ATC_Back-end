@@ -42,7 +42,7 @@ export class Order extends Model<Order> {
   @Column({
     type: DataType.ENUM(...Object.values(OrderStateEnum)),
     allowNull: false,
-    defaultValue: OrderStateEnum.ENPROCESO,
+    defaultValue: OrderStateEnum.PENDIENTE,
   })
     state: OrderStateEnum;
 
