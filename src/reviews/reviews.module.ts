@@ -8,7 +8,7 @@ import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     forwardRef(() => UsersModule),
-    SequelizeModule.forFeature([ Review ])],
+    SequelizeModule.forFeature([ Review ])
   ],
   controllers: [ReviewsController],
   providers: [ReviewsService],

@@ -13,11 +13,9 @@ import { User } from 'src/users/entities/user.entity';
 
 export enum OrderStateEnum {
   PAGO = 'PAGO',
-  PENDIENTE = 'EN PROCESO',
-  APROVADO = 'APROVADO',
-  PAGO = 'PAGO',
   RECHAZADO = 'RECHAZADO',
   DESPACHO = 'EN DESPACHO',
+  PENDIENTE = 'EN PROCESO',
   ENTREGADO = 'ENTREGADO',
 }
 

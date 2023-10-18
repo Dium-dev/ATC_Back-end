@@ -24,11 +24,11 @@ export class ReviewsService {
     private userService: UsersService,
   ) {}
 
-  async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview> {
+  async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview | HttpException> {
     try {
       const user = await this.userService.findByPkGenericUser(id, {});
 
-        const newReview = await this.reviewModel.create({
+        const Newreview = await this.reviewModel.create({
         ...createReviewDto,
         userId:id,
       });
@@ -40,7 +40,7 @@ export class ReviewsService {
 
       const response = {
         statusCode: 201,
-        data: newReview,
+        data: Newreview,
       };
       return response;
     } catch (error) {
