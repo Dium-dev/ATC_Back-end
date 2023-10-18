@@ -1,9 +1,9 @@
-import { IsNumber, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { OrderStateEnum } from '../entities/order.entity';
 
 export class UpdateOrderDto {
-  @IsNumber({}, {
-    message: '$property debe ser número, en cambio enviaste: $value',
+  @IsUUID(4, {
+    message: '$property debe ser un uuid, en cambio enviaste: $value',
   })
   @IsNotEmpty({
     message: '$property no puede estar vacío',

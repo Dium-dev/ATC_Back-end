@@ -140,20 +140,13 @@ export class OrdersService {
 
       order.state = updateDto.OrderStateEnum;
       order.save();
+
       return {
         statusCode: 200,
         message: 'Orden actualizada',
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException('Orden no encontrada');
-      } else if (error instanceof ForbiddenException) {
-        throw new ForbiddenException(
-          'No se permite cambiar la orden a este estado',
-        );
-      } else {
-        throw new InternalServerErrorException('Error del servidor');
-      }
+      throw new HttpException(error.message, error.status);
     }
   }
 }

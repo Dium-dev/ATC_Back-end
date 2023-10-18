@@ -49,8 +49,8 @@ export class OrdersController {
 
   //Actualizar el estado de una orden
   @Patch()
-  async updateOneOrder(@Body() updateDto: UpdateOrderDto) {
-    const response = await this.updateOneOrder(updateDto);
+  async patchUpdateStateOrder(@Body() updateDto: UpdateOrderDto) {
+    const response = await this.ordersService.updateStateOrder(updateDto);
     return response;
   }
 }
