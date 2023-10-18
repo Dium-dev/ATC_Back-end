@@ -7,11 +7,12 @@ import {
 } from 'class-validator';
 import { IResetPasswordContext } from '../interfaces/reset-password-context.interface';
 import { ICreateUserContext } from '../interfaces/create-account-context.interface';
+import {IPurchaseContext} from '../interfaces/purchase-context.interface';
 
 export enum Cases {
   RESET_PASSWORD = 'RESET_PASSWORD',
   CREATE_ACCOUNT = 'CREATE_ACCOUNT',
-  PURCHASE = 'PURCHASE',
+  PURCHASE = 'PURCHASE'
 }
 
 //Por si no es necesario el 'context'
@@ -39,5 +40,5 @@ export class SendMailDto {
   @IsDefined({
     message: '$property debe estar definido, revisa los parámetros requeridos',
   })
-  context: IResetPasswordContext | ICreateUserContext | INotSend;
+    context: IResetPasswordContext | ICreateUserContext | IPurchaseContext | INotSend;
 }

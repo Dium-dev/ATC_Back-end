@@ -57,6 +57,13 @@ export class MailService {
             subject: 'Nueva compra.',
             template: Templates.purchase,
             context: context,
+            attachments: [
+              {
+                filename: 'ATCarroLogo.png',
+                path: './src/public/ATCarroLogo.png',
+                cid: 'headerATCLogo',
+              },
+            ],
           });
           break;
       }

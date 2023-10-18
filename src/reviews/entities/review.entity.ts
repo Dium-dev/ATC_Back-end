@@ -8,7 +8,7 @@ import {
   CreatedAt,
   UpdatedAt,
 } from 'sequelize-typescript';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum Rating {
   zero = '0',
@@ -30,7 +30,7 @@ export enum Rating {
   timestamps: true,
   paranoid: true,
 })
-export class Review extends Model {
+export class Review extends Model<Review> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -46,9 +46,7 @@ export class Review extends Model {
   review: string;
 
   @Column({
-    type: DataType.ENUM({
-      values: ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
-    }),
+    type: DataType.ENUM(...Object.values(Rating)), //['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],),
     defaultValue: Rating.zero,
     allowNull: false,
   })

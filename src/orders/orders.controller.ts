@@ -1,4 +1,11 @@
-import { Controller, Get, Body, Post, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseGuards,
+  Body
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -44,7 +51,10 @@ export class OrdersController {
   })
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@GetUser() user: UserChangePasswordDto) {
+  async create(
+  @GetUser() user: UserChangePasswordDto,
+    @Body() createOrderDto: CreateOrderDto,
+  ) {
     const { userId } = user;
     const response = await this.ordersService.create(userId);
     return response;

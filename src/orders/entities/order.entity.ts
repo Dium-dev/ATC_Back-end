@@ -15,6 +15,8 @@ export enum OrderStateEnum {
   PAGO = 'PAGO',
   PENDIENTE = 'EN PROCESO',
   APROVADO = 'APROVADO',
+  PAGO = 'PAGO',
+  RECHAZADO = 'RECHAZADO',
   DESPACHO = 'EN DESPACHO',
   ENTREGADO = 'ENTREGADO',
 }
