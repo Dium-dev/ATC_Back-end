@@ -25,6 +25,12 @@ export class ExcelProductDto {
     'Descripción': string;
 
   @IsNotEmpty({
+    message: 'El campo "Stock", no debe estar vacío y debe ser numérico',
+  })
+  @IsString()
+    'Stock': string;
+
+  @IsNotEmpty({
     message:
       "El campo \"Estado\", no debe estar vacío. Debe contener los valores 'Activa' o'Inactiva'",
   })

@@ -13,7 +13,7 @@ export class LoginUserDto {
   @IsString({ message: '$property debe ser un string' })
   @IsNotEmpty({ message: '$property es requerida para iniciar sesión' })
   @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&_])[A-Za-z\d$@$!%*?&]{8,15}/,
+    /^(?=.*[A-Za-zñÑáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-zñÑáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/,
     {
       message:
         'La $property debe ser de 8 a 15 caracteres, tener una mayúscula, una minúscula, un número y un carácter especial..',

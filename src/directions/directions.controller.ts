@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { DireetionsService } from './directions.service';
+import { DirectionsService } from './directions.service';
 import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import {
@@ -22,9 +22,9 @@ import { IError } from 'src/utils/interfaces/error.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('Directions')
-@Controller('direetions')
+@Controller('directions')
 export class DireetionsController {
-  constructor(private readonly direetionsService: DireetionsService) {}
+  constructor(private readonly directionsService: DirectionsService) {}
 
   @ApiOperation({ summary: 'Crear una nueva dirección' })
   @ApiBody({ type: CreateDireetionDto })
@@ -38,7 +38,7 @@ export class DireetionsController {
   async create(
     @Body() createDireetionDto: CreateDireetionDto,
   ): Promise<IResDirection | IError> {
-    const response = await this.direetionsService.create(createDireetionDto);
+    const response = await this.directionsService.create(createDireetionDto);
     return response;
   }
 
@@ -56,13 +56,14 @@ export class DireetionsController {
   })
   @Get(':id')
   async findAll(@Param('id') id: string): Promise<IDirections | IError> {
-    const response = await this.direetionsService.findAll(id);
+    const response = await this.directionsService.findAll(id);
     return response;
   }
 
+  @ApiOperation({ summary: 'Obtener dirección por id' })
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.direetionsService.findOne(+id);
+    return this.directionsService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Modificar una direccion' })
@@ -83,7 +84,7 @@ export class DireetionsController {
     @Param('id') id: string,
       @Body() updateDireetionDto: UpdateDireetionDto,
   ): Promise<IResDirection | IError> {
-    const response = await this.direetionsService.update(
+    const response = await this.directionsService.update(
       id,
       updateDireetionDto,
     );
@@ -104,7 +105,7 @@ export class DireetionsController {
   })
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<IResponse | IError> {
-    const response = await this.direetionsService.remove(id);
+    const response = await this.directionsService.remove(id);
     return response;
   }
 }

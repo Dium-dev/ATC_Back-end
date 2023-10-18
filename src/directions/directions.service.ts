@@ -8,13 +8,17 @@ import { CreateDireetionDto } from './dto/create-direetion.dto';
 import { UpdateDireetionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
 
-import { IDirection, IDirections, IResDirection } from './interfaces/direction.interface';
+import {
+  IDirection,
+  IDirections,
+  IResDirection,
+} from './interfaces/direction.interface';
 
 import { Op } from 'sequelize';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @Injectable()
-export class DireetionsService {
+export class DirectionsService {
   async create(createDireetionDto: CreateDireetionDto): Promise<IResDirection> {
     try {
       const newDirection = await Direction.create({
@@ -74,14 +78,13 @@ export class DireetionsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} direetion`;
+    return `This action returns a #${id} direction`;
   }
 
   async update(
     id: string,
     updateDireetionDto: UpdateDireetionDto,
   ): Promise<{ statusCode: number; direction: IDirection }> {
-
     try {
       const thisDirection = await Direction.findByPk(id);
 

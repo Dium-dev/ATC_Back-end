@@ -1,5 +1,4 @@
 import {
-  AllowNull,
   Column,
   DataType,
   HasMany,
@@ -23,6 +22,16 @@ export enum Rol {
   underscored: true,
   timestamps: true,
   paranoid: true,
+  hooks: {
+    async beforeDestroy(instance: User) {
+      await ShoppingCart.destroy({
+        where: { userId: instance.id },
+        force: true,
+      });
+      await Direction.destroy({ where: { userId: instance.id }, force: true });
+      await Review.destroy({ where: { userId: instance.id }, force: true });
+    },
+  },
 })
 export class User extends Model<User> {
   @Column({
@@ -73,15 +82,18 @@ export class User extends Model<User> {
   })
     rol: Rol;
 
-  @HasMany(() => Direction)
+  @Column({})
+    isActive: boolean;
+
+  @HasMany(() => Direction, { onDelete: 'CASCADE', hooks: true })
     directions: Direction[];
 
-  @HasOne(() => ShoppingCart)
+  @HasOne(() => ShoppingCart, { onDelete: 'CASCADE', hooks: true })
     cart: ShoppingCart;
-  
-  @HasOne(() => Review)
+
+  @HasOne(() => Review, { onDelete: 'CASCADE', hooks: true })
     review: Review;
 
-  @HasMany(() => Order)
+  @HasMany(() => Order, { onDelete: 'CASCADE', hooks: true })
     orders: Order;
 }

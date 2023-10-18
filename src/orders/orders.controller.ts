@@ -1,13 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { IOrder } from './interfaces/response-order.interface';
+import { IGetOrders, IOrder } from './interfaces/response-order.interface';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
+import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 
+@ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
@@ -26,23 +32,32 @@ export class OrdersController {
     type: 'string',
   })
   @Get(':id')
-  async findOneOrder(@Param('id') id: string):Promise<IOrder> {
+  async findOneOrder(@Param('id') id: string): Promise<IOrder> {
     const response = await this.ordersService.findOneOrder(id);
     return response;
   }
 
   //Obtener órdenes por usuario
   @Get('user-orders/:id')
-  async findAlByUser(@Param('id') id:string):Promise<IOrder> {
+  async findAlByUser(@Param('id') id: string): Promise<IOrder> {
     const response = await this.ordersService.findAllByUser(id);
     return response;
   }
 
+  @ApiOperation({ summary: 'Crear orden', description: 'Es necesario tener un producto en el carrito.' })
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@GetUser() user:UserChangePasswordDto, @Body() createOrderDto:CreateOrderDto) {
+  async create(
+  @GetUser() user: UserChangePasswordDto,
+  ) {
     const { userId } = user;
-    const response = await this.ordersService.create(userId, createOrderDto);
+    const response = await this.ordersService.create(userId);
+    return response;
+  }
+
+  @Get()
+  async getAllOrders(@Body() getAllOrders:GetAllOrdersDto):Promise<IGetOrders> {
+    const response = await this.ordersService.findAll(getAllOrders);
     return response;
   }
 

@@ -1,16 +1,13 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { ExcelProductDto } from './dto/exelProducts.dto';
-import { Op } from 'sequelize';
 import axios from 'axios';
 
 import * as XLSX from 'xlsx';
-import * as fs from 'fs';
 import * as Papa from 'papaparse';
 
 /* entities */
@@ -121,10 +118,10 @@ export class AdminProductsService {
 
       await Product.create({
         id: product['Número de publicación'],
-        title: 'product.Título',
+        title: product.Título,
         description: product.Descripción,
         state: product.Estado,
-        stock: 0,
+        stock: Number(product.Stock),
         price: Number(product['Precio COP']),
         availability: Number(product['Disponibilidad de stock (días)']) || 0,
         image: [''],
@@ -219,12 +216,11 @@ export class AdminProductsService {
         product.Marca,
         index,
       );
-
       //Se actualiza el producto
       thisProduct.title = product.Título;
       thisProduct.description = product.Descripción;
       thisProduct.state = product.Estado;
-      thisProduct.stock = 0;
+      thisProduct.stock = Number(product.Stock);
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
       thisProduct.image = [''];
