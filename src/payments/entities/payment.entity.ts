@@ -22,6 +22,7 @@ export class Payment extends Model<Payment> {
     allowNull: false,
   })
     id: string;
+    id: string;
 
   @Column({
     allowNull: false,

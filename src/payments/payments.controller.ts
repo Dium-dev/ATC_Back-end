@@ -6,6 +6,7 @@ import {
   UseGuards,
   Param,
   Res,
+  Query,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -81,5 +82,16 @@ export class PaymentsController {
   ) {
     const actualize = await this.paymentsService.actualizePayment('pending', orderid);
     res.send(actualize);
+  }
+
+  @Post('webhook/:orderid')
+  async notifWebHook(
+  @Query() query,
+    @Param('orderid') orderid: string,
+  ) {
+    if (query.type && query.type == 'payment') {
+      const actualizeOrder = await this.paymentsService.actualizeOrder(query['data.id'], orderid);
+      return actualizeOrder;
+    }
   }
 }

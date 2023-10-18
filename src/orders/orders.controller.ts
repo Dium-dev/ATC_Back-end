@@ -6,6 +6,7 @@ import {
   Patch,
   Body,
   UseGuards,
+  Body
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';
@@ -52,6 +53,7 @@ export class OrdersController {
   @Post()
   async create(
   @GetUser() user: UserChangePasswordDto,
+    @Body() createOrderDto: CreateOrderDto,
   ) {
     const { userId } = user;
     const response = await this.ordersService.create(userId);
