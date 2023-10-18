@@ -142,4 +142,34 @@ export class MailService {
       throw new HttpException(error.message, error.status);
     }
   }
+  async sendContactFormEmail(addressee: string, context: Record<string, any>): Promise<IResponse> {
+    try {
+      const mail = await this.mailerService.sendMail({
+        to: addressee,
+        subject: 'Recibiste una consulta de usuario',
+        template: Templates.contactFormAdmin,
+        context: context, 
+        attachments: [
+          {
+            filename: 'ATCarroLogo.png',
+            path: './src/public/ATCarroLogo.png',
+            cid: 'headerATCLogo',
+          },
+        ],
+      });
+
+      if (mail.accepted.length)
+        return {
+          statusCode: 200,
+          message: 'El correo ha sido enviado correctamente',
+        };
+
+      if (mail.rejected.length)
+        throw new InternalServerErrorException(
+          'Error al enviar el correo',
+        );
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
 }
