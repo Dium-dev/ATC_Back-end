@@ -27,7 +27,7 @@ export class ContactController {
         message: contactData.message,
       };
       await this.mailService.sendMails({
-        addressee: 'correo_del_administrador@example.com', 
+        addressee: 'rehide5646@scubalm.com', 
         subject: 'CONTACT_FORM_ADMIN', //
         context: adminContext,
       });
