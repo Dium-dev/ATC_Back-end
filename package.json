@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@casl/ability": "^6.5.0",
+    "@faker-js/faker": "^8.1.0",
     "@nestjs-modules/mailer": "^1.9.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",

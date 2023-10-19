@@ -7,9 +7,9 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 import { OrderProduct } from './orderProduct.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum OrderStateEnum {
   PENDIENTE = 'EN PROCESO',
