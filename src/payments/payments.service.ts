@@ -5,8 +5,10 @@ import { User } from '../users/entities/user.entity';
 import { Payment, PaymentState } from './entities/payment.entity';
 import { Order, OrderStateEnum } from '../orders/entities/order.entity';
 import { CreatePreferencePayload } from 'mercadopago/models/preferences/create-payload.model';
-import { MailService } from '../mail/mail.service'; // Importa el servicio de correo
-import { Cases } from '../mail/dto/sendMail.dto';
+import { UsersService } from '../users/users.service';
+import { MailService } from '../mail/mail.service';
+import { Cases } from 'src/mail/dto/sendMail.dto';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { IPurchaseContext } from '../mail/interfaces/purchase-context.interface';
 import { Product } from '../products/entities/product.entity';
 import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
@@ -26,19 +28,19 @@ export class PaymentsService {
   async createPayment(amount: number,  userId: string, orderId?: string) {
     try {
       const user = await User.findByPk(userId);
-      // Crea un objeto de preferencia con los detalles del pago
+      
       const preference: CreatePreferencePayload = {
         items: [
           {
             title: 'Descripción del producto',
             quantity: 1,
-            currency_id: 'COP', // Moneda (Asegúrate de usar la moneda correcta)
-            unit_price: amount, // Monto del pago
+            currency_id: 'COP',
+            unit_price: amount,
           },
         ],
         payer: {
           name: user.firstName,
-          email: user.email, // Correo del comprador
+          email: user.email,
         },
         back_urls: {
           success: `${HOST}/payments/success/${orderId}`,
@@ -47,9 +49,7 @@ export class PaymentsService {
         },
         notification_url: `https://af6f-190-173-138-188.ngrok-free.app/payments/webhook/${orderId}`, //Cambiar por el host del servidor deployado
       };
-      // Crea la preferencia en Mercado Pago
       const response = await mercadopago.preferences.create(preference);
-      // Guardamos los datos del pago en la base de datos
       await Payment.create({
         id: response.body.id,
         orderId,
@@ -58,7 +58,6 @@ export class PaymentsService {
         state: PaymentState.PENDING,
       });
 
-      // Devuelve la URL de pago generada
       return {
         url: response.body.init_point,
         paymentId: response.body.id,
@@ -139,7 +138,7 @@ export class PaymentsService {
             };
           }),
           total: payment.body.transaction_details.total_paid_amount,
-          purchaseDate: order.createdAt, // Fecha de creación de la orden
+          purchaseDate: order.createdAt,
           cuotes,
           cuotesValue,
         };
