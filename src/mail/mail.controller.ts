@@ -12,6 +12,11 @@ import { ContactFormDto } from './dto/sendMail.dto';
 export class ContactController {
   constructor(private readonly mailService: MailService) {}
 
+  @ApiOperation({
+    summary:
+    'Ruta para contact form del front',
+  })
+
   @Post()
   async sendContactForm(@Body() contactData: ContactFormDto, @Res() res: Response) {
     try {
