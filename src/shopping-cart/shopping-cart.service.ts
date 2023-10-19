@@ -8,12 +8,12 @@ import {
   forwardRef,
   Inject,
 } from '@nestjs/common';
-import { Product, stateproduct } from 'src/products/entities/product.entity';
-import { IError } from 'src/utils/interfaces/error.interface';
+import { Product, stateproduct } from '../products/entities/product.entity';
+import { IError } from '../utils/interfaces/error.interface';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ShoppingCartService {

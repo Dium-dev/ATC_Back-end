@@ -1,8 +1,8 @@
 import { Controller, Get, Patch, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { GetUser } from 'src/auth/auth-user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
-import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
+import { GetUser } from '../auth/auth-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guarg';
+import { UserChangePasswordDto } from '../auth/dto/user-change-password.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Shopping cart')
