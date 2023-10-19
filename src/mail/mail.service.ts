@@ -95,37 +95,7 @@ export class MailService {
                   },
                 ],
               });
-              break;
-              case Cases.CONTACT_FORM_USER:
-          mail = await this.mailerService.sendMail({
-            to: addressee,
-            subject: 'Recibimos tu consulta',
-            template: Templates.contactFormUser,
-            context: context,
-            attachments: [
-              {
-                filename: 'ATCarroLogo.png',
-                path: './src/public/ATCarroLogo.png',
-                cid: 'headerATCLogo',
-              },
-            ],
-          });
-          break;
-        case Cases.CONTACT_FORM_ADMIN:
-          mail = await this.mailerService.sendMail({
-            to: addressee,
-            subject: 'Recibiste una consulta de usuario',
-            template: Templates.contactFormAdmin,
-            context: context,
-            attachments: [
-              {
-                filename: 'ATCarroLogo.png',
-                path: './src/public/ATCarroLogo.png',
-                cid: 'headerATCLogo',
-              },
-            ],
-          });
-          break;
+              break;             
       }
       //If mail.accepted: [ user_email ]
       if (mail.accepted.length)
@@ -141,35 +111,5 @@ export class MailService {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
-  }
-  async sendContactFormEmail(addressee: string, context: Record<string, any>): Promise<IResponse> {
-    try {
-      const mail = await this.mailerService.sendMail({
-        to: addressee,
-        subject: 'Recibiste una consulta de usuario',
-        template: Templates.contactFormAdmin,
-        context: context, 
-        attachments: [
-          {
-            filename: 'ATCarroLogo.png',
-            path: './src/public/ATCarroLogo.png',
-            cid: 'headerATCLogo',
-          },
-        ],
-      });
-
-      if (mail.accepted.length)
-        return {
-          statusCode: 200,
-          message: 'El correo ha sido enviado correctamente',
-        };
-
-      if (mail.rejected.length)
-        throw new InternalServerErrorException(
-          'Error al enviar el correo',
-        );
-    } catch (error) {
-      throw new HttpException(error.message, error.status);
-    }
-  }
+  }  
 }

@@ -3,27 +3,30 @@ import { Response } from 'express';
 import { MailService } from './mail.service';
 import{IContactFormAdminContext} from './interfaces/contact-form-admin-context.interface';
 import{IContactFormUserContext} from './interfaces/contact-form-user-cotext.interface';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ContactFormDto } from './dto/sendMail.dto';
 
 
+@ApiTags('Mail')
 @Controller('contact')
 export class ContactController {
   constructor(private readonly mailService: MailService) {}
 
   @Post()
-  async sendContactForm(@Body() contactData: any, @Res() res: Response) {
+  async sendContactForm(@Body() contactData: ContactFormDto, @Res() res: Response) {
     try {
       const userContext: IContactFormUserContext = {
-        firstname: contactData.firstname,
+        firstname: contactData.name,
       };
       await this.mailService.sendMails({
-        addressee: contactData.email, 
+        addressee: contactData.userEmail, 
         subject: 'CONTACT_FORM_USER', 
         context: userContext,
       });
 
       const adminContext: IContactFormAdminContext = {
-        firstname: contactData.firstname, 
-        contactInfo: contactData.email, 
+        firstname: contactData.name, 
+        contactInfo: contactData.userEmail, 
         message: contactData.message,
       };
       await this.mailService.sendMails({

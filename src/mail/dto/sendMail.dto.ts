@@ -19,6 +19,13 @@ export enum Cases {
   CONTACT_FORM_USER = 'CONTACT_FORM_USER'
 }
 
+export class ContactFormDto {
+  readonly name: string;
+  readonly phone: string;
+  readonly message: string;
+  readonly userEmail: string; // Agrega este campo para capturar el correo del usuario
+}
+
 //Por si no es necesario el 'context'
 interface INotSend {
   sendExtraData: false;
