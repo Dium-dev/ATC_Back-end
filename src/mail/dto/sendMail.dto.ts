@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
 import {
   IsDefined,
   IsEmail,

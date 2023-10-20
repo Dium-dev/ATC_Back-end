@@ -1,5 +1,6 @@
 export interface IContactFormAdminContext {
-    firstname: string;
-    contactInfo: string;
+    name: string;
+    phone: string;
     message: string;
+    userEmail: string;
 };

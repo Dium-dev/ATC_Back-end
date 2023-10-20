@@ -30,12 +30,13 @@ export class ContactController {
       });
 
       const adminContext: IContactFormAdminContext = {
-        firstname: contactData.name, 
-        contactInfo: contactData.userEmail, 
+        name: contactData.name, 
+        phone: contactData.phone, 
         message: contactData.message,
+        userEmail: contactData.userEmail
       };
       await this.mailService.sendMails({
-        addressee: 'rehide5646@scubalm.com', 
+        addressee: 'seleccionfloresceleste@gmail.com', 
         subject: 'CONTACT_FORM_ADMIN', //
         context: adminContext,
       });
