@@ -11,6 +11,8 @@ import { Payment, PaymentState } from '../entities/payment.entity';
 import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity';
 import { Product } from '../../products/entities/product.entity';
 import { CartProduct } from '../../shopping-cart/entities/cart-product.entity';
+import { createMock } from '@golevelup/ts-jest';
+import { faker } from '@faker-js/faker';
 
 describe('PaymentsController', () => {
   let paymentsController: PaymentsController;
@@ -18,7 +20,6 @@ describe('PaymentsController', () => {
   let user: any;
   let products: any;
   let order: any;
-
 
   beforeEach(async () => {
     user = createUserObject();
@@ -41,8 +42,8 @@ describe('PaymentsController', () => {
 
   describe('POST: payments/create-payments', () => {
     it('should create a payment and return a URL with valid JWT', async () => {
-      const mockUser = new User(user);
-      const mockOrder = new Order(order);
+      const mockUser = createMock<User>(user);
+      const mockOrder = createMock<Order>(order);
       const userFindByPkSpy = jest.spyOn(User, 'findByPk').mockResolvedValue(mockUser);
       const createPaymentSpy = jest.spyOn(paymentsService, 'createPayment');
       const userId = mockUser.id; // Reemplaza con un ID de usuario válido
@@ -67,7 +68,7 @@ describe('PaymentsController', () => {
     });
 
     it('should return a error when payment failed', async () => {
-      const mockOrder = new Order(order);
+      const mockOrder = createMock<Order>(order);
       const userId = 123;
       const createPaymentDto = {
         amount: mockOrder.total,
@@ -91,27 +92,25 @@ describe('PaymentsController', () => {
   });
   describe('actualizePayments', () => {
     it('GET: payments/success/:orderid', async () => {
-      const mockOrder = new Order(order);
-      mockOrder.user = new User(user);
-      mockOrder.userId = mockOrder.userId;
-      const mockPayment = new Payment();
-
-      jest.spyOn(User, 'findByPk').mockResolvedValue(mockOrder.user);
-      const OrderFindByPkSpy = jest.spyOn(Order, 'findByPk').mockResolvedValue(mockOrder);
-      const OrderSaveSpy = jest.spyOn(mockOrder, 'save').mockResolvedValue(mockOrder);
-      const paymentFindOneSpy = jest.spyOn(Payment, 'findOne').mockResolvedValue(mockPayment);
-      const paymentSaveSpy = jest.spyOn(mockPayment, 'save').mockResolvedValue(mockPayment);
-      mockOrder.user.cart = new ShoppingCart({ userId: mockOrder.user.id });
+      const mockOrder = createMock<Order>(order);
+      mockOrder.user = createMock<User>(user);
+      const mockPayment = createMock<Payment>();
+      mockOrder.user.cart = createMock<ShoppingCart>({ id: faker.string.uuid(), userId: mockOrder.user.id });
       mockOrder.user.cart.products = [];
       for (const product of products) {
-        const prod = new Product(product);
-        new CartProduct({ amount: prod.price, productId: prod.id, cartId: mockOrder.user.cart.id });
+        const prod = createMock<Product>(product);
+        createMock<CartProduct>({ amount: prod.price, productId: prod.id, cartId: mockOrder.user.cart.id });
         mockOrder.user.cart.products.push(prod);
       }
       const res: Response = {
         redirect: jest.fn(),
       } as any;
 
+      jest.spyOn(User, 'findByPk').mockResolvedValue(mockOrder.user);
+      const OrderFindByPkSpy = jest.spyOn(Order, 'findByPk').mockResolvedValue(mockOrder);
+      const OrderSaveSpy = jest.spyOn(mockOrder, 'save').mockResolvedValue(mockOrder);
+      const paymentFindOneSpy = jest.spyOn(Payment, 'findOne').mockResolvedValue(mockPayment);
+      const paymentSaveSpy = jest.spyOn(mockPayment, 'save').mockResolvedValue(mockPayment);
       await paymentsController.handleSuccessPayment(mockOrder.id, res);
 
       expect(OrderFindByPkSpy).toHaveBeenCalledWith(mockOrder.id);
@@ -123,32 +122,14 @@ describe('PaymentsController', () => {
       expect(res.redirect).toBeCalled();
     });
 
-    it('GET: payments/failure/:orderid', async () => {
-      new User(user);
-      const mockOrder = new Order(order);
-
+    it('GET: payments/pending/:orderid', async () => {
+      createMock<User>(user);
+      const mockOrder = createMock<Order>(order);
+      const mockPayment = createMock<Payment>();
+      const paymentFindOneSpy = jest.spyOn(Payment, 'findOne').mockResolvedValue(mockPayment);
+      const paymentSaveSpy = jest.spyOn(mockPayment, 'save').mockResolvedValue(mockPayment);
       const OrderFindByPkSpy = jest.spyOn(Order, 'findByPk').mockResolvedValue(mockOrder);
       const OrderSaveSpy = jest.spyOn(mockOrder, 'save').mockResolvedValue(mockOrder);
-
-      const res: Response = {
-        redirect: jest.fn(),
-      } as any;
-
-      await paymentsController.handleFailurePayment(mockOrder.id, res);
-
-      expect(OrderFindByPkSpy).toHaveBeenCalledWith(mockOrder.id);
-      expect(OrderSaveSpy).toHaveBeenCalled();
-      expect(mockOrder.state).toBe('RECHAZADO');
-      expect(res.redirect).toBeCalled();
-    });
-
-    it('GET: payments/failure/:orderid', async () => {
-      new User(user);
-      const mockOrder = new Order(order);
-
-      const OrderFindByPkSpy = jest.spyOn(Order, 'findByPk').mockResolvedValue(mockOrder);
-      const OrderSaveSpy = jest.spyOn(mockOrder, 'save').mockResolvedValue(mockOrder);
-
       const res: Response = {
         redirect: jest.fn(),
       } as any;
@@ -158,6 +139,32 @@ describe('PaymentsController', () => {
       expect(OrderFindByPkSpy).toHaveBeenCalledWith(mockOrder.id);
       expect(OrderSaveSpy).toHaveBeenCalled();
       expect(mockOrder.state).toBe('EN PROCESO');
+      expect(paymentFindOneSpy).toHaveBeenCalledWith({ where: { orderId: mockOrder.id } });
+      expect(mockPayment.state).toBe(PaymentState.PENDING);
+      expect(paymentSaveSpy).toHaveBeenCalled();
+      expect(res.redirect).toBeCalled();
+    });
+
+    it('GET: payments/failure/:orderid', async () => {
+      createMock<User>(user);
+      const mockOrder = createMock<Order>(order);
+      const mockPayment = createMock<Payment>();
+      const OrderFindByPkSpy = jest.spyOn(Order, 'findByPk').mockResolvedValue(mockOrder);
+      const OrderSaveSpy = jest.spyOn(mockOrder, 'save').mockResolvedValue(mockOrder);
+      const paymentFindOneSpy = jest.spyOn(Payment, 'findOne').mockResolvedValue(mockPayment);
+      const paymentSaveSpy = jest.spyOn(mockPayment, 'save').mockResolvedValue(mockPayment);
+      const res: Response = {
+        redirect: jest.fn(),
+      } as any;
+
+      await paymentsController.handleFailurePayment(mockOrder.id, res);
+
+      expect(OrderFindByPkSpy).toHaveBeenCalledWith(mockOrder.id);
+      expect(OrderSaveSpy).toHaveBeenCalled();
+      expect(mockOrder.state).toBe('RECHAZADO');
+      expect(paymentFindOneSpy).toHaveBeenCalledWith({ where: { orderId: mockOrder.id } });
+      expect(paymentSaveSpy).toHaveBeenCalled();
+      expect(mockPayment.state).toBe(PaymentState.FAILED);
       expect(res.redirect).toBeCalled();
     });
   });
