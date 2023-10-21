@@ -1,4 +1,13 @@
-import { Controller, Get, Patch, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
@@ -44,7 +53,8 @@ export class ShoppingCartController {
 
   @ApiOperation({ summary: 'Obtener un carrito por id' })
   @Get(':cartId') // Cambiar el parámetro a cartId
-  async getCartProducts(@Param('cartId') cartId: string) { // Cambiar el nombre del parámetro a cartId
+  async getCartProducts(@Param('cartId') cartId: string) {
+    // Cambiar el nombre del parámetro a cartId
     const thisShoppingCart = await this.shoppingCartService.getCartProducts(
       cartId, // Pasar el cartId como parámetro
     );
@@ -53,16 +63,18 @@ export class ShoppingCartController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getCart(
-  @GetUser() { userId }: UserChangePasswordDto,
-  ) {
+  async getCart(@GetUser() { userId }: UserChangePasswordDto) {
     const cart = await this.shoppingCartService.getCart(userId);
     return cart;
   }
 
   @Patch()
-  async updateProductQuantity(@Body() updateInfo: { cartProductId: string; newQuantity: number }) {
-    const response = await this.shoppingCartService.updateProductQuantity(updateInfo);
+  async updateProductQuantity(
+  @Body() updateInfo: { cartProductId: string; newQuantity: number },
+  ) {
+    const response = await this.shoppingCartService.updateProductQuantity(
+      updateInfo,
+    );
     return response;
   }
 }

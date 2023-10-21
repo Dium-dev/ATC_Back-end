@@ -16,6 +16,6 @@ import { ShoppingCartModule } from 'src/shopping-cart/shopping-cart.module';
   ],
   controllers: [ProductsController],
   providers: [ProductsService],
-  exports: [ProductsService]
+  exports: [ProductsService],
 })
-export class ProductsModule { }
+export class ProductsModule {}

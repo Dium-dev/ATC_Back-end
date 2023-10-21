@@ -10,10 +10,10 @@ import { ProductsModule } from 'src/products/products.module';
 @Module({
   imports: [
     SequelizeModule.forFeature([Product, Categories, Brand]),
-    forwardRef(() => ProductsModule)
+    forwardRef(() => ProductsModule),
   ],
   controllers: [AdminProductsController],
   providers: [AdminProductsService],
-  exports: [AdminProductsService]
+  exports: [AdminProductsService],
 })
-export class AdminProductsModule { }
+export class AdminProductsModule {}

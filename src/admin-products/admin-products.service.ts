@@ -26,7 +26,8 @@ export class AdminProductsService {
   constructor(
     @Inject(forwardRef(() => ProductsService))
     private productsService: ProductsService,
-  ) { }
+  ) {}
+
   //Usa una url al archivo original para obtener la información y retornar un buffer
   async getExcelData(url: string): Promise<Buffer> {
     try {
@@ -123,10 +124,14 @@ export class AdminProductsService {
       index,
     );
 
-    await this.productsService.createGenericProduct(product, brandId, categoryId, index)
+    await this.productsService.createGenericProduct(
+      product,
+      brandId,
+      categoryId,
+      index,
+    );
 
     return;
-
   }
 
   //Crea o actualiza un producto en DB
@@ -134,9 +139,11 @@ export class AdminProductsService {
     allProducts: any[],
   ): Promise<IResponseCreateOrUpdateProducts> {
     for (const [index, value] of allProducts.entries()) {
-      const thisProduct: Product | null = await this.productsService.findByPkToValidateExistentProduct(
-        value['Número de publicación'], {}
-      );
+      const thisProduct: Product | null =
+        await this.productsService.findByPkToValidateExistentProduct(
+          value['Número de publicación'],
+          {},
+        );
 
       if (thisProduct) {
         await this.updateProduct(thisProduct, value, index);
@@ -164,7 +171,8 @@ export class AdminProductsService {
 
       if (!thisResult)
         throw new NotFoundException(
-          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${index + 2
+          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${
+            index + 2
           }`,
         );
 
@@ -221,7 +229,8 @@ export class AdminProductsService {
       return;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Ocurrio un error al Actualizar el producto ${product.Título
+        `Ocurrio un error al Actualizar el producto ${
+          product.Título
         }, en el Indice: ${index + 2}`,
       );
     }

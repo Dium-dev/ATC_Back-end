@@ -1,8 +1,4 @@
-import {
-  Column,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, Model, Table } from 'sequelize-typescript';
 
 export enum PaymentState {
   SUCCESS = 'PAGO',
@@ -45,5 +41,4 @@ export class Payment extends Model<Payment> {
     allowNull: false,
   })
     user_email: string;
-
 }

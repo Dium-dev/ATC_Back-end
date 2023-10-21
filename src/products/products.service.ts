@@ -26,7 +26,7 @@ import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
 /* temporal acá */
 enum EModelsTable {
   findAll = 'findAll',
-  findOne = 'findOne'
+  findOne = 'findOne',
 }
 
 @Injectable()
@@ -36,7 +36,7 @@ export class ProductsService {
     private adminProductsService: AdminProductsService,
     @Inject(forwardRef(() => ShoppingCartService))
     private shoppingCartService: ShoppingCartService,
-  ) { }
+  ) {}
 
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
     const limit = parseInt(query.limit);
@@ -219,14 +219,19 @@ export class ProductsService {
   public async genericProduct(method: EModelsTable, options: FindOptions) {
     try {
       const genericResponseProduct = await Product[method](options);
-      if (!genericResponseProduct) throw new BadRequestException(`No se encontraron datos para la solucitud de tipo ${method}`)
+      if (!genericResponseProduct)
+        throw new BadRequestException(
+          `No se encontraron datos para la solucitud de tipo ${method}`,
+        );
       return genericResponseProduct;
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
-          throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ${method}`)
+          throw new InternalServerErrorException(
+            `Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ${method}`,
+          );
       }
     }
   }
@@ -234,45 +239,64 @@ export class ProductsService {
   public async findAndCountAllGenericProduct(options: FindOptions) {
     try {
       const genericResponseProduct = await Product.findAndCountAll(options);
-      if (!genericResponseProduct) throw new BadRequestException(`No se encontraron datos para la solucitud de tipo findAndCountAll`)
+      if (!genericResponseProduct)
+        throw new BadRequestException(
+          'No se encontraron datos para la solucitud de tipo findAndCountAll',
+        );
       return genericResponseProduct;
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
-          throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por findAndCountAll`)
+          throw new InternalServerErrorException(
+            'Ocurrio un error al trabajar la entidad usuario a la hora de indagar por findAndCountAll',
+          );
       }
     }
   }
 
   public async findByPkGenericProduct(productId: string, options: FindOptions) {
     try {
-      const genericResponseProduct = await Product.findByPk(productId, options)
-      if (!genericResponseProduct) throw new BadRequestException('No ha sido posible encontro al usuario')
+      const genericResponseProduct = await Product.findByPk(productId, options);
+      if (!genericResponseProduct)
+        throw new BadRequestException('No ha sido posible encontro al usuario');
       return genericResponseProduct;
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
-          throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ususario particular`)
+          throw new InternalServerErrorException(
+            'Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ususario particular',
+          );
       }
     }
-
   }
 
-  public async findByPkToValidateExistentProduct(productId: string, options: FindOptions): Promise<Product | null> {
+  public async findByPkToValidateExistentProduct(
+    productId: string,
+    options: FindOptions,
+  ): Promise<Product | null> {
     try {
-      const genericResponseProduct: Product | null = await Product.findByPk(productId, options)
+      const genericResponseProduct: Product | null = await Product.findByPk(
+        productId,
+        options,
+      );
       return genericResponseProduct;
     } catch (error) {
-      throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad Producto a la hora de indagar por producto particular`)
+      throw new InternalServerErrorException(
+        'Ocurrio un error al trabajar la entidad Producto a la hora de indagar por producto particular',
+      );
     }
-
   }
 
-  public async createGenericProduct(product: ExcelProductDto, brandId: string, categoryId: string, index: number) {
+  public async createGenericProduct(
+    product: ExcelProductDto,
+    brandId: string,
+    categoryId: string,
+    index: number,
+  ) {
     try {
       const genericCreatedProduct = await Product.create({
         id: product['Número de publicación'],
@@ -290,13 +314,15 @@ export class ProductsService {
             : null,
         brandId,
         categoryId,
-      })
-      if (!genericCreatedProduct) throw new InternalServerErrorException
+      });
+      if (!genericCreatedProduct) throw new InternalServerErrorException();
       return;
     } catch (error) {
-      throw new InternalServerErrorException(`Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${product.Título} del indice ${index + 2}`)
+      throw new InternalServerErrorException(
+        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
+          product.Título
+        } del indice ${index + 2}`,
+      );
     }
-
   }
-
 }

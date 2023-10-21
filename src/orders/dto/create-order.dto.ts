@@ -22,7 +22,6 @@ export class CreateOrderDto {
   })
     total: number;
 
-
   @IsArray({
     message: '$property debe ser un array válido',
   })

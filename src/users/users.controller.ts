@@ -130,13 +130,11 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
+    summary:
+      'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
   })
   @Get()
-  getUsers(
-  @Query('page') page: string,
-    @Query('limit') limit: string,
-  ) {
+  getUsers(@Query('page') page: string, @Query('limit') limit: string) {
     return this.usersService.getAll(+page, +limit);
   }
 
@@ -144,10 +142,7 @@ export class UsersController {
     summary: 'Ruta para eliminar un usuario.',
   })
   @Delete(':id')
-  deleteUser(
-  @Param('id') id: string,
-  ) {
+  deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
   }
-
 }

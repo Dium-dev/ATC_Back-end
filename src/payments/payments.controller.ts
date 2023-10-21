@@ -21,8 +21,7 @@ export class PaymentsController {
 
   // Ruta para crear un pago
   @ApiOperation({
-    summary:
-    'Ruta para realizar pagos.',
+    summary: 'Ruta para realizar pagos.',
   })
   @UseGuards(JwtAuthGuard)
   @Post('create-payment')
@@ -32,7 +31,11 @@ export class PaymentsController {
     @Res() res: Response,
   ) {
     try {
-      const payment = await this.paymentsService.createPayment(amount, userId, orderId);
+      const payment = await this.paymentsService.createPayment(
+        amount,
+        userId,
+        orderId,
+      );
       // Redirige al usuario a la URL de pago generada por Mercado Pago
 
       res.send(payment.url);
@@ -43,43 +46,49 @@ export class PaymentsController {
 
   // Ruta para manejar un pago exitoso
   @ApiOperation({
-    summary:
-    'Ruta para manejar un pago exitoso.',
+    summary: 'Ruta para manejar un pago exitoso.',
   })
   @Get('success/:orderid')
   async handleSuccessPayment(
   @Param('orderid') orderid: string,
     @Res() res: Response,
   ) {
-    const actualize = await this.paymentsService.actualizePayment('success', orderid);
+    const actualize = await this.paymentsService.actualizePayment(
+      'success',
+      orderid,
+    );
     res.send(actualize);
   }
 
   // Ruta para manejar un pago fallido
   @ApiOperation({
-    summary:
-    'Ruta para manejar un pago fallido.',
+    summary: 'Ruta para manejar un pago fallido.',
   })
   @Get('failure/:orderid')
   async handleFailurePayment(
   @Param('orderid') orderid: string,
     @Res() res: Response,
   ) {
-    const actualize = await this.paymentsService.actualizePayment('failure', orderid);
+    const actualize = await this.paymentsService.actualizePayment(
+      'failure',
+      orderid,
+    );
     res.send(actualize);
   }
 
   // Ruta para manejar un pago pendiente
   @ApiOperation({
-    summary:
-    'Ruta para manejar un pago pendiente.',
+    summary: 'Ruta para manejar un pago pendiente.',
   })
   @Get('pending/:orderid')
   async handlePendingPayment(
   @Param('orderid') orderid: string,
     @Res() res: Response,
   ) {
-    const actualize = await this.paymentsService.actualizePayment('pending', orderid);
+    const actualize = await this.paymentsService.actualizePayment(
+      'pending',
+      orderid,
+    );
     res.send(actualize);
   }
 }

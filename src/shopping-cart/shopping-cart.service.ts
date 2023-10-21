@@ -195,15 +195,19 @@ export class ShoppingCartService {
   async getCart(userId: string) {
     try {
       const user = await User.findByPk(userId, {
-        include: [{
-          model: ShoppingCart,
-        }],
+        include: [
+          {
+            model: ShoppingCart,
+          },
+        ],
       });
       const cart = await ShoppingCart.findByPk(user.cart.dataValues.id, {
-        include: [{
-          model: Product,
-          attributes: ['id', 'title', 'price'],
-        }],
+        include: [
+          {
+            model: Product,
+            attributes: ['id', 'title', 'price'],
+          },
+        ],
       });
 
       const products = await Promise.all(
@@ -227,18 +231,19 @@ export class ShoppingCartService {
         }),
       );
 
-      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
+      const total = products.reduce(
+        (acc, product) => acc + product.subtotal,
+        0,
+      );
 
       return {
         id: cart.id,
         products,
         total,
       };
-
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
-
   }
 
   async getCartProducts(cartId: string) {
@@ -272,7 +277,10 @@ export class ShoppingCartService {
         }),
       );
 
-      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
+      const total = products.reduce(
+        (acc, product) => acc + product.subtotal,
+        0,
+      );
 
       return {
         id: thisCart.id,
@@ -290,13 +298,19 @@ export class ShoppingCartService {
     }
   }
 
-
-  async updateProductQuantity(updateInfo: { cartProductId: string; newQuantity: number }): Promise<{ statusCode: number; message: string }> {
+  async updateProductQuantity(updateInfo: {
+    cartProductId: string;
+    newQuantity: number;
+  }): Promise<{ statusCode: number; message: string }> {
     try {
-      const cartProductToUpdate = await CartProduct.findByPk(updateInfo.cartProductId);
+      const cartProductToUpdate = await CartProduct.findByPk(
+        updateInfo.cartProductId,
+      );
 
       if (!cartProductToUpdate) {
-        throw new NotFoundException('No se encontró el registro de CartProduct');
+        throw new NotFoundException(
+          'No se encontró el registro de CartProduct',
+        );
       }
 
       const thisProduct: boolean | IError = await this.getThisProduct(
@@ -317,7 +331,9 @@ export class ShoppingCartService {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       } else {
-        throw new InternalServerErrorException('Error del servidor al actualizar la cantidad de producto.');
+        throw new InternalServerErrorException(
+          'Error del servidor al actualizar la cantidad de producto.',
+        );
       }
     }
   }

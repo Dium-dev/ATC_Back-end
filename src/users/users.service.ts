@@ -216,11 +216,13 @@ export class UsersService {
 
   async getAll(page: number, limit: number) {
     try {
-      page --;
+      page--;
       const allUsers = await this.userModel.findAll();
       const limitOfPages = Math.ceil(allUsers.length / limit);
 
-      if (page < 0 || page > limitOfPages) { throw new HttpException('This page not exist.', 400);}
+      if (page < 0 || page > limitOfPages) {
+        throw new HttpException('This page not exist.', 400);
+      }
 
       return {
         prevPage: page === 0 ? null : page - 1,
