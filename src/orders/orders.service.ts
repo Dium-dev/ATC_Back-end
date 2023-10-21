@@ -5,8 +5,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { OrderProduct } from './entities/orderProduct.entity';

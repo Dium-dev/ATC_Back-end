@@ -1,8 +1,10 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { ExcelProductDto } from './dto/exelProducts.dto';
 import axios from 'axios';
@@ -17,9 +19,14 @@ import { Brand } from 'src/brands/entities/brand.entity';
 
 /* interface */
 import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-update.interface';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class AdminProductsService {
+  constructor(
+    @Inject(forwardRef(() => ProductsService))
+    private productsService: ProductsService,
+  ) { }
   //Usa una url al archivo original para obtener la información y retornar un buffer
   async getExcelData(url: string): Promise<Buffer> {
     try {
@@ -94,54 +101,32 @@ export class AdminProductsService {
     });
   }
 
-  private async findThisProduct(id: string): Promise<Product | null> {
+  /* ya sin utilizar */
+  /* private async findThisProduct(id: string): Promise<Product | null> {
     const thisProduct: Product | null = await Product.findByPk(id);
     return thisProduct;
-  }
+  } */
 
   private async createNewProduct(
     product: ExcelProductDto,
     index: number,
   ): Promise<void> {
-    try {
-      const categoryId = await this.getOrCreateInEntitis(
-        Categories,
-        product.Categoría,
-        index,
-      );
+    const categoryId = await this.getOrCreateInEntitis(
+      Categories,
+      product.Categoría,
+      index,
+    );
 
-      const brandId = await this.getOrCreateInEntitis(
-        Brand,
-        product.Marca,
-        index,
-      );
+    const brandId = await this.getOrCreateInEntitis(
+      Brand,
+      product.Marca,
+      index,
+    );
 
-      await Product.create({
-        id: product['Número de publicación'],
-        title: product.Título,
-        description: product.Descripción,
-        state: product.Estado,
-        stock: Number(product.Stock),
-        price: Number(product['Precio COP']),
-        availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: [''],
-        year: product.Título.split(' ')[3].includes('-')
-          ? product.Título.split(' ')[3]
-          : product.Título.split(' ')[4].includes('-')
-            ? product.Título.split(' ')[4]
-            : null,
-        brandId: brandId,
-        categoryId: categoryId,
-      });
+    await this.productsService.createGenericProduct(product, brandId, categoryId, index)
 
-      return;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Ocurrió un problema en la creación del producto '${
-          product.Título
-        }', en el Indice: ${index + 2}`,
-      );
-    }
+    return;
+
   }
 
   //Crea o actualiza un producto en DB
@@ -149,8 +134,8 @@ export class AdminProductsService {
     allProducts: any[],
   ): Promise<IResponseCreateOrUpdateProducts> {
     for (const [index, value] of allProducts.entries()) {
-      const thisProduct: Product | null = await this.findThisProduct(
-        value['Número de publicación'],
+      const thisProduct: Product | null = await this.productsService.findByPkToValidateExistentProduct(
+        value['Número de publicación'], {}
       );
 
       if (thisProduct) {
@@ -179,8 +164,7 @@ export class AdminProductsService {
 
       if (!thisResult)
         throw new NotFoundException(
-          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${
-            index + 2
+          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${index + 2
           }`,
         );
 
@@ -237,8 +221,7 @@ export class AdminProductsService {
       return;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Ocurrio un error al Actualizar el producto ${
-          product.Título
+        `Ocurrio un error al Actualizar el producto ${product.Título
         }, en el Indice: ${index + 2}`,
       );
     }
