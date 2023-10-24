@@ -5,10 +5,10 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { Direction } from '../directions/entities/direction.entity';
 import { AuthModule } from '../auth/auth.module';
-import { AuthService } from 'src/auth/auth.service';
-import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
-import { MailService } from 'src/mail/mail.service';
-import { ShoppingCartModule } from 'src/shopping-cart/shopping-cart.module';
+import { AuthService } from '../auth/auth.service';
+import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
+import { MailService } from '../mail/mail.service';
+import { ShoppingCartModule } from '../shopping-cart/shopping-cart.module';
 
 @Module({
   imports: [

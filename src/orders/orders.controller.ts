@@ -6,7 +6,7 @@ import {
   Patch,
   Body,
   UseGuards,
-  Body
+  Body,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';
@@ -15,7 +15,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 import { GetAllOrdersDto } from './dto/getAllOrders.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+
 
 @ApiTags('Orders')
 @Controller('orders')
