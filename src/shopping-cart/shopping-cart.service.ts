@@ -14,17 +14,27 @@ import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class ShoppingCartService {
   constructor(
+    //Injecting shoppingCart model
+    @InjectModel(ShoppingCart) 
+    private shoppingCartModel:typeof ShoppingCart,
+    //Injecting CartProduct model
+    @InjectModel(CartProduct) private cartProductModel: typeof CartProduct,
+    //Injecting Product model
+    @InjectModel(Product) private productModel: typeof Product,
+    //Injecting User model
+    @InjectModel(User) private userModel: typeof User,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
   ) {}
 
   public async createCartProduct(userId: string) {
     try {
-      const newCartUser = await ShoppingCart.create({ userId });
+      const newCartUser = await this.shoppingCartModel.create({ userId });
       return newCartUser;
     } catch (error) {
       switch (error.constructor) {
@@ -41,7 +51,7 @@ export class ShoppingCartService {
     cartId: string,
     amount: number,
   ): Promise<{ statusCode: number; message: string }> {
-    console.log(productId, cartId, amount);
+
     const thisProduct: boolean | IError = await this.getThisProduct(
       productId,
       amount,
@@ -52,7 +62,7 @@ export class ShoppingCartService {
     );
 
     if (thisProduct === true && thisShoppingCart === true) {
-      await CartProduct.create({
+      await this.cartProductModel.create({
         amount,
         productId,
         cartId,
@@ -66,7 +76,7 @@ export class ShoppingCartService {
 
   private async getThisShoppingCart(id: string): Promise<boolean | IError> {
     try {
-      const thisCart = await ShoppingCart.findByPk(id);
+      const thisCart = await this.shoppingCartModel.findByPk(id);
       if (!thisCart)
         throw new NotFoundException(
           'No se ha encontrado el Carrito solicitado.',
@@ -89,7 +99,7 @@ export class ShoppingCartService {
     cantidad: number,
   ): Promise<boolean | IError> {
     try {
-      const thisProducto = await Product.findByPk(id, {
+      const thisProducto = await this.productModel.findByPk(id, {
         attributes: ['id', 'state', 'stock', 'price'],
       });
       if (!thisProducto)
@@ -122,7 +132,7 @@ export class ShoppingCartService {
 
   async remove(cartId: string, productId: string) {
     try {
-      const cartProductToDelete = await CartProduct.findOne({
+      const cartProductToDelete = await this.cartProductModel.findOne({
         where: {
           cartId: cartId,
           productId: productId,
@@ -155,7 +165,7 @@ export class ShoppingCartService {
     transaction: any,
   ): Promise<void> {
     try {
-      const newShoppingCart = await ShoppingCart.create({ userId });
+      const newShoppingCart = await this.shoppingCartModel.create({ userId });
 
       if (!newShoppingCart)
         throw new HttpException(
@@ -173,7 +183,7 @@ export class ShoppingCartService {
     transaction: any,
   ): Promise<void> {
     try {
-      const destroyThisShoppingCart = await ShoppingCart.destroy({
+      const destroyThisShoppingCart = await this.shoppingCartModel.destroy({
         where: { userId },
         force: true,
       });
@@ -191,12 +201,12 @@ export class ShoppingCartService {
 
   async getCart(userId: string) {
     try {
-      const user = await User.findByPk(userId, {
+      const user = await this.userModel.findByPk(userId, {
         include: [{
           model: ShoppingCart,
         }],
       });
-      const cart = await ShoppingCart.findByPk(user.cart.dataValues.id, {
+      const cart = await this.shoppingCartModel.findByPk(user.cart.dataValues.id, {
         include: [{
           model: Product,
           attributes: ['id', 'title', 'price'],
@@ -205,7 +215,7 @@ export class ShoppingCartService {
 
       const products = await Promise.all(
         cart.products?.map(async (product) => {
-          const cartProduct = await CartProduct.findOne({
+          const cartProduct = await this.cartProductModel.findOne({
             where: {
               cartId: cart.id,
               productId: product.id,
@@ -240,7 +250,7 @@ export class ShoppingCartService {
 
   async getCartProducts(cartId: string) {
     try {
-      const thisCart = await ShoppingCart.findByPk(cartId, {
+      const thisCart = await this.shoppingCartModel.findByPk(cartId, {
         include: [{ model: Product, attributes: ['id', 'title', 'price'] }],
       });
 
@@ -250,7 +260,7 @@ export class ShoppingCartService {
 
       const products = await Promise.all(
         thisCart.products?.map(async (product) => {
-          const cartProduct = await CartProduct.findOne({
+          const cartProduct = await this.cartProductModel.findOne({
             where: {
               cartId: thisCart.id,
               productId: product.id,
@@ -290,7 +300,7 @@ export class ShoppingCartService {
 
   async updateProductQuantity(updateInfo: { cartProductId: string; newQuantity: number }): Promise<{ statusCode: number; message: string }> {
     try {
-      const cartProductToUpdate = await CartProduct.findByPk(updateInfo.cartProductId);
+      const cartProductToUpdate = await this.cartProductModel.findByPk(updateInfo.cartProductId);
 
       if (!cartProductToUpdate) {
         throw new NotFoundException('No se encontró el registro de CartProduct');
