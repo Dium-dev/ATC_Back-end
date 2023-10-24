@@ -11,9 +11,8 @@ import { ProductsModule } from 'src/products/products.module';
 
 @Module({
   imports: [
-    ProductsModule,
     forwardRef(() => UsersModule),
-    SequelizeModule.forFeature([CartProduct, ShoppingCart]),
+    SequelizeModule.forFeature([CartProduct, ShoppingCart, User, Product]),
   ],
   controllers: [ShoppingCartController],
   providers: [ShoppingCartService],
