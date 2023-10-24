@@ -3,6 +3,8 @@ import {
   Get,
   Post,
   Param,
+  Patch,
+  Body,
   UseGuards,
   Body,
 } from '@nestjs/common';
@@ -14,6 +16,8 @@ import { GetUser } from 'src/auth/auth-user.decorator';
 import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
+
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -61,6 +65,14 @@ export class OrdersController {
   @Get()
   async getAllOrders(@Body() getAllOrders:GetAllOrdersDto):Promise<IGetOrders> {
     const response = await this.ordersService.findAll(getAllOrders);
+    return response;
+  }
+
+
+  //Actualizar el estado de una orden
+  @Patch()
+  async patchUpdateStateOrder(@Body() updateDto: UpdateOrderDto) {
+    const response = await this.ordersService.updateStateOrder(updateDto);
     return response;
   }
 }

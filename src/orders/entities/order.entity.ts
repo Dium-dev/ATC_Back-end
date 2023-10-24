@@ -13,11 +13,12 @@ import { User } from '../../users/entities/user.entity';
 
 export enum OrderStateEnum {
   PENDIENTE = 'EN PROCESO',
-  APROVADO = 'APROVADO',
+  APROBADO = 'APROBADO',
   PAGO = 'PAGO',
   RECHAZADO = 'RECHAZADO',
   DESPACHO = 'EN DESPACHO',
   ENTREGADO = 'ENTREGADO',
+  CANCELADO = 'CANCELADO',
 }
 
 @Table({
