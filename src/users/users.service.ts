@@ -15,12 +15,12 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
-import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
-import { IResponse } from 'src/utils/interfaces/response.interface';
-import { MailService } from 'src/mail/mail.service';
-import { Cases } from 'src/mail/dto/sendMail.dto';
+import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
+import { IResponse } from '../utils/interfaces/response.interface';
+import { MailService } from '../mail/mail.service';
+import { Cases } from '../mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
-import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
 
 @Injectable()
 export class UsersService {
