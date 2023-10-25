@@ -7,16 +7,18 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 import { OrderProduct } from './orderProduct.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum OrderStateEnum {
+  APROBADO = 'APROBADO',
   PAGO = 'PAGO',
   RECHAZADO = 'RECHAZADO',
   DESPACHO = 'EN DESPACHO',
   PENDIENTE = 'EN PROCESO',
   ENTREGADO = 'ENTREGADO',
+  CANCELADO = 'CANCELADO',
 }
 
 @Table({

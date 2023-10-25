@@ -1,5 +1,5 @@
 import { Column, Model, DataType, Table, HasMany } from 'sequelize-typescript';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Table({
   tableName: 'Brands',

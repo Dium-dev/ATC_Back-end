@@ -7,9 +7,9 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Direction } from '../../directions/entities/direction.entity';
-import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
+import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity';
 import { Review } from '../../reviews/entities/review.entity';
-import { Order } from 'src/orders/entities/order.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 export enum Rol {
   superAdmin = 'superAdmin',

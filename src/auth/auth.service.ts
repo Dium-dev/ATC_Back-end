@@ -9,15 +9,15 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import * as jwt from 'jsonwebtoken';
-import { JWT_SECRET } from 'src/config/env';
-import { IResponse } from 'src/utils/interfaces/response.interface';
+import { JWT_SECRET } from '../config/env';
+import { IResponse } from '../utils/interfaces/response.interface';
 import { MailService } from '../mail/mail.service';
-import { Cases } from 'src/mail/dto/sendMail.dto';
+import { Cases } from '../mail/dto/sendMail.dto';
 @Injectable()
 export class AuthService {
   constructor(
