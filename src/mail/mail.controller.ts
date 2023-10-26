@@ -6,6 +6,7 @@ import{IContactFormUserContext} from './interfaces/contact-form-user-cotext.inte
 import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { ContactFormDto } from './dto/sendMail.dto';
 import { Cases } from 'src/mail/dto/sendMail.dto';
+import { ADMIN_EMAIL } from 'src/config/env';
 
 
 @ApiTags('Mail')
@@ -38,7 +39,7 @@ export class ContactController {
         userEmail: contactData.userEmail
       };
       await this.mailService.sendMails({
-        addressee: 'seleccionfloresceleste@gmail.com', 
+        addressee: ADMIN_EMAIL,
         subject: Cases.CONTACT_FORM_ADMIN, //
         context: adminContext,
       });
