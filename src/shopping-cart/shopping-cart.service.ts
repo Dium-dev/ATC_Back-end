@@ -61,7 +61,7 @@ export class ShoppingCartService {
       cartId,
     );
 
-    if (thisProduct === true && thisShoppingCart === true) {
+    if (thisProduct && thisShoppingCart) {
       await this.cartProductModel.create({
         amount,
         productId,
