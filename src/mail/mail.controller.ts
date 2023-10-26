@@ -3,8 +3,9 @@ import { Response } from 'express';
 import { MailService } from './mail.service';
 import{IContactFormAdminContext} from './interfaces/contact-form-admin-context.interface';
 import{IContactFormUserContext} from './interfaces/contact-form-user-cotext.interface';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { ContactFormDto } from './dto/sendMail.dto';
+import { Cases } from 'src/mail/dto/sendMail.dto';
 
 
 @ApiTags('Mail')
@@ -16,6 +17,7 @@ export class ContactController {
     summary:
     'Ruta para contact form del front',
   })
+  @ApiBody({ type: ContactFormDto })
 
   @Post()
   async sendContactForm(@Body() contactData: ContactFormDto, @Res() res: Response) {
@@ -25,7 +27,7 @@ export class ContactController {
       };
       await this.mailService.sendMails({
         addressee: contactData.userEmail, 
-        subject: 'CONTACT_FORM_USER', 
+        subject: Cases.CONTACT_FORM_USER, 
         context: userContext,
       });
 
@@ -37,7 +39,7 @@ export class ContactController {
       };
       await this.mailService.sendMails({
         addressee: 'seleccionfloresceleste@gmail.com', 
-        subject: 'CONTACT_FORM_ADMIN', //
+        subject: Cases.CONTACT_FORM_ADMIN, //
         context: adminContext,
       });
 
