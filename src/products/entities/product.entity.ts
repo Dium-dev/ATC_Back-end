@@ -7,12 +7,12 @@ import {
   ForeignKey,
   BelongsToMany,
 } from 'sequelize-typescript';
-import { Brand } from 'src/brands/entities/brand.entity';
-import { Categories } from 'src/categories/entities/category.entity';
-import { Order } from 'src/orders/entities/order.entity';
-import { OrderProduct } from 'src/orders/entities/orderProduct.entity';
-import { CartProduct } from 'src/shopping-cart/entities/cart-product.entity';
-import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
+import { Brand } from '../../brands/entities/brand.entity';
+import { Categories } from '../../categories/entities/category.entity';
+import { Order } from '../../orders/entities/order.entity';
+import { OrderProduct } from '../../orders/entities/orderProduct.entity';
+import { CartProduct } from '../../shopping-cart/entities/cart-product.entity';
+import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export enum stateproduct {
