@@ -38,7 +38,7 @@ export class ContactController {
         userEmail: contactData.userEmail
       };
       await this.mailService.sendMails({
-        addressee: 'seleccionfloresceleste@gmail.com', 
+        addressee: 'seleccionfloresceleste@gmail.com', // acá iria el mail del admin!
         subject: Cases.CONTACT_FORM_ADMIN, //
         context: adminContext,
       });
