@@ -37,10 +37,6 @@ describe('ShoppingCartService', () => {
 
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   describe('createCartProduct method', () => {
     it('Must create a new ShoppingCart instance from a userId and return that instance', async () => {
       const userId = faker.string.uuid();
@@ -68,6 +64,7 @@ describe('ShoppingCartService', () => {
     });
   });
 
+  //postProductInCart method--------------------------------------------------------------------
   describe('postProductInCart method', () => {
     let productFound;
     let productId:string;
