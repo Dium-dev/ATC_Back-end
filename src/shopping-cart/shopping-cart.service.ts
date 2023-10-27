@@ -52,26 +52,41 @@ export class ShoppingCartService {
     amount: number,
   ): Promise<{ statusCode: number; message: string }> {
 
-    const thisProduct: boolean | IError = await this.getThisProduct(
-      productId,
-      amount,
-    );
-
-    const thisShoppingCart: boolean | IError = await this.getThisShoppingCart(
-      cartId,
-    );
-
-    if (thisProduct && thisShoppingCart) {
-      await this.cartProductModel.create({
-        amount,
+    try {
+      const thisProduct: boolean | IError = await this.getThisProduct(
         productId,
+        amount,
+      );
+
+      const thisShoppingCart: boolean | IError = await this.getThisShoppingCart(
         cartId,
-      });
-      return {
-        statusCode: 200,
-        message: 'Producto agregado con exito!',
-      };
+      );
+
+      if (thisProduct && thisShoppingCart) {
+        await this.cartProductModel.create({
+          amount,
+          productId,
+          cartId,
+        });
+        return {
+          statusCode: 200,
+          message: 'Producto agregado con exito!',
+        };
+      }
+    } catch (error) {
+      switch (error.constructor) {
+        case NotFoundException:
+          throw new NotFoundException(error.message);
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrio un error en el servidor al tratar de buscar un producto',
+          );
+      }
     }
+
+    
   }
 
   private async getThisShoppingCart(id: string): Promise<boolean | IError> {
