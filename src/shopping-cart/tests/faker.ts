@@ -14,7 +14,7 @@ export const generatesProduct = (productId:string, state:stateproduct) => {
     state: state,
     /*     title: faker.commerce.product(),
     description: faker.commerce.productDescription(), */
-    stock: faker.number.int({ min:100 }),
+    stock: faker.number.int({ min:5, max:10 }),
     price: faker.number.float({ min: 0, max: 100, precision: 0.01 }),
   };
 };
