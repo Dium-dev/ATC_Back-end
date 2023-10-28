@@ -25,3 +25,10 @@ export const generatesCartProduct = (data) => {
     ...data,
   };
 };
+
+export const generateResponse = (status:number, message:string ) => {
+  return {
+    statusCode:status,
+    message: message,
+  };
+};
