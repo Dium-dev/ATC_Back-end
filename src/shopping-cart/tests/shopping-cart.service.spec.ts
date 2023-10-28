@@ -3,7 +3,7 @@ import { ShoppingCartService } from '../shopping-cart.service';
 import { ShoppingCart } from '../entities/shopping-cart.entity';
 import { SequelizeModule, getModelToken } from '@nestjs/sequelize';
 import { faker } from '@faker-js/faker';
-import { generatesCartProduct, generatesProduct, generatesShoppingCartInstance } from './faker';
+import { generateResponse, generatesCartProduct, generatesProduct, generatesShoppingCartInstance } from './faker';
 import { BadRequestException, InternalServerErrorException, NotFoundException, forwardRef } from '@nestjs/common';
 import { Product, stateproduct } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -37,6 +37,7 @@ describe('ShoppingCartService', () => {
 
   });
 
+  //createCartProduct method -------------------------------------------------------------------
   describe('createCartProduct method', () => {
     it('Must create a new ShoppingCart instance from a userId and return that instance', async () => {
       const userId = faker.string.uuid();
@@ -170,6 +171,51 @@ describe('ShoppingCartService', () => {
         .rejects.toThrow(InternalServerErrorException);
 
       expect(createCartProduct).toBeCalled();
+    });
+  });
+
+  describe('remove method', () => {
+    let findCartProduct;
+    const destroy = jest.fn(() => 'Deleted successfully');
+    let cartProductId;
+    let productId;
+    
+    beforeEach(() => {
+      cartProductId = faker.string.uuid();
+      productId = faker.string.uuid();
+
+      findCartProduct = jest.spyOn(cartProductModel, 'findOne').mockImplementation(() => {
+        return {
+          destroy: destroy,
+        };
+      });
+
+    });
+
+    it('Must remove an specific cartProduct instance from database', async () => {
+
+      const response = generateResponse(204, 'Producto eliminado exitosamente');
+
+      const result = await service.remove(cartProductId, productId);
+
+      expect(findCartProduct).toBeCalledWith({
+        where:{
+          cartId: cartProductId,
+          productId: productId,
+        },
+      });
+      expect(destroy).toBeCalled();
+      expect(result).toEqual(response);
+
+    });
+
+    it('Must throw an exception when the carProduct to destroy is not found', async () => {
+      findCartProduct.mockReset();
+      findCartProduct.mockImplementation(() => undefined);
+
+      await expect(async () => {
+        await service.remove(cartProductId, productId);
+      }).rejects.toThrow(NotFoundException);
     });
   });
 });
