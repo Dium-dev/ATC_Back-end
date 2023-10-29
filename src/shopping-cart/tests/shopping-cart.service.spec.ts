@@ -3,8 +3,8 @@ import { ShoppingCartService } from '../shopping-cart.service';
 import { ShoppingCart } from '../entities/shopping-cart.entity';
 import { SequelizeModule, getModelToken } from '@nestjs/sequelize';
 import { faker } from '@faker-js/faker';
-import { generateResponse, generatesCartProduct, generatesProduct, generatesShoppingCartInstance } from './faker';
-import { BadRequestException, InternalServerErrorException, NotFoundException, forwardRef } from '@nestjs/common';
+import { NewCartProduct, generateResponse, generatesArrayOfProducts, generatesCartProduct, generatesProduct, generatesShoppingCartInstance } from './faker';
+import { BadRequestException, HttpException, InternalServerErrorException, NotFoundException, forwardRef } from '@nestjs/common';
 import { Product, stateproduct } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
@@ -67,7 +67,10 @@ describe('ShoppingCartService', () => {
 
   //postProductInCart method--------------------------------------------------------------------
   describe('postProductInCart method', () => {
+
+    //Will be used for assertion purposes
     let productFound;
+
     let productId:string;
     let cartId:string;
     let amount:number;
@@ -93,7 +96,7 @@ describe('ShoppingCartService', () => {
         return true;
       });
 
-      createCartProduct = jest.spyOn(cartProductModel, 'create').mockImplementation( data => {
+      createCartProduct = jest.spyOn(cartProductModel, 'create').mockImplementation( (data: NewCartProduct) => {
         return generatesCartProduct(data);
       });
     });
@@ -177,8 +180,8 @@ describe('ShoppingCartService', () => {
   describe('remove method', () => {
     let findCartProduct;
     const destroy = jest.fn(() => 'Deleted successfully');
-    let cartProductId;
-    let productId;
+    let cartProductId:string;
+    let productId:string;
     
     beforeEach(() => {
       cartProductId = faker.string.uuid();
@@ -218,4 +221,112 @@ describe('ShoppingCartService', () => {
       }).rejects.toThrow(NotFoundException);
     });
   });
+
+  describe('CreateShoppingCart method', () => {
+    let userId:string;
+    let createMocked;
+
+    beforeEach(() => {
+      userId = faker.string.uuid();
+      createMocked = jest.spyOn(shoppingCartModel, 'create').mockImplementation(() => true);
+    });
+
+    it('Must create a ShoppingCart instance', async () => {
+
+      const result = await service.CreateShoppingCart(userId, {});
+
+      expect(createMocked).toBeCalledWith({ userId });
+      expect(result).toBeUndefined();
+    });
+
+    it('Must throw an exception when creating an instance is not possible', async () => {
+      createMocked.mockReset();
+      createMocked.mockImplementation(() => false);
+
+      await expect(async () => {
+        await service.CreateShoppingCart(userId, {});
+      }).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('destroyShoppingCart', () => {
+    let userId;
+    let destroyMocked;
+    
+    beforeEach(() => {
+      userId = faker.string.uuid();
+      destroyMocked = jest.spyOn(shoppingCartModel, 'destroy').mockImplementation(() => {
+        return 1;
+      });
+    });
+
+    it('Must destroy an specific shoppingCart', async () => {
+
+      const result = await service.destroyShoppingCart(userId, {});
+
+      expect(result).toBeUndefined();
+      expect(destroyMocked).toBeCalled();
+    });
+
+    it('Must throw an exception when the number of deleted rows equals zero', async () => {
+      destroyMocked.mockReset();
+      destroyMocked.mockImplementation(() => 0);
+
+      await expect(async () => {
+        await service.destroyShoppingCart(userId, {});
+      }).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('getCart method', () => {
+
+    it('Must find an specific cart and return its data', async () => {
+
+      const userId = faker.string.uuid();
+      const products = generatesArrayOfProducts(4);
+      const total = products.reduce((acc, product) => acc + product.price, 0);
+      let newShoppingCart;
+
+      const findShoppingCart = jest.spyOn(shoppingCartModel, 'findOne').mockImplementation((id:string) => {
+        newShoppingCart = generatesShoppingCartInstance(id);
+        const shoppingCart = {
+          ...newShoppingCart,
+          products: products,
+        };
+
+        return shoppingCart;
+      });
+
+      const findCartProduct = jest.spyOn(cartProductModel, 'findOne').mockImplementation(() => {
+        const data = {
+          amount: 1,
+          productId: faker.string.uuid(),
+          cartId: faker.string.uuid(),
+        };
+
+        return generatesCartProduct(data);
+      });
+
+
+      const result = await service.getCart(userId);
+
+      expect(findShoppingCart).toBeCalled();
+      expect(findCartProduct).toBeCalledTimes(products.length);
+      expect(result.id).toBe(newShoppingCart.id);
+      expect(result.total).toBe(total);
+      
+      for (const product in products) {
+        expect(result.products[product]).toEqual({
+          id: products[product].id,
+          title: products[product].title,
+          price: products[product].price,
+          amount: 1,
+          subtotal: products[product].price, // Agregar el subtotal para este producto
+        });
+      }
+    });
+
+  });
+
+  
 });
