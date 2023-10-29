@@ -216,12 +216,10 @@ export class ShoppingCartService {
 
   async getCart(userId: string) {
     try {
-      const user = await this.userModel.findByPk(userId, {
-        include: [{
-          model: ShoppingCart,
-        }],
-      });
-      const cart = await this.shoppingCartModel.findByPk(user.cart.dataValues.id, {
+      const cart = await this.shoppingCartModel.findOne({
+        where:{
+          userId:userId,
+        },
         include: [{
           model: Product,
           attributes: ['id', 'title', 'price'],
