@@ -324,7 +324,8 @@ export class ShoppingCartService {
         updateInfo.newQuantity,
       );
 
-      if (thisProduct === true) {
+
+      if (thisProduct) {
         cartProductToUpdate.amount = updateInfo.newQuantity;
         await cartProductToUpdate.save();
 
