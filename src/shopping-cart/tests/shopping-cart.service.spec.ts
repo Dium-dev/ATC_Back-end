@@ -280,7 +280,7 @@ describe('ShoppingCartService', () => {
 
   describe('getCart method', () => {
 
-    it('Must find an specific cart and return its data', async () => {
+    it('Must find an specific cart and return its associated data', async () => {
 
       const userId = faker.string.uuid();
       const products = generatesArrayOfProducts(4);
@@ -328,5 +328,108 @@ describe('ShoppingCartService', () => {
 
   });
 
-  
+  describe('getCartProducts method', () => {
+
+    it('Must find an specific cart and return its associated data', async () => {
+      const cartId = faker.string.uuid();
+      const products = generatesArrayOfProducts(4);
+      const total = products.reduce((acc, product) => acc + product.price, 0);
+      let newShoppingCart;
+
+      const findShoppingCart = jest.spyOn(shoppingCartModel, 'findByPk').mockImplementation((id:string, options) => {
+        newShoppingCart = generatesShoppingCartInstance(id);
+        const shoppingCart = {
+          ...newShoppingCart,
+          products: products,
+        };
+
+        return shoppingCart;
+      });
+
+      const findCartProduct = jest.spyOn(cartProductModel, 'findOne').mockImplementation(() => {
+        const data = {
+          amount: 1,
+          productId: faker.string.uuid(),
+          cartId: faker.string.uuid(),
+        };
+
+        return generatesCartProduct(data);
+      });
+
+      //Calling the method
+      const result = await service.getCartProducts(cartId);
+
+      expect(findShoppingCart).toBeCalled();
+      expect(findCartProduct).toBeCalledTimes(products.length);
+      expect(result.id).toBe(newShoppingCart.id);
+      expect(result.total).toBe(total);
+
+      for (const product in products) {
+        expect(result.products[product]).toEqual({
+          id: products[product].id,
+          title: products[product].title,
+          price: products[product].price,
+          amount: 1,
+          subtotal: products[product].price, // Agregar el subtotal para este producto
+        });
+      }
+    });
+
+    it('Must throw an exception when a ShoppingCart is not found', async () => {
+      const cartId = faker.string.uuid();
+
+      const findShoppingCart = jest.spyOn(shoppingCartModel, 'findByPk').mockImplementation((id:string, options) => undefined );
+
+      await expect( async () => {
+        await service.getCartProducts(cartId);
+      }).rejects.toThrow(NotFoundException);
+
+    });
+  });
+
+  describe('updateProductQuantity method', () => {
+    it('Must update the specified CartProductUpdate', async () => {
+      //For assertions purposes
+      const response = generateResponse(200, 'Cantidad de producto actualizada con éxito!');
+      const cartProductData = {
+        amount: 4, //faker.number.int({ max:4 }), //It can`t be greater than five, otherwise test will fail (check generateProduct method)
+        productId: faker.string.uuid(),
+        cartId: faker.string.uuid(),
+      };
+      let cartProduct;
+      //Arguments
+      const cartProductId = faker.string.uuid();
+      const newQuantity = 5;
+
+      const findCartProduct = jest.spyOn(cartProductModel, 'findByPk').mockImplementation(() => {
+        cartProduct = {
+          ...generatesCartProduct(cartProductData),
+          save:jest.fn(async () => 'XD'),
+        };
+
+        return cartProduct;
+      });
+      const findProduct = jest.spyOn(productModel, 'findByPk').mockImplementation(() => {
+        return generatesProduct(cartProductData.productId, stateproduct.Active);
+      });
+
+      const result = await service.updateProductQuantity({ cartProductId, newQuantity });
+
+      expect(findCartProduct).toBeCalled();
+      expect(findProduct).toBeCalled();
+      expect(result).toEqual(response);
+      expect(cartProduct.amount).toBe(newQuantity);
+    });
+
+    it('Must throw an exception when a CartProduct instance can`t be found', async () => {
+      const cartProductId = faker.string.uuid();
+      const newQuantity = 5;
+
+      const findCartProduct = jest.spyOn(cartProductModel, 'findByPk').mockImplementation(() => false);
+
+      await expect(async () => {
+        await service.updateProductQuantity({ cartProductId, newQuantity });
+      }).rejects.toThrow(NotFoundException);
+    });
+  });
 });
