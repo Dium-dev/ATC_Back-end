@@ -38,7 +38,7 @@ describe('ShoppingCartService', () => {
   });
 
   //createCartProduct method -------------------------------------------------------------------
-  describe('createCartProduct method', () => {
+  /* describe('createCartProduct method', () => {
     it('Must create a new ShoppingCart instance from a userId and return that instance', async () => {
       const userId = faker.string.uuid();
       const newShoppingCart = generatesShoppingCartInstance(userId);
@@ -63,7 +63,7 @@ describe('ShoppingCartService', () => {
       },
       ).rejects.toThrow(InternalServerErrorException);
     });
-  });
+  }); */
 
   //postProductInCart method--------------------------------------------------------------------
   describe('postProductInCart method', () => {

@@ -32,7 +32,7 @@ export class ShoppingCartService {
     private userService: UsersService,
   ) {}
 
-  public async createCartProduct(userId: string) {
+  /*   public async createCartProduct(userId: string) {
     try {
       const newCartUser = await this.shoppingCartModel.create({ userId });
       return newCartUser;
@@ -44,7 +44,7 @@ export class ShoppingCartService {
           );
       }
     }
-  }
+  } */
 
   async postProductInCart(
     productId: string,
