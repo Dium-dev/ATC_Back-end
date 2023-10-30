@@ -4,13 +4,14 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { OrderProduct } from './entities/orderProduct.entity';
-import { IGetOrders, IOrder } from './interfaces/response-order.interface';
+import { IOrder, UpdateStateOrder, IGetOrders } from './interfaces/response-order.interface';
 import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 import { Op } from 'sequelize';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
@@ -26,6 +27,7 @@ export class OrdersService {
   ) {}
 
   async findOneOrder(id: string) {
+
     try {
       const order = await Order.findOne({
         where: {
@@ -74,6 +76,15 @@ export class OrdersService {
           },
         },
       });
+
+      if (!orders)
+        throw new InternalServerErrorException(
+          'Algo salió mal al momento de buscar las órdenes. Revisar id enviado',
+        );
+      if (!orders.length)
+        throw new NotFoundException(
+          'No se encontraron órdenes asociadas a este usuario',
+        );
       if (!orders)
         throw new InternalServerErrorException(
           'Algo salió mal al momento de buscar las órdenes. Revisar id enviado',
@@ -113,7 +124,6 @@ export class OrdersService {
       if (!newOrder) {
         throw new InternalServerErrorException('Algo salió mal en el servidor');
       } else {
-
         for (const product of products) {
           await OrderProduct.create({
             orderId: newOrder.id,
@@ -132,6 +142,39 @@ export class OrdersService {
           ...urlBuy,
         };
       }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async updateStateOrder(updateDto: UpdateOrderDto): Promise<UpdateStateOrder> {
+    try {
+      const order = await Order.findByPk(updateDto.idOrder);
+      if (!order) throw new NotFoundException('Orden no encontrada');
+
+      //* Cancelar orden
+      //! Falta realizar validacion de rol
+      if (updateDto.OrderStateEnum === OrderStateEnum.CANCELADO) {
+        if (order.state === OrderStateEnum.APROBADO)
+          throw new ForbiddenException(
+            'No se permite cambiar la orden a este estado',
+          );
+
+        order.state = updateDto.OrderStateEnum;
+        order.save();
+        return {
+          statusCode: 200,
+          message: 'Orden actualizada',
+        };
+      }
+
+      order.state = updateDto.OrderStateEnum;
+      order.save();
+
+      return {
+        statusCode: 200,
+        message: 'Orden actualizada',
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
