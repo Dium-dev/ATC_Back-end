@@ -24,11 +24,16 @@ import {
 import { ICreateUser } from './interfaces/create-user.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { User } from './entities/user.entity';
+import { Sequelize } from 'sequelize-typescript';
+import { Transaction } from 'sequelize';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private sequelize: Sequelize,
+  ) { }
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -58,10 +63,17 @@ export class UsersController {
   async create(
     @Body() createUserDto: CreateUserDto,
   ): Promise<ICreateUser | IError> {
-    return (
-      (await this.usersService.verifyEmail(createUserDto.email)) &&
-      (await this.usersService.create(createUserDto))
-    );
+    const transaction: Transaction = await this.sequelize.transaction()
+
+    const newUser = await this.usersService.verifyEmail(createUserDto.email)
+      .then(async() => {
+        try {
+          return await this.usersService.create(createUserDto, transaction)
+        } catch (error) {
+          transaction.rollback()
+        }
+      })
+      return newUser;
   }
 
   @ApiOperation({
@@ -123,7 +135,7 @@ export class UsersController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-      @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ): Promise<IResponse | IError> {
     const response = this.usersService.update(id, updateUserDto);
     return response;
@@ -134,7 +146,7 @@ export class UsersController {
   })
   @Get()
   getUsers(
-  @Query('page') page: string,
+    @Query('page') page: string,
     @Query('limit') limit: string,
   ) {
     return this.usersService.getAll(+page, +limit);
@@ -145,7 +157,7 @@ export class UsersController {
   })
   @Delete(':id')
   deleteUser(
-  @Param('id') id: string,
+    @Param('id') id: string,
   ) {
     return this.usersService.deleteUser(id);
   }

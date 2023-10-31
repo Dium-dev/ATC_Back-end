@@ -21,6 +21,8 @@ import { MailService } from '../mail/mail.service';
 import { Cases } from '../mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
 import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
+import { ICreateUserContext } from 'src/mail/interfaces/create-account-context.interface';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class UsersService {
@@ -35,7 +37,7 @@ export class UsersService {
     private shopCartService: ShoppingCartService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
+  async create(createUserDto: CreateUserDto, transaction: Transaction): Promise<ICreateUser> {
     try {
       const data = {
         firstName: createUserDto.firstName,
@@ -48,9 +50,11 @@ export class UsersService {
         isActive: true,
       };
 
-      const newUser = await this.userModel.create(data);
+      const newUser = await this.userModel.create(data,{transaction});
 
-      await this.shopCartService.CreateShoppingCart(newUser.id, null);
+      await this.shopCartService.CreateShoppingCart(newUser.id, transaction);
+      
+      transaction.commit(); 
 
       if (newUser) {
         const response = {
@@ -62,9 +66,10 @@ export class UsersService {
         };
 
         //Setting up for email sending
-        const context = {
-          name: createUserDto.firstName,
-          link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad
+        const context: ICreateUserContext = {
+          firstname: createUserDto.firstName,
+          lastname: createUserDto.lastName,
+          /* link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad */
         };
         const mailData = {
           addressee: createUserDto.email,
@@ -72,7 +77,7 @@ export class UsersService {
           context: context,
         };
         //Sending mail
-        const mail = await this.mailsService.sendMails(mailData);
+        /* await this.mailsService.sendMails(mailData); */
 
         return response;
       } else {

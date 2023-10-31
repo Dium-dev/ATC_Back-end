@@ -155,7 +155,7 @@ export class ShoppingCartService {
     transaction: any,
   ): Promise<void> {
     try {
-      const newShoppingCart = await ShoppingCart.create({ userId });
+      const newShoppingCart = await ShoppingCart.create({ userId },{transaction});
 
       if (!newShoppingCart)
         throw new HttpException(
