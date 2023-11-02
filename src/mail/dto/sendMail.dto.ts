@@ -9,16 +9,16 @@ import {
 } from 'class-validator';
 import { IResetPasswordContext } from '../interfaces/reset-password-context.interface';
 import { ICreateUserContext } from '../interfaces/create-account-context.interface';
-import {IPurchaseContext} from '../interfaces/purchase-context.interface';
-import{IContactFormAdminContext} from '../interfaces/contact-form-admin-context.interface';
-import{IContactFormUserContext} from '../interfaces/contact-form-user-cotext.interface';
+import { IPurchaseContext } from '../interfaces/purchase-context.interface';
+import { IContactFormAdminContext } from '../interfaces/contact-form-admin-context.interface';
+import { IContactFormUserContext } from '../interfaces/contact-form-user-cotext.interface';
 
 export enum Cases {
   RESET_PASSWORD = 'RESET_PASSWORD',
   CREATE_ACCOUNT = 'CREATE_ACCOUNT',
   PURCHASE = 'PURCHASE',
   CONTACT_FORM_ADMIN = 'CONTACT_FORM_ADMIN',
-  CONTACT_FORM_USER = 'CONTACT_FORM_USER'
+  CONTACT_FORM_USER = 'CONTACT_FORM_USER',
 }
 
 export class ContactFormDto {
@@ -28,18 +28,21 @@ export class ContactFormDto {
     description: 'Recibe el nombre del usuario, requerido',
   })
   name: string;
+
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Recibe el telefono de contacto del usuario, requerido',
   })
   phone: string;
+
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Mensaje del usuario, requerido',
   })
   message: string;
+
   @IsEmail(undefined, { message: 'El formato del email no es valido' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
@@ -64,15 +67,21 @@ export class SendMailDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-    addressee: string;
+  addressee: string;
 
   @IsEnum(Cases, {
     message: '$value no está entre los posibles casos para envío de correo',
   })
-    subject: string;
+  subject: string;
 
   @IsDefined({
     message: '$property debe estar definido, revisa los parámetros requeridos',
   })
-    context: IResetPasswordContext | ICreateUserContext | IPurchaseContext | IContactFormAdminContext | IContactFormUserContext | INotSend;
+  context:
+    | IResetPasswordContext
+    | ICreateUserContext
+    | IPurchaseContext
+    | IContactFormAdminContext
+    | IContactFormUserContext
+    | INotSend;
 }

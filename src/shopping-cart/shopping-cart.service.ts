@@ -14,6 +14,7 @@ import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class ShoppingCartService {
@@ -151,56 +152,41 @@ export class ShoppingCartService {
   }
 
   public async CreateShoppingCart(
-    userId: string,
-    transaction: any,
+    userId: { userId: string },
+    transaction: Transaction,
   ): Promise<void> {
-    try {
-      const newShoppingCart = await ShoppingCart.create({ userId },{transaction});
-
-      if (!newShoppingCart)
-        throw new HttpException(
-          'No se pudo llevar a cabo la creación del nuevo carrito de compras',
-          HttpStatus.EXPECTATION_FAILED,
-        );
-      return;
-    } catch (error) {
-      throw new HttpException(error.message, error.status, error.error);
-    }
+    await ShoppingCart.create(userId, { transaction });
+    return;
   }
 
   public async destroyShoppingCart(
-    userId: string,
-    transaction: any,
+    userId: { userId: string },
+    transaction: Transaction,
   ): Promise<void> {
-    try {
-      const destroyThisShoppingCart = await ShoppingCart.destroy({
-        where: { userId },
-        force: true,
-      });
-
-      if (destroyThisShoppingCart === 0)
-        throw new HttpException(
-          'No se pudo llevar a cabo el borrado del carrito de compras',
-          HttpStatus.EXPECTATION_FAILED,
-        );
-      return;
-    } catch (error) {
-      throw new HttpException(error.message, error.status, error.error);
-    }
+    await ShoppingCart.destroy({
+      where: userId,
+      force: true,
+      transaction,
+    });
+    return;
   }
 
   async getCart(userId: string) {
     try {
       const user = await User.findByPk(userId, {
-        include: [{
-          model: ShoppingCart,
-        }],
+        include: [
+          {
+            model: ShoppingCart,
+          },
+        ],
       });
       const cart = await ShoppingCart.findByPk(user.cart.dataValues.id, {
-        include: [{
-          model: Product,
-          attributes: ['id', 'title', 'price'],
-        }],
+        include: [
+          {
+            model: Product,
+            attributes: ['id', 'title', 'price'],
+          },
+        ],
       });
 
       const products = await Promise.all(
@@ -224,18 +210,19 @@ export class ShoppingCartService {
         }),
       );
 
-      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
+      const total = products.reduce(
+        (acc, product) => acc + product.subtotal,
+        0,
+      );
 
       return {
         id: cart.id,
         products,
         total,
       };
-
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
-
   }
 
   async getCartProducts(cartId: string) {
@@ -269,7 +256,10 @@ export class ShoppingCartService {
         }),
       );
 
-      const total = products.reduce((acc, product) => acc + product.subtotal, 0);
+      const total = products.reduce(
+        (acc, product) => acc + product.subtotal,
+        0,
+      );
 
       return {
         id: thisCart.id,
@@ -287,13 +277,19 @@ export class ShoppingCartService {
     }
   }
 
-
-  async updateProductQuantity(updateInfo: { cartProductId: string; newQuantity: number }): Promise<{ statusCode: number; message: string }> {
+  async updateProductQuantity(updateInfo: {
+    cartProductId: string;
+    newQuantity: number;
+  }): Promise<{ statusCode: number; message: string }> {
     try {
-      const cartProductToUpdate = await CartProduct.findByPk(updateInfo.cartProductId);
+      const cartProductToUpdate = await CartProduct.findByPk(
+        updateInfo.cartProductId,
+      );
 
       if (!cartProductToUpdate) {
-        throw new NotFoundException('No se encontró el registro de CartProduct');
+        throw new NotFoundException(
+          'No se encontró el registro de CartProduct',
+        );
       }
 
       const thisProduct: boolean | IError = await this.getThisProduct(
@@ -314,7 +310,9 @@ export class ShoppingCartService {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       } else {
-        throw new InternalServerErrorException('Error del servidor al actualizar la cantidad de producto.');
+        throw new InternalServerErrorException(
+          'Error del servidor al actualizar la cantidad de producto.',
+        );
       }
     }
   }

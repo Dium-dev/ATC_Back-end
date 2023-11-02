@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import {ContactController} from './mail.controller';
+import { ContactController } from './mail.controller';
 import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';

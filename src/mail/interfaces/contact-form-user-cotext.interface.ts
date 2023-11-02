@@ -1,3 +1,3 @@
 export interface IContactFormUserContext {
-    firstname: string;
+  firstname: string;
 }

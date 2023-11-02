@@ -26,8 +26,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiOperation({
-    summary:
-      'Obtener productos',
+    summary: 'Obtener productos',
   })
   @Get()
   async getProducts(

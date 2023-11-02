@@ -15,16 +15,16 @@ import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class ReviewsService {
-  constructor(
-    @InjectModel(Review) private reviewModel:typeof Review,
-  ) {}
+  constructor(@InjectModel(Review) private reviewModel: typeof Review) {}
 
-  async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview | HttpException> {
+  async create(
+    id: string,
+    createReviewDto: CreateReviewDto,
+  ): Promise<IReview | HttpException> {
     try {
-
       const newReview = await this.reviewModel.create({
         ...createReviewDto,
-        userId:id,
+        userId: id,
       });
       if (!newReview)
         throw new InternalServerErrorException(
@@ -67,7 +67,9 @@ export class ReviewsService {
     }
   }
 
-  async update(updateReviewDto: UpdateReviewDto): Promise<IReview | HttpException> {
+  async update(
+    updateReviewDto: UpdateReviewDto,
+  ): Promise<IReview | HttpException> {
     try {
       //Update
       const count = await this.reviewModel.update(updateReviewDto, {

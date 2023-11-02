@@ -128,8 +128,8 @@ export class AdminProductsService {
         year: product.Título.split(' ')[3].includes('-')
           ? product.Título.split(' ')[3]
           : product.Título.split(' ')[4].includes('-')
-            ? product.Título.split(' ')[4]
-            : null,
+          ? product.Título.split(' ')[4]
+          : null,
         brandId: brandId,
         categoryId: categoryId,
       });
@@ -227,8 +227,8 @@ export class AdminProductsService {
       thisProduct.year = product.Título.split(' ')[3].includes('-')
         ? product.Título.split(' ')[3]
         : product.Título.split(' ')[4].includes('-')
-          ? product.Título.split(' ')[4]
-          : null;
+        ? product.Título.split(' ')[4]
+        : null;
       thisProduct.brandId = brandId;
       thisProduct.categoryId = categoryId;
 

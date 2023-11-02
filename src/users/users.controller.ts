@@ -24,16 +24,11 @@ import {
 import { ICreateUser } from './interfaces/create-user.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { User } from './entities/user.entity';
-import { Sequelize } from 'sequelize-typescript';
-import { Transaction } from 'sequelize';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private sequelize: Sequelize,
-  ) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -44,11 +39,16 @@ export class UsersController {
     description:
       'Si todo sale bien, se devolverá un objeto con un statusCode 201 y el token de verificación de usuario.',
   })
-  @ApiResponse({
+  /* 
+    Dejo comentado éste debido a que en la funcion crear usuario deja de estar el 400 de error 
+    en la creacion x datos del usuario, quedando con el 500 nomás.
+    los datos del ususario se validan en el DTO !
+  */
+  /* @ApiResponse({
     status: 400,
     description:
       'Indica que hubo un error a la hora de crear la cuenta del usuario en la aplicación. Recomendacion verificar los datos enviados',
-  })
+  }) */
   @ApiResponse({
     status: 409,
     description:
@@ -56,24 +56,19 @@ export class UsersController {
   })
   @ApiResponse({
     status: 500,
-    description: 'Error interno del servidor.',
+    description: 'Erron interno del servidor, intente mas tarde',
   })
   @Post('register')
   @HttpCode(201)
   async create(
     @Body() createUserDto: CreateUserDto,
   ): Promise<ICreateUser | IError> {
-    const transaction: Transaction = await this.sequelize.transaction()
-
-    const newUser = await this.usersService.verifyEmail(createUserDto.email)
-      .then(async() => {
-        try {
-          return await this.usersService.create(createUserDto, transaction)
-        } catch (error) {
-          transaction.rollback()
-        }
-      })
-      return newUser;
+    const newUser = await this.usersService
+      .verifyEmail(createUserDto.email)
+      .then(async () => {
+        return this.usersService.create(createUserDto);
+      });
+    return newUser;
   }
 
   @ApiOperation({
@@ -142,13 +137,11 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
+    summary:
+      'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
   })
   @Get()
-  getUsers(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
-  ) {
+  getUsers(@Query('page') page: string, @Query('limit') limit: string) {
     return this.usersService.getAll(+page, +limit);
   }
 
@@ -156,10 +149,7 @@ export class UsersController {
     summary: 'Ruta para eliminar un usuario.',
   })
   @Delete(':id')
-  deleteUser(
-    @Param('id') id: string,
-  ) {
+  deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
   }
-
 }

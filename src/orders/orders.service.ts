@@ -11,7 +11,11 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { OrderProduct } from './entities/orderProduct.entity';
-import { IOrder, UpdateStateOrder, IGetOrders } from './interfaces/response-order.interface';
+import {
+  IOrder,
+  UpdateStateOrder,
+  IGetOrders,
+} from './interfaces/response-order.interface';
 import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 import { Op } from 'sequelize';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
@@ -27,7 +31,6 @@ export class OrdersService {
   ) {}
 
   async findOneOrder(id: string) {
-
     try {
       const order = await Order.findOne({
         where: {
@@ -103,17 +106,19 @@ export class OrdersService {
   }
 
   //Crear Orden
-  async create(
-    userId: string,
-  ): Promise<object> {
+  async create(userId: string): Promise<object> {
     //Obtenemos el id del carrito del usuario que realiza la peticion
     const { cart } = await User.findByPk(userId, {
-      include: [{
-        model: ShoppingCart,
-      }],
+      include: [
+        {
+          model: ShoppingCart,
+        },
+      ],
     });
     //Aqui obtenemos el monto total y los productos para realizar la orden
-    const { total, products } = await this.shoppingCartService.getCartProducts(cart.id);
+    const { total, products } = await this.shoppingCartService.getCartProducts(
+      cart.id,
+    );
 
     try {
       const newOrder = await Order.create({
@@ -133,7 +138,11 @@ export class OrdersService {
           });
         }
 
-        const urlBuy = await this.paymentsService.createPayment(total, userId, newOrder.id);
+        const urlBuy = await this.paymentsService.createPayment(
+          total,
+          userId,
+          newOrder.id,
+        );
 
         return {
           statusCode: 201,
@@ -180,49 +189,49 @@ export class OrdersService {
     }
   }
 
-  async findAll(getAllOrdersDto: GetAllOrdersDto):Promise<IGetOrders> {
+  async findAll(getAllOrdersDto: GetAllOrdersDto): Promise<IGetOrders> {
     try {
       const { page, status } = getAllOrdersDto;
       //Preparing requirements for querying data using the method findAndCountAll
-      const {
-        limit,
-        offset,
-        order,
-        attributes,
-      } = this.generateObject(getAllOrdersDto);
+      const { limit, offset, order, attributes } =
+        this.generateObject(getAllOrdersDto);
 
       //Querying
-      const { rows:orders, count:totalOrders } = await Order.findAndCountAll({
+      const { rows: orders, count: totalOrders } = await Order.findAndCountAll({
         limit,
         offset,
         order,
         attributes,
-        where:{
-          state:{
+        where: {
+          state: {
             [Op.or]: status,
           },
         },
       });
 
-      if (!orders.length) throw new NotFoundException('No se encontraron órdenes en esta página');
+      if (!orders.length)
+        throw new NotFoundException('No se encontraron órdenes en esta página');
 
       const totalPages = Math.ceil(totalOrders / limit);
 
-      return { statusCode:200, data: { orders, totalOrders, totalPages, page } };
+      return {
+        statusCode: 200,
+        data: { orders, totalOrders, totalPages, page },
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
   //Method used to prepare query data
-  generateObject(getAllOrders:GetAllOrdersDto) {
+  generateObject(getAllOrders: GetAllOrdersDto) {
     //Returns an array of type:['created_at','ASC']
     const newOrder = getAllOrders.order.split(' ');
     const queryObject = {
       limit: getAllOrders.limit,
       offset: (getAllOrders.page - 1) * getAllOrders.limit,
       order: [],
-      attributes:['id', 'state', 'created_at'],
+      attributes: ['id', 'state', 'created_at'],
     };
 
     queryObject.order.push([newOrder[0], newOrder[1]]);
