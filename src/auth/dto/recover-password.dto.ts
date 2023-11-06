@@ -7,5 +7,5 @@ export class RecoverPasswordDto {
   @ApiProperty({
     description: 'Email de usuario que perdio la contraseña',
   })
-    email: string;
+  email: string;
 }

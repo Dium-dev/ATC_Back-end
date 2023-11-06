@@ -14,9 +14,9 @@ export interface UpdateStateOrder {
 export interface IGetOrders {
   statusCode: number;
   data: {
-    orders: Order[],
-    totalOrders: number,
-    totalPages: number,
-    page: number
-  }
+    orders: Order[];
+    totalOrders: number;
+    totalPages: number;
+    page: number;
+  };
 }

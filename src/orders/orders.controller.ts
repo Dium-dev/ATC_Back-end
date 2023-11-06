@@ -48,7 +48,10 @@ export class OrdersController {
     return response;
   }
 
-  @ApiOperation({ summary: 'Crear orden', description: 'Es necesario tener un producto en el carrito.' })
+  @ApiOperation({
+    summary: 'Crear orden',
+    description: 'Es necesario tener un producto en el carrito.',
+  })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -61,7 +64,9 @@ export class OrdersController {
   }
 
   @Get()
-  async getAllOrders(@Body() getAllOrders:GetAllOrdersDto):Promise<IGetOrders> {
+  async getAllOrders(
+    @Body() getAllOrders: GetAllOrdersDto,
+  ): Promise<IGetOrders> {
     const response = await this.ordersService.findAll(getAllOrders);
     return response;
   }

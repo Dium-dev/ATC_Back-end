@@ -1,4 +1,6 @@
 import {
+  Inject,
+  forwardRef,
   Injectable,
   NotFoundException,
   BadRequestException,
@@ -16,9 +18,15 @@ import {
 
 import { Op } from 'sequelize';
 import { IResponse } from 'src/utils/interfaces/response.interface';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class DirectionsService {
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+  ) {}
+
   async create(createDireetionDto: CreateDireetionDto): Promise<IResDirection> {
     try {
       const newDirection = await Direction.create({

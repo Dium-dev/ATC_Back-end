@@ -64,12 +64,12 @@ export class SendMailDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-    addressee: string;
+  addressee: string;
 
   @IsEnum(Cases, {
     message: '$value no está entre los posibles casos para envío de correo',
   })
-    subject: string;
+  subject: string;
 
   @IsDefined({
     message: '$property debe estar definido, revisa los parámetros requeridos',
