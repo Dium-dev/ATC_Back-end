@@ -10,14 +10,13 @@ import {
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { IError } from 'src/utils/interfaces/error.interface';
 
 @Controller('brands')
 export class BrandsController {
   constructor(private readonly brandsService: BrandsService) {}
 
   @Get()
-  async getAllCategories(): Promise<{ id: string; name: string }[] | IError> {
+  async getAllCategories(): Promise<{ id: string; name: string }[]> {
     const brands = await this.brandsService.findAllBrands();
     return brands;
   }

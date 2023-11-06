@@ -27,7 +27,7 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @Post('create-payment')
   async createPayment(
-  @GetUser() { userId }: any,
+    @GetUser() { userId }: any,
     @Body() { amount, orderId }: CreatePaymentDto,
     @Res() res: Response,
   ) {
@@ -51,7 +51,7 @@ export class PaymentsController {
   })
   @Get('success/:orderid')
   async handleSuccessPayment(
-  @Param('orderid') orderid: string,
+    @Param('orderid') orderid: string,
     @Res() res: Response,
   ) {
     await this.paymentsService.actualizePayment('success', orderid);
@@ -64,7 +64,7 @@ export class PaymentsController {
   })
   @Get('failure/:orderid')
   async handleFailurePayment(
-  @Param('orderid') orderid: string,
+    @Param('orderid') orderid: string,
     @Res() res: Response,
   ) {
     await this.paymentsService.actualizePayment('failure', orderid);
@@ -77,7 +77,7 @@ export class PaymentsController {
   })
   @Get('pending/:orderid')
   async handlePendingPayment(
-  @Param('orderid') orderid: string,
+    @Param('orderid') orderid: string,
     @Res() res: Response,
   ) {
     await this.paymentsService.actualizePayment('pending', orderid);

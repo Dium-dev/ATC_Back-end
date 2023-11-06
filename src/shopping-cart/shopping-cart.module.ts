@@ -8,7 +8,6 @@ import { ShoppingCart } from './entities/shopping-cart.entity';
 import { UsersModule } from 'src/users/users.module';
 import { ProductsModule } from 'src/products/products.module';
 
-
 @Module({
   imports: [
     forwardRef(() => UsersModule),
@@ -17,6 +16,6 @@ import { ProductsModule } from 'src/products/products.module';
   ],
   controllers: [ShoppingCartController],
   providers: [ShoppingCartService],
-  exports: [ShoppingCartService],
+  exports: [ShoppingCartService, SequelizeModule],
 })
 export class ShoppingCartModule {}

@@ -11,7 +11,6 @@ import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { GetUser } from './auth-user.decorator';
-import { IError } from 'src/utils/interfaces/error.interface';
 import {
   ApiTags,
   ApiOperation,
@@ -51,7 +50,7 @@ export class AuthController {
   @HttpCode(201)
   async recoverPassword(
     @Body() recoverPassword: RecoverPasswordDto,
-  ): Promise<IResponse | IError> {
+  ): Promise<IResponse> {
     const response = await this.authService.recoverPassword(recoverPassword);
     return response;
   }
@@ -84,9 +83,9 @@ export class AuthController {
   @HttpCode(201)
   async resetPassword(
     @Body() resetPassword: ResetPasswordDto,
-      @Headers('x-token') token: string,
-      //@GetUser() user: UserChangePasswordDto,
-  ): Promise<IResponse | IError> {
+    @Headers('x-token') token: string,
+    //@GetUser() user: UserChangePasswordDto,
+  ): Promise<IResponse> {
     const response = await this.authService.resetPassword(resetPassword, token);
     return response;
   }
@@ -120,8 +119,8 @@ export class AuthController {
   @HttpCode(201)
   async changePassword(
     @Body() changePassword: ChangePasswordDto,
-      @GetUser() user: UserChangePasswordDto,
-  ): Promise<IResponse | IError> {
+    @GetUser() user: UserChangePasswordDto,
+  ): Promise<IResponse> {
     const response = await this.authService.changePassword(
       changePassword,
       user,

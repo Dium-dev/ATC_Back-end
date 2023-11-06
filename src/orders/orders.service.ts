@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   HttpException,
+  Inject,
+  forwardRef,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -16,12 +18,15 @@ import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
 import { PaymentsService } from 'src/payments/payments.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly shoppingCartService: ShoppingCartService,
     private readonly paymentsService: PaymentsService,
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
   ) {}
 
   async findOneOrder(id: string) {
@@ -103,7 +108,7 @@ export class OrdersService {
   //Crear Orden
   async create(userId: string): Promise<object> {
     //Obtenemos el id del carrito del usuario que realiza la peticion
-    const { cart } = await User.findByPk(userId, {
+    const { cart } = await this.userService.findByPkGenericUser(userId, {
       include: [
         {
           model: ShoppingCart,

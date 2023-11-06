@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   HttpException,
+  Inject,
+  forwardRef,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,29 +13,34 @@ import { Review } from './entities/review.entity';
 import { User } from 'src/users/entities/user.entity';
 import { IReview } from './interfaces/response-review.interface';
 import { ActivateReviewDto } from './dto/activate-review.dto';
+import { UsersService } from 'src/users/users.service';
 import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class ReviewsService {
   constructor(
     @InjectModel(Review) private reviewModel:typeof Review,
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
   ) {}
 
   async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview | HttpException> {
     try {
+      const user = await this.userService.findByPkGenericUser(id, {});
 
-      const newReview = await this.reviewModel.create({
+        const Newreview = await this.reviewModel.create({
         ...createReviewDto,
         userId:id,
       });
-      if (!newReview)
+      if (!Newreview)
+
         throw new InternalServerErrorException(
           'Algo salió mal al momento de crear la reseña',
         );
 
       const response = {
         statusCode: 201,
-        data: newReview,
+        data: Newreview,
       };
       return response;
     } catch (error) {

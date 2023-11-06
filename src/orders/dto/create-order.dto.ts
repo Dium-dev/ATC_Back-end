@@ -32,5 +32,5 @@ export class CreateOrderDto {
     each: true,
   })
   @Type(() => AmountPricePerProduct)
-    products: AmountPricePerProduct[];
+  products: AmountPricePerProduct[];
 }

@@ -1,7 +1,7 @@
 import * as mercadopago from 'mercadopago';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { User } from 'src/users/entities/user.entity';
 import { ACCESS_TOKEN, HOST } from '../config/env';
-import { Injectable, HttpException } from '@nestjs/common';
-import { User } from '../users/entities/user.entity';
 import { Payment, PaymentState } from './entities/payment.entity';
 import { Order, OrderStateEnum } from '../orders/entities/order.entity';
 import { CreatePreferencePayload } from 'mercadopago/models/preferences/create-payload.model';
@@ -16,6 +16,8 @@ mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 @Injectable()
 export class PaymentsService {
   constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
     private readonly mailsService: MailService,
   ) {
     mercadopago.configure({
@@ -25,8 +27,8 @@ export class PaymentsService {
 
   async createPayment(amount: number, userId: string, orderId?: string) {
     try {
-      const user = await User.findByPk(userId);
-
+      const user = await this.userService.findByPkGenericUser(userId, {});
+      // Crea un objeto de preferencia con los detalles del pago
       const preference: CreatePreferencePayload = {
         items: [
           {
@@ -95,7 +97,6 @@ export class PaymentsService {
           where: { cartId },
         });
       }
-
       return `El estado de la orden es:${state}`;
     } catch (error) {
       console.log(error.message);

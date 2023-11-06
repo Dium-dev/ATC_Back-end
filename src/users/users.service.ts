@@ -15,12 +15,18 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
-import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
-import { IResponse } from '../utils/interfaces/response.interface';
-import { MailService } from '../mail/mail.service';
-import { Cases } from '../mail/dto/sendMail.dto';
+import { IResponse } from 'src/utils/interfaces/response.interface';
+import { MailService } from 'src/mail/mail.service';
+import { Cases } from 'src/mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
-import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
+import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+import { FindOptions, or } from 'sequelize';
+import { EModelsTable } from 'src/utils/custom/EmodelsTable.enum';
+import { DirectionsService } from 'src/directions/directions.service';
+import { ReviewsService } from 'src/reviews/reviews.service';
+import { OrdersService } from 'src/orders/orders.service';
+import { PaymentsService } from 'src/payments/payments.service';
+import { GenericPaginateUserInt } from './interfaces/genericsIntUsers.interface';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +39,14 @@ export class UsersService {
     private mailsService: MailService,
     @Inject(forwardRef(() => ShoppingCartService))
     private shopCartService: ShoppingCartService,
+    @Inject(forwardRef(() => DirectionsService))
+    private directionService: DirectionsService,
+    @Inject(forwardRef(() => ReviewsService))
+    private reviewService: ReviewsService,
+    @Inject(forwardRef(() => OrdersService))
+    private orderService: OrdersService,
+    @Inject(forwardRef(() => PaymentsService))
+    private paymentService: PaymentsService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
@@ -253,6 +267,80 @@ export class UsersService {
       }
     } catch (error) {
       throw new HttpException('Error al eliminar un usuario.', 404);
+    }
+  }
+
+  /* Public functions a utilizar en diferentes modulos */
+
+  public async genericUser(
+    method: EModelsTable,
+    options: FindOptions,
+  ): Promise<User[] | User> {
+    try {
+      const genericResponseUser = await User[method](options);
+      if (!genericResponseUser)
+        throw new BadRequestException(
+          `No se encontraron datos para la solucitud de tipo ${method}`,
+        );
+      return genericResponseUser;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            `Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ${method}`,
+          );
+      }
+    }
+  }
+
+  public async findAndCountAllGenericUser(
+    options: FindOptions,
+    page: number,
+  ): Promise<GenericPaginateUserInt> {
+    try {
+      const genericResponseUser = await User.findAndCountAll(options);
+      if (!genericResponseUser)
+        throw new BadRequestException(
+          'No se encontraron datos para la solucitud de tipo findAndCountAll',
+        );
+      return {
+        data: genericResponseUser.rows,
+        page,
+        totalPages: Math.ceil(genericResponseUser.count / options.limit),
+        totalUsers: genericResponseUser.count,
+      };
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrio un error al trabajar la entidad usuario a la hora de indagar por findAndCountAll',
+          );
+      }
+    }
+  }
+
+  public async findByPkGenericUser(
+    userId: string,
+    options: FindOptions,
+  ): Promise<User> {
+    try {
+      const genericResponseUser = await User.findByPk(userId, options);
+      if (!genericResponseUser)
+        throw new BadRequestException('No ha sido posible encontro al usuario');
+      return genericResponseUser;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrio un error al trabajar la entidad usuario a la hora de indagar por ususario particular',
+          );
+      }
     }
   }
 }
