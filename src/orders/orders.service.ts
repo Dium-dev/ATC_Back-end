@@ -8,8 +8,6 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { OrderProduct } from './entities/orderProduct.entity';
@@ -191,7 +189,7 @@ export class OrdersService {
     }
   }
 
-  async findAll(getAllOrdersDto: GetAllOrdersDto):Promise<IGetOrders> {
+  async findAll(getAllOrdersDto: GetAllOrdersDto): Promise<IGetOrders> {
     try {
       const { page, status } = getAllOrdersDto;
       //Preparing requirements for querying data using the method findAndCountAll

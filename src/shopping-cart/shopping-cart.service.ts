@@ -13,6 +13,7 @@ import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
+import { ProductsService } from 'src/products/products.service';
 import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
@@ -29,6 +30,8 @@ export class ShoppingCartService {
     @InjectModel(User) private userModel: typeof User,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
+    @Inject(forwardRef(() => ProductsService))
+    private productsService: ProductsService,
   ) {}
 
   /*   public async createCartProduct(userId: string) {

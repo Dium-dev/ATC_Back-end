@@ -23,7 +23,7 @@ export class GetAllOrdersDto {
     message: '$property debe ser un número mayor que cero',
   })
   //Número de órdenes por página
-  limit: number;
+    limit: number;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
@@ -32,7 +32,7 @@ export class GetAllOrdersDto {
     message: '$property debe ser un número mayor que cero',
   })
   //Según el limit, la página de las órdenes
-  page: number;
+    page: number;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
@@ -50,7 +50,7 @@ export class GetAllOrdersDto {
     each: true,
   })
   //El estado actual de la orden
-  status: string[];
+    status: string[];
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
@@ -60,5 +60,5 @@ export class GetAllOrdersDto {
       'Hay un número limitado de valores permitidos para $property y $value no lo es',
   })
   //El orden en el que se envían las órdenes
-  order: DateOrder;
+    order: DateOrder;
 }
