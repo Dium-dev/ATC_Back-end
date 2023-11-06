@@ -71,19 +71,25 @@ export class PaymentsService {
     try {
       const order = await Order.findByPk(orderId);
 
-      state == 'success' ? order.state = OrderStateEnum.PAGO :
-        state == 'pending' ? order.state = OrderStateEnum.PENDIENTE :
-          order.state = OrderStateEnum.RECHAZADO;
+      state == 'success'
+        ? (order.state = OrderStateEnum.PAGO)
+        : state == 'pending'
+        ? (order.state = OrderStateEnum.PENDIENTE)
+        : (order.state = OrderStateEnum.RECHAZADO);
       await order.save();
 
       const payment = await Payment.findOne({ where: { orderId } });
-      state == 'success' ? payment.state = PaymentState.SUCCESS :
-        state == 'pending' ? payment.state = PaymentState.PENDING :
-          payment.state = PaymentState.FAILED;
+      state == 'success'
+        ? (payment.state = PaymentState.SUCCESS)
+        : state == 'pending'
+        ? (payment.state = PaymentState.PENDING)
+        : (payment.state = PaymentState.FAILED);
       await payment.save();
 
       if (state == 'success') {
-        const user = await User.findByPk(order.userId, { include: [ ShoppingCart ] });
+        const user = await User.findByPk(order.userId, {
+          include: [ShoppingCart],
+        });
         const cartId = user.cart.id;
         const products = await CartProduct.findAll({
           where: { cartId },
@@ -113,7 +119,8 @@ export class PaymentsService {
       const cuotesValue = payment.body.transaction_details.installment_amount;
 
       if (status == 'rejected') await this.actualizePayment('failure', orderId);
-      if (status == 'in_process') await this.actualizePayment('pending', orderId);
+      if (status == 'in_process')
+        await this.actualizePayment('pending', orderId);
       if (status == 'approved') {
         const order = await Order.findByPk(orderId);
         const user = await User.findByPk(order.userId);

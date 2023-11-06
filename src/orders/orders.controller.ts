@@ -5,7 +5,7 @@ import {
   Param,
   Patch,
   Body,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';
@@ -55,7 +55,7 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-  @GetUser() user: UserChangePasswordDto,
+    @GetUser() user: UserChangePasswordDto,
     @Body() createOrderDto: CreateOrderDto,
   ) {
     const { userId } = user;
@@ -70,7 +70,6 @@ export class OrdersController {
     const response = await this.ordersService.findAll(getAllOrders);
     return response;
   }
-
 
   //Actualizar el estado de una orden
   @Patch()

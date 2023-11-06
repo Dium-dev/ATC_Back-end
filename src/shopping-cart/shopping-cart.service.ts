@@ -11,6 +11,7 @@ import {
 import { Product, stateproduct } from 'src/products/entities/product.entity';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
+import { Transaction } from 'sequelize';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { ProductsService } from 'src/products/products.service';
@@ -155,42 +156,23 @@ export class ShoppingCartService {
   }
 
   public async CreateShoppingCart(
-    userId: string,
-    transaction: any,
+    userId: { userId: string },
+    transaction: Transaction,
   ): Promise<void> {
-    try {
-      const newShoppingCart = await this.shoppingCartModel.create({ userId });
-
-      if (!newShoppingCart)
-        throw new HttpException(
-          'No se pudo llevar a cabo la creación del nuevo carrito de compras',
-          HttpStatus.EXPECTATION_FAILED,
-        );
-      return;
-    } catch (error) {
-      throw new HttpException(error.message, error.status, error.error);
-    }
+    await ShoppingCart.create(userId, { transaction });
+    return;
   }
 
   public async destroyShoppingCart(
-    userId: string,
-    transaction: any,
+    userId: { userId: string },
+    transaction: Transaction,
   ): Promise<void> {
-    try {
-      const destroyThisShoppingCart = await this.shoppingCartModel.destroy({
-        where: { userId },
-        force: true,
-      });
-
-      if (destroyThisShoppingCart === 0)
-        throw new HttpException(
-          'No se pudo llevar a cabo el borrado del carrito de compras',
-          HttpStatus.EXPECTATION_FAILED,
-        );
-      return;
-    } catch (error) {
-      throw new HttpException(error.message, error.status, error.error);
-    }
+    await ShoppingCart.destroy({
+      where: userId,
+      force: true,
+      transaction,
+    });
+    return;
   }
 
   async getCart(userId: string) {

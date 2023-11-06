@@ -55,7 +55,7 @@ export class PaymentsController {
     @Res() res: Response,
   ) {
     await this.paymentsService.actualizePayment('success', orderid);
-    res.redirect('https://google.com');// Insertar ruta a donde queremos que se diriga cuando se realize el pago
+    res.redirect('https://google.com'); // Insertar ruta a donde queremos que se diriga cuando se realize el pago
   }
 
   // Ruta para manejar un pago fallido
@@ -68,7 +68,7 @@ export class PaymentsController {
     @Res() res: Response,
   ) {
     await this.paymentsService.actualizePayment('failure', orderid);
-    res.redirect('https://google.com');// Insertar ruta a donde queremos que se diriga cuando falle el pago
+    res.redirect('https://google.com'); // Insertar ruta a donde queremos que se diriga cuando falle el pago
   }
 
   // Ruta para manejar un pago pendiente
@@ -81,14 +81,11 @@ export class PaymentsController {
     @Res() res: Response,
   ) {
     await this.paymentsService.actualizePayment('pending', orderid);
-    res.redirect('https://google.com');// Insertar ruta a donde queremos que se diriga cuando falle el pago
+    res.redirect('https://google.com'); // Insertar ruta a donde queremos que se diriga cuando falle el pago
   }
 
   @Post('webhook/:orderid')
-  async notifWebHook(
-  @Query() query,
-    @Param('orderid') orderid: string,
-  ) {
+  async notifWebHook(@Query() query, @Param('orderid') orderid: string) {
     if (query.type && query.type == 'payment') {
       await this.paymentsService.actualizeOrder(query['data.id'], orderid);
     }

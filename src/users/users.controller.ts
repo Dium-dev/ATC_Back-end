@@ -38,11 +38,16 @@ export class UsersController {
     description:
       'Si todo sale bien, se devolverá un objeto con un statusCode 201 y el token de verificación de usuario.',
   })
-  @ApiResponse({
+  /* 
+    Dejo comentado éste debido a que en la funcion crear usuario deja de estar el 400 de error 
+    en la creacion x datos del usuario, quedando con el 500 nomás.
+    los datos del ususario se validan en el DTO !
+  */
+  /* @ApiResponse({
     status: 400,
     description:
       'Indica que hubo un error a la hora de crear la cuenta del usuario en la aplicación. Recomendacion verificar los datos enviados',
-  })
+  }) */
   @ApiResponse({
     status: 409,
     description:
@@ -50,15 +55,19 @@ export class UsersController {
   })
   @ApiResponse({
     status: 500,
-    description: 'Error interno del servidor.',
+    description: 'Erron interno del servidor, intente mas tarde',
   })
   @Post('register')
   @HttpCode(201)
-  async create(@Body() createUserDto: CreateUserDto): Promise<ICreateUser> {
-    return (
-      (await this.usersService.verifyEmail(createUserDto.email)) &&
-      (await this.usersService.create(createUserDto))
-    );
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<ICreateUser> {
+    const newUser = await this.usersService
+      .verifyEmail(createUserDto.email)
+      .then(async () => {
+        return this.usersService.create(createUserDto);
+      });
+    return newUser;
   }
 
   @ApiOperation({

@@ -17,7 +17,7 @@ export class Payment extends Model<Payment> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     allowNull: false,

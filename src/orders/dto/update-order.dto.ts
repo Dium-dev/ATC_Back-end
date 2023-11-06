@@ -8,7 +8,7 @@ export class UpdateOrderDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-    idOrder: string;
+  idOrder: string;
 
   @IsString({
     message: '$property debe ser un string, en cambio enviaste: $value',
@@ -16,5 +16,5 @@ export class UpdateOrderDto {
   @IsNotEmpty({
     message: '$property no puede estar vacio',
   })
-    OrderStateEnum: OrderStateEnum;
+  OrderStateEnum: OrderStateEnum;
 }

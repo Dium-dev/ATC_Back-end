@@ -57,7 +57,12 @@ export const createOrderObject = (products: [], user: any) => {
   return order;
 };
 
-export const createPaymentObject = (id: string, amount: number, orderId: string, user_email: string) => {
+export const createPaymentObject = (
+  id: string,
+  amount: number,
+  orderId: string,
+  user_email: string,
+) => {
   const payment = {
     id,
     orderId,

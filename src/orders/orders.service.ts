@@ -11,7 +11,11 @@ import {
 import { Order, OrderStateEnum } from './entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { OrderProduct } from './entities/orderProduct.entity';
-import { IOrder, UpdateStateOrder, IGetOrders } from './interfaces/response-order.interface';
+import {
+  IOrder,
+  UpdateStateOrder,
+  IGetOrders,
+} from './interfaces/response-order.interface';
 import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 import { Op } from 'sequelize';
 import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
@@ -30,7 +34,6 @@ export class OrdersService {
   ) {}
 
   async findOneOrder(id: string) {
-
     try {
       const order = await Order.findOne({
         where: {

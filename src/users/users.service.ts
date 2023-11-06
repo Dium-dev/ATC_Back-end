@@ -19,6 +19,9 @@ import { IResponse } from 'src/utils/interfaces/response.interface';
 import { MailService } from 'src/mail/mail.service';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
+import { ICreateUserContext } from 'src/mail/interfaces/create-account-context.interface';
+import { Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
 import { FindOptions, or } from 'sequelize';
 import { EModelsTable } from 'src/utils/custom/EmodelsTable.enum';
@@ -39,6 +42,7 @@ export class UsersService {
     private mailsService: MailService,
     @Inject(forwardRef(() => ShoppingCartService))
     private shopCartService: ShoppingCartService,
+    private sequelize: Sequelize,
     @Inject(forwardRef(() => DirectionsService))
     private directionService: DirectionsService,
     @Inject(forwardRef(() => ReviewsService))
@@ -50,6 +54,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
       const data = {
         firstName: createUserDto.firstName,
@@ -62,48 +67,41 @@ export class UsersService {
         isActive: true,
       };
 
-      const newUser = await this.userModel.create(data);
+      const newUser = await this.userModel.create(data, { transaction });
 
-      await this.shopCartService.CreateShoppingCart(newUser.id, null);
+      await this.shopCartService.CreateShoppingCart(
+        { userId: newUser.id },
+        transaction,
+      );
 
-      if (newUser) {
-        const response = {
-          statusCode: 201,
-          token: await this.authService.generateToken(
-            newUser.id,
-            newUser.email,
-          ),
-        };
+      await transaction.commit();
 
-        //Setting up for email sending
-        const context = {
-          name: createUserDto.firstName,
-          link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad
-        };
-        const mailData = {
-          addressee: createUserDto.email,
-          subject: Cases.CREATE_ACCOUNT,
-          context: context,
-        };
-        //Sending mail
-        const mail = await this.mailsService.sendMails(mailData);
+      const response = {
+        statusCode: 201,
+        token: await this.authService.generateToken(newUser.id, newUser.email),
+      };
 
-        return response;
-      } else {
-        throw new BadRequestException(
-          'Error al crear el usuario verifique los datos enviados e intentelo nuevamente',
-        );
-      }
+      //Setting up for email sending
+      const context: ICreateUserContext = {
+        firstname: createUserDto.firstName,
+        lastname: createUserDto.lastName,
+        /* link: 'http://actualizaTuCarro.com', //Link falso. Reemplazar por link de verdad */
+      };
+
+      const mailData = {
+        addressee: createUserDto.email,
+        subject: Cases.CREATE_ACCOUNT,
+        context: context,
+      };
+      //Sending mail
+      await this.mailsService.sendMails(mailData);
+
+      return response;
     } catch (error) {
-      console.log(error);
-      switch (error.constructor) {
-        case BadRequestException:
-          throw new BadRequestException(error.message);
-        default:
-          throw new InternalServerErrorException(
-            'Erron interno del servidor, intente mas tarde',
-          );
-      }
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        'Erron interno del servidor, intente mas tarde',
+      );
     }
   }
 
@@ -249,24 +247,45 @@ export class UsersService {
     }
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: string): Promise<any> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      const user = await this.userModel.findByPk(id);
+      const user = await this.userModel.findByPk(id, { transaction });
       user.isActive = !user.isActive;
-      await user.save();
+
       if (!user.isActive) {
-        return {
-          message: 'Usuario eliminado correctamente.',
-          status: HttpStatusCode.NoContent,
-        };
+        /* Realiza la eliminación del carrito de compras dentro de la transacción. */
+        return await this.shopCartService
+          .destroyShoppingCart({ userId: id }, transaction)
+          .then(async () => {
+            await transaction.commit().then(async () => user.save());
+            return {
+              message: `Se inactivó la cuenta del Usuario: ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
+              status: HttpStatusCode.NoContent,
+            };
+          });
       } else {
-        return {
-          message: 'Usuario reactivado.',
-          status: HttpStatusCode.Ok,
-        };
+        /* Realiza la creación del carrito de compras dentro de la transacción. */
+        return await this.shopCartService
+          .CreateShoppingCart({ userId: id }, transaction)
+          .then(async () => {
+            await transaction.commit().then(async () => user.save());
+            return {
+              message: `Se ah restaurado la cuenta del Usuario ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
+              status: HttpStatusCode.Ok,
+            };
+          });
       }
     } catch (error) {
-      throw new HttpException('Error al eliminar un usuario.', 404);
+      await transaction.rollback();
+      throw new HttpException(
+        'Error al cambiar el estado del usuario.\nIntentelo más tarde.',
+        404,
+      );
     }
   }
 
