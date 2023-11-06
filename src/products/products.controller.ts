@@ -15,7 +15,6 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductsDto } from './dto/query-product.dto';
 import { IGetProducts } from './interfaces/getProducts.interface';
 import { ApiParam, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
-import { IError } from 'src/utils/interfaces/error.interface';
 import { IProductXcategory } from './interfaces/product-x-category.interface';
 import { IProduct } from './interfaces/getProduct.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
@@ -82,7 +81,7 @@ export class ProductsController {
   @HttpCode(200)
   async getProductsXCategory(
     @Param('categoryName') category: string,
-  ): Promise<IProductXcategory | IError> {
+  ): Promise<IProductXcategory> {
     const thisData: IProductXcategory = await this.productsService
       .existCategoty(category)
       .then(async () => {
@@ -106,7 +105,7 @@ export class ProductsController {
     type: 'string',
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<IProduct | IError> {
+  async findOne(@Param('id') id: string): Promise<IProduct> {
     return this.productsService.findOne(id);
   }
 
@@ -123,7 +122,7 @@ export class ProductsController {
     type: 'string',
   })
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<IResponse | IError> {
+  async remove(@Param('id') id: string): Promise<IResponse> {
     const response = await this.productsService.remove(id);
     return response;
   }

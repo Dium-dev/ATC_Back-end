@@ -18,7 +18,6 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { IDirections, IResDirection } from './interfaces/direction.interface';
-import { IError } from 'src/utils/interfaces/error.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('Directions')
@@ -37,7 +36,7 @@ export class DireetionsController {
   @Post()
   async create(
     @Body() createDireetionDto: CreateDireetionDto,
-  ): Promise<IResDirection | IError> {
+  ): Promise<IResDirection> {
     const response = await this.directionsService.create(createDireetionDto);
     return response;
   }
@@ -55,7 +54,7 @@ export class DireetionsController {
     type: 'string',
   })
   @Get(':id')
-  async findAll(@Param('id') id: string): Promise<IDirections | IError> {
+  async findAll(@Param('id') id: string): Promise<IDirections> {
     const response = await this.directionsService.findAll(id);
     return response;
   }
@@ -83,7 +82,7 @@ export class DireetionsController {
   async update(
     @Param('id') id: string,
     @Body() updateDireetionDto: UpdateDireetionDto,
-  ): Promise<IResDirection | IError> {
+  ): Promise<IResDirection> {
     const response = await this.directionsService.update(
       id,
       updateDireetionDto,
@@ -104,7 +103,7 @@ export class DireetionsController {
     type: 'string',
   })
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<IResponse | IError> {
+  async remove(@Param('id') id: string): Promise<IResponse> {
     const response = await this.directionsService.remove(id);
     return response;
   }

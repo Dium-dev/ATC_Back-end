@@ -1,13 +1,13 @@
 import {
   BadRequestException,
   HttpException,
+  Inject,
+  forwardRef,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order, OrderStateEnum } from './entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { OrderProduct } from './entities/orderProduct.entity';
@@ -22,12 +22,15 @@ import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
 import { PaymentsService } from 'src/payments/payments.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly shoppingCartService: ShoppingCartService,
     private readonly paymentsService: PaymentsService,
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
   ) {}
 
   async findOneOrder(id: string) {
@@ -108,7 +111,7 @@ export class OrdersService {
   //Crear Orden
   async create(userId: string): Promise<object> {
     //Obtenemos el id del carrito del usuario que realiza la peticion
-    const { cart } = await User.findByPk(userId, {
+    const { cart } = await this.userService.findByPkGenericUser(userId, {
       include: [
         {
           model: ShoppingCart,

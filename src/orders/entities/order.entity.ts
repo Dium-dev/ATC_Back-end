@@ -12,11 +12,11 @@ import { OrderProduct } from './orderProduct.entity';
 import { User } from '../../users/entities/user.entity';
 
 export enum OrderStateEnum {
-  PENDIENTE = 'EN PROCESO',
   APROBADO = 'APROBADO',
   PAGO = 'PAGO',
   RECHAZADO = 'RECHAZADO',
   DESPACHO = 'EN DESPACHO',
+  PENDIENTE = 'EN PROCESO',
   ENTREGADO = 'ENTREGADO',
   CANCELADO = 'CANCELADO',
 }

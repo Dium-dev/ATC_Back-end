@@ -95,5 +95,5 @@ export class User extends Model<User> {
   review: Review;
 
   @HasMany(() => Order, { onDelete: 'CASCADE', hooks: true })
-  orders: Order;
+  orders: Order[];
 }

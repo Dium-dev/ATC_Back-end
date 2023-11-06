@@ -13,7 +13,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { IError } from 'src/utils/interfaces/error.interface';
 import {
   ApiTags,
   ApiOperation,
@@ -62,7 +61,7 @@ export class UsersController {
   @HttpCode(201)
   async create(
     @Body() createUserDto: CreateUserDto,
-  ): Promise<ICreateUser | IError> {
+  ): Promise<ICreateUser> {
     const newUser = await this.usersService
       .verifyEmail(createUserDto.email)
       .then(async () => {
@@ -96,9 +95,7 @@ export class UsersController {
   })
   @Post('login')
   @HttpCode(200)
-  async signIn(
-    @Body() loginUserDto: LoginUserDto,
-  ): Promise<ICreateUser | IError> {
+  async signIn(@Body() loginUserDto: LoginUserDto): Promise<ICreateUser> {
     const response = await this.usersService.signIn(loginUserDto);
     return response;
   }
@@ -131,7 +128,7 @@ export class UsersController {
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<IResponse | IError> {
+  ): Promise<IResponse> {
     const response = this.usersService.update(id, updateUserDto);
     return response;
   }
