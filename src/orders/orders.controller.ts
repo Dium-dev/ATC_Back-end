@@ -5,8 +5,7 @@ import {
   Param,
   Patch,
   Body,
-  UseGuards,
-  Body,
+  UseGuards
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { IGetOrders, IOrder } from './interfaces/response-order.interface';

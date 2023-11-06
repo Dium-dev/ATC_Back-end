@@ -1,0 +1,20 @@
+doctype html
+html(lang='es')
+  head
+    meta(charset='utf-8')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Hemos recibido tu mensaje
+  header(style='text-align:center; padding-top:4vh; padding-bottom:4vh; background-color:white;')
+    img(src='cid:headerATCLogo', style='max-width:100%; align-content:center;')
+  body
+    article(style='border-bottom:solid red; padding-bottom:2vh;')
+      h2(style='color: red; text-align:left') ¡Hola #{name}!
+      p(style='color:black; text-align:left') Hemos recibido tu mensaje y estamos trabajando en ello.
+      p(style='color:black; text-align:left') Te responderemos a la brevedad posible.
+      p(style='text-align:center; margin:4vh 0 4vh 0;')
+        | Gracias por contactarnos.
+    footer
+      p(style='color:black; text-align:left') No responda a este remitente
+      p(style='color:black; text-align:left')
+        | <b>Atte:</b> Equipo de
+        span(style="color: red") ATC

@@ -66,6 +66,36 @@ export class MailService {
             ],
           });
           break;
+          case Cases.CONTACT_FORM_USER:
+            mail = await this.mailerService.sendMail({
+              to: addressee,
+              subject: 'Recibimos tu consulta',
+              template: Templates.contactFormUser,
+              context: context,
+              attachments: [
+                {
+                  filename: 'ATCarroLogo.png',
+                  path: './src/public/ATCarroLogo.png',
+                  cid: 'headerATCLogo',
+                },
+              ],
+            });
+            break;
+            case Cases.CONTACT_FORM_ADMIN:
+              mail = await this.mailerService.sendMail({
+                to: addressee,
+                subject: 'Recibiste una consulta de usuario',
+                template: Templates.contactFormAdmin,
+                context: context,
+                attachments: [
+                  {
+                    filename: 'ATCarroLogo.png',
+                    path: './src/public/ATCarroLogo.png',
+                    cid: 'headerATCLogo',
+                  },
+                ],
+              });
+              break;             
       }
       //If mail.accepted: [ user_email ]
       if (mail.accepted.length)
@@ -81,5 +111,5 @@ export class MailService {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
-  }
+  }  
 }
