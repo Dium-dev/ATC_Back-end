@@ -7,12 +7,15 @@ import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { UsersModule } from 'src/users/users.module';
 import { ProductsModule } from 'src/products/products.module';
+import { OrdersModule } from 'src/orders/orders.module';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
     forwardRef(() => ProductsModule),
-    SequelizeModule.forFeature([CartProduct, ShoppingCart, Product]),
+    forwardRef(() => OrdersModule),
+    SequelizeModule.forFeature([CartProduct, ShoppingCart, Product, User]),
   ],
   controllers: [ShoppingCartController],
   providers: [ShoppingCartService],

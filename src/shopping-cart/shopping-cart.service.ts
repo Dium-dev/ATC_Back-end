@@ -4,7 +4,6 @@ import {
   InternalServerErrorException,
   BadRequestException,
   HttpException,
-  HttpStatus,
   forwardRef,
   Inject,
 } from '@nestjs/common';
@@ -16,6 +15,7 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { ProductsService } from 'src/products/products.service';
 import { InjectModel } from '@nestjs/sequelize';
+import { OrdersService } from 'src/orders/orders.service';
 
 @Injectable()
 export class ShoppingCartService {
@@ -24,15 +24,20 @@ export class ShoppingCartService {
     @InjectModel(ShoppingCart) 
     private shoppingCartModel:typeof ShoppingCart,
     //Injecting CartProduct model
-    @InjectModel(CartProduct) private cartProductModel: typeof CartProduct,
+    @InjectModel(CartProduct) 
+    private cartProductModel: typeof CartProduct,
     //Injecting Product model
-    @InjectModel(Product) private productModel: typeof Product,
+    @InjectModel(Product) 
+    private productModel: typeof Product,
     //Injecting User model
-    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(User) 
+    private userModel: typeof User,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     @Inject(forwardRef(() => ProductsService))
     private productsService: ProductsService,
+    @Inject(forwardRef(() => OrdersService))
+    private ordersService: OrdersService,
   ) {}
 
   /*   public async createCartProduct(userId: string) {

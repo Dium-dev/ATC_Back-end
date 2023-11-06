@@ -23,12 +23,15 @@ import { User } from 'src/users/entities/user.entity';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
 import { PaymentsService } from 'src/payments/payments.service';
 import { UsersService } from 'src/users/users.service';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    private readonly shoppingCartService: ShoppingCartService,
-    private readonly paymentsService: PaymentsService,
+    @Inject(forwardRef(() => ShoppingCartService))
+    private shoppingCartService: ShoppingCartService,
+    @Inject(forwardRef(() => PaymentsService))
+    private paymentsService: PaymentsService,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
   ) {}

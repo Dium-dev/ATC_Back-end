@@ -1,5 +1,5 @@
 import * as mercadopago from 'mercadopago';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { ACCESS_TOKEN, HOST } from '../config/env';
 import { Payment, PaymentState } from './entities/payment.entity';
@@ -11,6 +11,8 @@ import { IPurchaseContext } from '../mail/interfaces/purchase-context.interface'
 import { Product } from '../products/entities/product.entity';
 import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
 import { CartProduct } from '../shopping-cart/entities/cart-product.entity';
+import { UsersService } from 'src/users/users.service';
+import { OrdersService } from 'src/orders/orders.service';
 mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
@@ -18,6 +20,8 @@ export class PaymentsService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
+    @Inject(forwardRef(() => OrdersService))
+    private ordersService: OrdersService,
     private readonly mailsService: MailService,
   ) {
     mercadopago.configure({

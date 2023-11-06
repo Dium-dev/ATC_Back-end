@@ -6,9 +6,13 @@ import { PaymentsModule } from 'src/payments/payments.module';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [ShoppingCartModule, PaymentsModule, forwardRef(() => UsersModule)],
+  imports: [
+    forwardRef(() => ShoppingCartModule),
+    forwardRef(() => PaymentsModule),
+    forwardRef(() => UsersModule)
+  ],
   controllers: [OrdersController],
   providers: [OrdersService],
   exports: [OrdersService],
 })
-export class OrdersModule {}
+export class OrdersModule { }
