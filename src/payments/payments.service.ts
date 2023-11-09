@@ -1,22 +1,27 @@
 import * as mercadopago from 'mercadopago';
-import { ACCESS_TOKEN } from 'src/config/env';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
+import { ACCESS_TOKEN, HOST } from '../config/env';
 import { Payment, PaymentState } from './entities/payment.entity';
-import { Order, OrderStateEnum } from 'src/orders/entities/order.entity';
+import { Order, OrderStateEnum } from '../orders/entities/order.entity';
 import { CreatePreferencePayload } from 'mercadopago/models/preferences/create-payload.model';
-import { UsersService } from '../users/users.service'; // Importa el servicio de usuarios
-import { MailService } from '../mail/mail.service'; // Importa el servicio de correo
+import { MailService } from '../mail/mail.service';
 import { Cases } from 'src/mail/dto/sendMail.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { IPurchaseContext } from '../mail/interfaces/purchase-context.interface';
-import { Product } from 'src/products/entities/product.entity';
-
+import { Product } from '../products/entities/product.entity';
+import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
+import { CartProduct } from '../shopping-cart/entities/cart-product.entity';
+import { UsersService } from 'src/users/users.service';
+import { OrdersService } from 'src/orders/orders.service';
 mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
 export class PaymentsService {
   constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+    @Inject(forwardRef(() => OrdersService))
+    private ordersService: OrdersService,
     private readonly mailsService: MailService,
   ) {
     mercadopago.configure({
@@ -24,33 +29,31 @@ export class PaymentsService {
     });
   }
 
-  async createPayment(amount: number,  userId: string, orderId?: string) {
+  async createPayment(amount: number, userId: string, orderId?: string) {
     try {
-      const user = await User.findByPk(userId);
+      const user = await this.userService.findByPkGenericUser(userId, {});
       // Crea un objeto de preferencia con los detalles del pago
       const preference: CreatePreferencePayload = {
         items: [
           {
             title: 'Descripción del producto',
             quantity: 1,
-            currency_id: 'COP', // Moneda (Asegúrate de usar la moneda correcta)
-            unit_price: amount, // Monto del pago
+            currency_id: 'COP',
+            unit_price: amount,
           },
         ],
         payer: {
           name: user.firstName,
-          email: user.email, // Correo del comprador
+          email: user.email,
         },
         back_urls: {
-          success: `http://localhost:3000/payments/success/${orderId}`,
-          failure: `http://localhost:3000/payments/failure/${orderId}`,
-          pending: `http://localhost:3000/payments/pending/${orderId}`,
+          success: `${HOST}/payments/success/${orderId}`,
+          failure: `${HOST}/payments/failure/${orderId}`,
+          pending: `${HOST}/payments/pending/${orderId}`,
         },
-        notification_url: `https://430b-2802-8010-8200-ee00-b58b-b516-5a1e-f60.ngrok-free.app/payments/webhook/${orderId}`,
+        notification_url: `https://af6f-190-173-138-188.ngrok-free.app/payments/webhook/${orderId}`, //Cambiar por el host del servidor deployado
       };
-      // Crea la preferencia en Mercado Pago
       const response = await mercadopago.preferences.create(preference);
-      // Guardamos los datos del pago en la base de datos
       await Payment.create({
         id: response.body.id,
         orderId,
@@ -59,35 +62,56 @@ export class PaymentsService {
         state: PaymentState.PENDING,
       });
 
-      // Devuelve la URL de pago generada
       return {
         url: response.body.init_point,
         paymentId: response.body.id,
       };
     } catch (error) {
-      console.error('Error al crear el pago:', error);
-      throw error;
+      throw new Error('Error al crear el pago:' + error.message);
     }
   }
 
   async actualizePayment(state: string, orderId: string) {
-    const order = await Order.findByPk(orderId);
+    try {
+      const order = await Order.findByPk(orderId);
 
-    state == 'success' ? order.state = OrderStateEnum.PAGO :
-      state == 'pending' ? order.state = OrderStateEnum.PENDIENTE :
-        order.state = OrderStateEnum.RECHAZADO;
+      state == 'success'
+        ? (order.state = OrderStateEnum.PAGO)
+        : state == 'pending'
+        ? (order.state = OrderStateEnum.PENDIENTE)
+        : (order.state = OrderStateEnum.RECHAZADO);
+      await order.save();
 
-    await order.save();
+      const payment = await Payment.findOne({ where: { orderId } });
+      state == 'success'
+        ? (payment.state = PaymentState.SUCCESS)
+        : state == 'pending'
+        ? (payment.state = PaymentState.PENDING)
+        : (payment.state = PaymentState.FAILED);
+      await payment.save();
 
-
-    const payment = await Payment.findOne({ where: { orderId } });
-    state == 'success' ? payment.state = PaymentState.SUCCESS :
-      state == 'pending' ? payment.state = PaymentState.PENDING :
-        payment.state = PaymentState.FAILED;
-    await payment.save();
-
-    if (state == 'success') {}
-    return `El estado de la orden es:${state}`;
+      if (state == 'success') {
+        const user = await User.findByPk(order.userId, {
+          include: [ShoppingCart],
+        });
+        const cartId = user.cart.id;
+        const products = await CartProduct.findAll({
+          where: { cartId },
+        });
+        for (const prod of products) {
+          const productDB = await Product.findByPk(prod.productId);
+          productDB.stock--;
+          await productDB.save();
+        }
+        await CartProduct.destroy({
+          where: { cartId },
+        });
+      }
+      return `El estado de la orden es:${state}`;
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException('Error al actualizar el pago', 404);
+    }
   }
 
   async actualizeOrder(paymentid: number, orderId: string) {
@@ -99,7 +123,8 @@ export class PaymentsService {
       const cuotesValue = payment.body.transaction_details.installment_amount;
 
       if (status == 'rejected') await this.actualizePayment('failure', orderId);
-      if (status == 'in_process') await this.actualizePayment('pending', orderId);
+      if (status == 'in_process')
+        await this.actualizePayment('pending', orderId);
       if (status == 'approved') {
         const order = await Order.findByPk(orderId);
         const user = await User.findByPk(order.userId);
@@ -123,7 +148,7 @@ export class PaymentsService {
             };
           }),
           total: payment.body.transaction_details.total_paid_amount,
-          purchaseDate: order.createdAt, // Fecha de creación de la orden
+          purchaseDate: order.createdAt,
           cuotes,
           cuotesValue,
         };

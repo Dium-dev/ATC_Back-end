@@ -6,12 +6,17 @@ export interface IOrder {
   data: Order | Order[] | string;
 }
 
+export interface UpdateStateOrder {
+  statusCode: number;
+  message: string;
+}
+
 export interface IGetOrders {
   statusCode: number;
   data: {
-    orders: Order[],
-    totalOrders: number,
-    totalPages: number,
-    page: number
-  }
+    orders: Order[];
+    totalOrders: number;
+    totalPages: number;
+    page: number;
+  };
 }

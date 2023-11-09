@@ -30,7 +30,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 import { IReview } from './interfaces/response-review.interface';
-import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -59,7 +58,7 @@ export class ReviewsController {
   //Controller------------------------------------------------------------------------------
   async create(
     @GetUser() user: UserChangePasswordDto,
-      @Body() createReviewDto: CreateReviewDto,
+    @Body() createReviewDto: CreateReviewDto,
   ): Promise<IReview | HttpException> {
     //Se extrae el id del objeto req.user que nos retorna el decorador @GetUser
     const { userId } = user;

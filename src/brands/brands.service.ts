@@ -6,11 +6,10 @@ import {
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
-import { IError } from 'src/utils/interfaces/error.interface';
 
 @Injectable()
 export class BrandsService {
-  async findAllBrands(): Promise<{ id: string; name: string }[] | IError> {
+  async findAllBrands(): Promise<{ id: string; name: string }[]> {
     try {
       const allBrands = await Brand.findAll();
       if (!allBrands.length)

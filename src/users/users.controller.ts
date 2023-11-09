@@ -13,7 +13,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { IError } from 'src/utils/interfaces/error.interface';
 import {
   ApiTags,
   ApiOperation,
@@ -39,11 +38,16 @@ export class UsersController {
     description:
       'Si todo sale bien, se devolverá un objeto con un statusCode 201 y el token de verificación de usuario.',
   })
-  @ApiResponse({
+  /* 
+    Dejo comentado éste debido a que en la funcion crear usuario deja de estar el 400 de error 
+    en la creacion x datos del usuario, quedando con el 500 nomás.
+    los datos del ususario se validan en el DTO !
+  */
+  /* @ApiResponse({
     status: 400,
     description:
       'Indica que hubo un error a la hora de crear la cuenta del usuario en la aplicación. Recomendacion verificar los datos enviados',
-  })
+  }) */
   @ApiResponse({
     status: 409,
     description:
@@ -51,17 +55,19 @@ export class UsersController {
   })
   @ApiResponse({
     status: 500,
-    description: 'Error interno del servidor.',
+    description: 'Erron interno del servidor, intente mas tarde',
   })
   @Post('register')
   @HttpCode(201)
   async create(
     @Body() createUserDto: CreateUserDto,
-  ): Promise<ICreateUser | IError> {
-    return (
-      (await this.usersService.verifyEmail(createUserDto.email)) &&
-      (await this.usersService.create(createUserDto))
-    );
+  ): Promise<ICreateUser> {
+    const newUser = await this.usersService
+      .verifyEmail(createUserDto.email)
+      .then(async () => {
+        return this.usersService.create(createUserDto);
+      });
+    return newUser;
   }
 
   @ApiOperation({
@@ -89,9 +95,7 @@ export class UsersController {
   })
   @Post('login')
   @HttpCode(200)
-  async signIn(
-    @Body() loginUserDto: LoginUserDto,
-  ): Promise<ICreateUser | IError> {
+  async signIn(@Body() loginUserDto: LoginUserDto): Promise<ICreateUser> {
     const response = await this.usersService.signIn(loginUserDto);
     return response;
   }
@@ -123,20 +127,18 @@ export class UsersController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-      @Body() updateUserDto: UpdateUserDto,
-  ): Promise<IResponse | IError> {
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<IResponse> {
     const response = this.usersService.update(id, updateUserDto);
     return response;
   }
 
   @ApiOperation({
-    summary: 'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
+    summary:
+      'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
   })
   @Get()
-  getUsers(
-  @Query('page') page: string,
-    @Query('limit') limit: string,
-  ) {
+  getUsers(@Query('page') page: string, @Query('limit') limit: string) {
     return this.usersService.getAll(+page, +limit);
   }
 
@@ -144,10 +146,7 @@ export class UsersController {
     summary: 'Ruta para eliminar un usuario.',
   })
   @Delete(':id')
-  deleteUser(
-  @Param('id') id: string,
-  ) {
+  deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
   }
-
 }

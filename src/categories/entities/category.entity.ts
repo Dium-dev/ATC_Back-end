@@ -1,5 +1,5 @@
 import { Table, Model, Column, DataType, HasMany } from 'sequelize-typescript';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Table({
   tableName: 'Categories',
@@ -13,15 +13,15 @@ export class Categories extends Model<Categories> {
     allowNull: false,
     primaryKey: true,
   })
-    id: string;
+  id: string;
 
   @HasMany(() => Product)
-    products: Product[];
+  products: Product[];
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
     unique: true,
   })
-    name: string;
+  name: string;
 }

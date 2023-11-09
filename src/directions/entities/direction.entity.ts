@@ -6,7 +6,7 @@ import {
   BelongsTo,
   ForeignKey,
 } from 'sequelize-typescript';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 @Table({
   tableName: 'Directions',
   timestamps: true,
@@ -20,38 +20,38 @@ export class Direction extends Model<Direction> {
     allowNull: false,
     primaryKey: true,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-    codigoPostal: number;
+  codigoPostal: number;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    ciudad: string;
+  ciudad: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    estado: string;
+  estado: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    calle: string;
+  calle: string;
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
   })
-    userId: string;
+  userId: string;
 
   @BelongsTo(() => User)
-    user: User;
+  user: User;
 }

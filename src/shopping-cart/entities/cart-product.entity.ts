@@ -6,7 +6,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { ShoppingCart } from './shopping-cart.entity';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Table({
   tableName: 'CartProduct',
@@ -21,26 +21,26 @@ export class CartProduct extends Model<CartProduct> {
     allowNull: false,
     unique: true,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
     defaultValue: 1,
   })
-    amount: number;
+  amount: number;
 
   @ForeignKey(() => ShoppingCart)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    cartId: string;
+  cartId: string;
 
   @ForeignKey(() => Product)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    productId: string;
+  productId: string;
 }

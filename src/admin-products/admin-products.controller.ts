@@ -12,7 +12,6 @@ import { AdminProductsService } from './admin-products.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ExcelProductDto } from './dto/exelProducts.dto';
 import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-update.interface';
-import { IError } from 'src/utils/interfaces/error.interface';
 
 @ApiTags('Admin Products')
 @Controller('admin-products')
@@ -87,7 +86,7 @@ export class AdminProductsController {
   @HttpCode(201)
   async excelToDataBase(
     @Body('url') url: string,
-  ): Promise<IResponseCreateOrUpdateProducts | IError> {
+  ): Promise<IResponseCreateOrUpdateProducts> {
     /* Se usa la url al archivo excel para generar un buffer, luego a 
     formato csv y por último formato json para para aprovechar la data */
     const excelData: Buffer = await this.adminProductsService.getExcelData(url);

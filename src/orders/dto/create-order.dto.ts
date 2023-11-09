@@ -22,7 +22,6 @@ export class CreateOrderDto {
   })
     total: number;
 
-
   @IsArray({
     message: '$property debe ser un array válido',
   })
@@ -33,5 +32,5 @@ export class CreateOrderDto {
     each: true,
   })
   @Type(() => AmountPricePerProduct)
-    products: AmountPricePerProduct[];
+  products: AmountPricePerProduct[];
 }

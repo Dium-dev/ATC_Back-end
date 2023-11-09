@@ -7,17 +7,18 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 import { OrderProduct } from './orderProduct.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum OrderStateEnum {
-  PENDIENTE = 'EN PROCESO',
-  APROVADO = 'APROVADO',
+  APROBADO = 'APROBADO',
   PAGO = 'PAGO',
   RECHAZADO = 'RECHAZADO',
   DESPACHO = 'EN DESPACHO',
+  PENDIENTE = 'EN PROCESO',
   ENTREGADO = 'ENTREGADO',
+  CANCELADO = 'CANCELADO',
 }
 
 @Table({
@@ -32,31 +33,31 @@ export class Order extends Model<Order> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-    total: number;
+  total: number;
 
   @Column({
     type: DataType.ENUM(...Object.values(OrderStateEnum)),
     allowNull: false,
     defaultValue: OrderStateEnum.PENDIENTE,
   })
-    state: OrderStateEnum;
+  state: OrderStateEnum;
 
   @BelongsToMany(() => Product, () => OrderProduct)
-    products: Product[];
+  products: Product[];
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-    userId: string;
+  userId: string;
 
   @BelongsTo(() => User)
-    user: User;
+  user: User;
 }

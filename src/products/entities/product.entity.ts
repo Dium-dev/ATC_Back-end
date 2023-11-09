@@ -7,12 +7,12 @@ import {
   ForeignKey,
   BelongsToMany,
 } from 'sequelize-typescript';
-import { Brand } from 'src/brands/entities/brand.entity';
-import { Categories } from 'src/categories/entities/category.entity';
-import { Order } from 'src/orders/entities/order.entity';
-import { OrderProduct } from 'src/orders/entities/orderProduct.entity';
-import { CartProduct } from 'src/shopping-cart/entities/cart-product.entity';
-import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
+import { Brand } from '../../brands/entities/brand.entity';
+import { Categories } from '../../categories/entities/category.entity';
+import { Order } from '../../orders/entities/order.entity';
+import { OrderProduct } from '../../orders/entities/orderProduct.entity';
+import { CartProduct } from '../../shopping-cart/entities/cart-product.entity';
+import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export enum stateproduct {
@@ -32,7 +32,7 @@ export class Product extends Model<Product> {
     primaryKey: true,
     unique: true,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING(60),
@@ -41,78 +41,78 @@ export class Product extends Model<Product> {
       len: [1, 60],
     },
   })
-    title: string;
+  title: string;
 
   @Column({
     type: DataType.TEXT,
     allowNull: false,
   })
-    description: string;
+  description: string;
 
   @Column({
     type: DataType.ENUM(...Object.values(stateproduct)),
     allowNull: false,
   })
-    state: stateproduct;
+  state: stateproduct;
 
   @Column({
     type: DataType.INTEGER,
     defaultValue: 0,
     allowNull: false,
   })
-    stock: number;
+  stock: number;
 
   @Column({
     type: DataType.FLOAT,
     allowNull: false,
   })
-    price: number;
+  price: number;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
-    availability: number;
+  availability: number;
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),
     allowNull: true,
   })
-    image: string[];
+  image: string[];
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-    model: string;
+  model: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-    year: string;
+  year: string;
 
   @ForeignKey(() => Brand)
   @Column({
     type: DataType.UUID,
   })
-    brandId: string;
+  brandId: string;
 
   @BelongsTo(() => Brand, 'brandId')
-    brand: Brand;
+  brand: Brand;
 
   @ForeignKey(() => Categories)
   @Column({
     type: DataType.UUID,
   })
-    categoryId: string;
+  categoryId: string;
 
   @BelongsTo(() => Categories)
-    category: Categories;
+  category: Categories;
 
   @BelongsToMany(() => ShoppingCart, () => CartProduct)
-    products: ShoppingCart[];
+  products: ShoppingCart[];
 
   @BelongsToMany(() => Order, () => OrderProduct)
-    order: Order[];
+  order: Order[];
 }

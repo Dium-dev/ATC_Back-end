@@ -6,9 +6,9 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 import { CartProduct } from './cart-product.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Table({
   tableName: 'ShoppingCart',
@@ -31,11 +31,11 @@ export class ShoppingCart extends Model {
     allowNull: false,
     unique: true,
   })
-    id: string;
+  id: string;
 
   @BelongsToMany(() => Product, () => CartProduct)
-    products: Product[];
+  products: Product[];
 
   @ForeignKey(() => User)
-    userId: string;
+  userId: string;
 }
