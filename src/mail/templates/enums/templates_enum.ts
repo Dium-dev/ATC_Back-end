@@ -1,5 +1,7 @@
 export enum Templates {
   recoverPassword = './recoverPassword',
   createAccount = './createAccount',
-  purchase = './purchase.pug',
+  purchase = './purchase',
+  contactFormUser = './contactFormUser',
+  contactFormAdmin = './contactFormAdmin',
 }

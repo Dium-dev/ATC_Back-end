@@ -19,3 +19,4 @@ export const BUYER_USER = process.env.BUYER_USER;
 export const BUYER_PASSWORD = process.env.BUYER_SELLER;
 export const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 export const HOST = process.env.HOST;
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;

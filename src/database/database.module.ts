@@ -38,7 +38,7 @@ import { Payment } from '../payments/entities/payment.entity';
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: false },
+      sync: { force: true },
     }),
   ],
   exports: [SequelizeModule],
