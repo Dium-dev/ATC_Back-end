@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, InternalServerErrorException } from '@nestjs/common';
 import { Response } from 'express';
 import { MailService } from './mail.service';
 import { IContactFormAdminContext } from './interfaces/contact-form-admin-context.interface';
@@ -11,7 +11,7 @@ import { ADMIN_EMAIL } from 'src/config/env';
 @ApiTags('Mail')
 @Controller('contact')
 export class ContactController {
-  constructor(private readonly mailService: MailService) {}
+  constructor(private readonly mailService: MailService) { }
 
   @ApiOperation({
     summary: 'Ruta para contact form del front',
@@ -20,12 +20,14 @@ export class ContactController {
   @Post()
   async sendContactForm(
     @Body() contactData: ContactFormDto,
-    @Res() res: Response,
+    /*  @Res() res: Response, */
   ) {
     try {
       const userContext: IContactFormUserContext = {
         firstname: contactData.name,
       };
+      console.log('paso 1');
+      
       await this.mailService.sendMails({
         addressee: contactData.userEmail,
         subject: Cases.CONTACT_FORM_USER,
@@ -38,17 +40,21 @@ export class ContactController {
         message: contactData.message,
         userEmail: contactData.userEmail,
       };
+      console.log('paso 2');
+      
       await this.mailService.sendMails({
         addressee: ADMIN_EMAIL,
         subject: Cases.CONTACT_FORM_ADMIN, //
         context: adminContext,
       });
-
-      return res
-        .status(200)
-        .json({ message: 'Formulario de contacto enviado con éxito' });
+      console.log('paso 3');
+      
+      return {
+        status: 200,
+        message: 'Formulario de contacto enviado con éxito'
+      }
     } catch (error) {
-      return res.status(error.status).json({ error: error.message });
+      throw new InternalServerErrorException(error)
     }
   }
 }
