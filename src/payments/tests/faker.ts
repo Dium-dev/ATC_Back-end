@@ -28,7 +28,7 @@ export const createProductsObject = (number: number) => {
       id: faker.string.uuid(),
       title: faker.string.alpha(),
       description: faker.lorem.words(),
-      state: stateproduct.Active,
+      state: stateproduct.Nuevo,
       stock: 0,
       availability: 3,
       price: faker.number.int(5000),

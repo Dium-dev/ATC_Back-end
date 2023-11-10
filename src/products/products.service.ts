@@ -301,17 +301,13 @@ export class ProductsService {
       const genericCreatedProduct = await Product.create({
         id: product['Número de publicación'],
         title: product.Título,
-        description: product.Descripción,
+        description: product['Descripción'],
         state: product.Estado,
         stock: Number(product.Stock),
         price: Number(product['Precio COP']),
         availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: [''],
-        year: product.Título.split(' ')[3].includes('-')
-          ? product.Título.split(' ')[3]
-          : product.Título.split(' ')[4].includes('-')
-            ? product.Título.split(' ')[4]
-            : null,
+        image: [product.Fotos],
+        year: product.Año,
         brandId,
         categoryId,
       });
@@ -321,7 +317,7 @@ export class ProductsService {
       throw new InternalServerErrorException(
         `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
           product.Título
-        } del indice ${index + 2}`,
+        } del indice ${index + 2}` + error.message,
       );
     }
   }

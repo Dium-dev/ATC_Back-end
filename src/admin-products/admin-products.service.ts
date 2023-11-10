@@ -92,8 +92,38 @@ export class AdminProductsService {
       Papa.parse(csvData, {
         header: true,
         skipEmptyLines: true,
+
         complete: (result) => {
-          resolve(result.data);
+          // Mapeo de nombres de propiedades
+          const propertyMapping = {
+            '': 'Número de publicación',
+            'A': 'Título',
+            'B': 'Categoría',
+            'C': 'Fotos',
+            'D': 'Stock',
+            'E': 'Precio COP',
+            'F': 'Descripción',
+            'G': 'Estado',
+            'H': 'Disponibilidad de stock (días)',
+            'I': 'Marca',
+            'J': 'Modelo',
+            'K': 'Año',
+          };
+
+          // Transformar el resultado para incluir solo las propiedades A hasta K con nuevos nombres
+          const transformedData = result.data.map((row) => {
+            const filteredRow = {};
+            // Copiar y renombrar las propiedades A hasta K
+            for (const prop in row) {
+              if (prop <= 'K' && propertyMapping[prop]) {
+                filteredRow[propertyMapping[prop]] = row[prop];
+              }
+            }
+            return filteredRow;
+          });
+
+          transformedData.shift();
+          resolve(transformedData);
         },
         error: (error) => {
           reject(error);
@@ -138,6 +168,7 @@ export class AdminProductsService {
   async JsonToDatabase(
     allProducts: any[],
   ): Promise<IResponseCreateOrUpdateProducts> {
+
     for (const [index, value] of allProducts.entries()) {
       const thisProduct: Product | null =
         await this.productsService.findByPkToValidateExistentProduct(
@@ -208,6 +239,7 @@ export class AdminProductsService {
         product.Marca,
         index,
       );
+
       //Se actualiza el producto
       thisProduct.title = product.Título;
       thisProduct.description = product.Descripción;
