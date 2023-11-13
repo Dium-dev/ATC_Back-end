@@ -96,6 +96,23 @@ export class MailService {
             ],
           });
           break;
+
+          case Cases.UPDATE_ORDER:
+          mail = await this.mailerService.sendMail({
+            to: addressee,
+            subject: `Recibiste una solicitud de cambio en la orden`,
+            template: Templates.updateOrder,
+            context: context,
+            attachments: [
+              {
+                filename: 'ATCarroLogo.png',
+                path: './src/public/ATCarroLogo.png',
+                cid: 'headerATCLogo',
+              },
+            ],
+          });
+          break;
+
       }
       //If mail.accepted: [ user_email ]
       if (mail.accepted.length)

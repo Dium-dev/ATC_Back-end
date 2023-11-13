@@ -6,6 +6,7 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { EMAIL_USER } from '../config/env';
 import { transporter } from '../utils/mailer/mailer';
 import { join } from 'path';
+import { UpdateOrderDto } from './dto/sendMail.dto';
 @Module({
   imports: [
     MailerModule.forRoot({
