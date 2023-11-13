@@ -16,7 +16,13 @@ import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export enum stateproduct {
+  Active = 'Activo',
+  Inactive = 'Inactivo',
+}
+
+export enum ConditionProduct {
   Nuevo = 'Nuevo',
+  Remanufacturado = 'Remanufacturado',
   Usado = 'Usado',
 }
 
@@ -54,6 +60,11 @@ export class Product extends Model<Product> {
     allowNull: false,
   })
     state: stateproduct;
+
+  @Column({
+    allowNull: false,
+  })
+    condition: ConditionProduct;
 
   @Column({
     type: DataType.INTEGER,

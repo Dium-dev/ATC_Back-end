@@ -106,10 +106,10 @@ export class ShoppingCartService {
         throw new NotFoundException(
           'No se encontró el producto entre nuestro catalogo de disponibles.',
         );
-      // if (thisProducto.state === stateproduct.Inactive)
-      //   throw new NotFoundException(
-      //     'El producto seleccionado no se encuentra disponible para la venta. Consulte en otro momento.',
-      //   );
+      if (thisProducto.state === stateproduct.Inactive)
+        throw new NotFoundException(
+          'El producto seleccionado no se encuentra disponible para la venta. Consulte en otro momento.',
+        );
       if (thisProducto.stock < cantidad)
         throw new BadRequestException(
           'La cantidad de productos solicitados sobrepasa el Stock disponible en la tienda.',

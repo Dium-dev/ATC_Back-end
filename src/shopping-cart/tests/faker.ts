@@ -30,7 +30,7 @@ export const generatesArrayOfProducts = (amount:number) => {
 
   while (amount > 0) {
     const productId = faker.string.uuid();
-    arrayOfProducts.push(generatesProduct(productId, stateproduct.Nuevo));
+    arrayOfProducts.push(generatesProduct(productId, stateproduct.Active));
     --amount;
   }
 

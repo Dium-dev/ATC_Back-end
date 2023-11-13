@@ -59,7 +59,6 @@ export class AdminProductsService {
       const workbook = XLSX.read(excelData, { type: 'buffer' });
 
       const sheetName = workbook.SheetNames[0];
-
       if (!sheetName)
         throw new ConflictException(
           'Hubo un problema a la hora de trabajár el Excel!. Recuerde ponerle un nombre a la hoja de trabajo',
@@ -102,20 +101,23 @@ export class AdminProductsService {
             'C': 'Fotos',
             'D': 'Stock',
             'E': 'Precio COP',
-            'F': 'Descripción',
-            'G': 'Estado',
-            'H': 'Disponibilidad de stock (días)',
-            'I': 'Marca',
-            'J': 'Modelo',
-            'K': 'Año',
+            'F': 'Estado',
+            'G': 'Descripción',
+            'H': 'Condicion',
+            'I': 'Disponibilidad de stock (días)',
+            'J': 'Marca',
+            'K': 'Modelo',
+            'L': 'Año',
           };
 
           // Transformar el resultado para incluir solo las propiedades A hasta K con nuevos nombres
           const transformedData = result.data.map((row) => {
             const filteredRow = {};
-            // Copiar y renombrar las propiedades A hasta K
+            // Copiar y renombrar las propiedades A hasta l
             for (const prop in row) {
-              if (prop <= 'K' && propertyMapping[prop]) {
+              if (prop == 'C') {
+                filteredRow[propertyMapping[prop]] = row[prop].split(',');
+              } else if (prop <= 'L' && propertyMapping[prop]) {
                 filteredRow[propertyMapping[prop]] = row[prop];
               }
             }
@@ -175,7 +177,6 @@ export class AdminProductsService {
           value['Número de publicación'],
           {},
         );
-
       if (thisProduct) {
         await this.updateProduct(thisProduct, value, index);
       } else {
@@ -247,12 +248,9 @@ export class AdminProductsService {
       thisProduct.stock = Number(product.Stock);
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
-      thisProduct.image = [''];
-      thisProduct.year = product.Título.split(' ')[3].includes('-')
-        ? product.Título.split(' ')[3]
-        : product.Título.split(' ')[4].includes('-')
-          ? product.Título.split(' ')[4]
-          : null;
+      thisProduct.image = [product.Fotos];
+      thisProduct.condition = product.Condicion;
+      thisProduct.year = product.Año;
       thisProduct.brandId = brandId;
       thisProduct.categoryId = categoryId;
 

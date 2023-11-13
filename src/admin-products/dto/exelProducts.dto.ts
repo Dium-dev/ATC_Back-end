@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsEnum, Length } from 'class-validator';
-import { stateproduct } from 'src/products/entities/product.entity';
+import { ConditionProduct, stateproduct } from 'src/products/entities/product.entity';
 
 export class ExcelProductDto {
   @IsNotEmpty({
@@ -14,7 +14,7 @@ export class ExcelProductDto {
   @IsNotEmpty({ message: 'El campo "Título", no debe estar vacío' })
   @IsString()
   @Length(1, 60)
-    'Título': string;
+    Título: string;
 
   @IsNotEmpty({ message: 'El campo "Precio COP", no debe estar vacío' })
   @IsString()
@@ -22,23 +22,26 @@ export class ExcelProductDto {
 
   @IsNotEmpty({ message: 'El campo "Descripción", no debe estar vacío' })
   @IsString()
-    'Descripción': string;
+    Descripción: string;
 
   @IsString()
-    'Fotos': string;
+    Fotos: string;
 
   @IsNotEmpty({
     message: 'El campo "Stock", no debe estar vacío y debe ser numérico',
   })
   @IsString()
-    'Stock': string;
+    Stock: string;
 
   @IsNotEmpty({
     message:
       "El campo \"Estado\", no debe estar vacío. Debe contener los valores 'Activa' o'Inactiva'",
   })
   @IsEnum(stateproduct)
-    'Estado': stateproduct;
+    Estado: stateproduct;
+
+  @IsEnum(ConditionProduct)
+    Condicion: ConditionProduct;
 
   @IsNotEmpty({
     message:
@@ -48,12 +51,12 @@ export class ExcelProductDto {
 
   @IsNotEmpty({ message: 'El campo "Categoría", no debe estar vacío' })
   @IsString()
-    'Categoría': string;
+    Categoría: string;
 
   @IsNotEmpty({ message: 'El campo "Marca", no debe estar vacío' })
   @IsString()
-    'Marca': string;
-  
+    Marca: string;
+
   @IsString()
     Año: string;
 }

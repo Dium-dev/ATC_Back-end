@@ -90,9 +90,9 @@ export class AdminProductsController {
     /* Se usa la url al archivo excel para generar un buffer, luego a 
     formato csv y por último formato json para para aprovechar la data */
     const excelData: Buffer = await this.adminProductsService.getExcelData(url);
-
+    console.log(excelData);
     const csvData: string = this.adminProductsService.excelToCsv(excelData);
-
+    
     const jsonData: ExcelProductDto[] =
       await this.adminProductsService.csvToJson(csvData);
 
