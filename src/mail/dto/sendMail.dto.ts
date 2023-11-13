@@ -12,7 +12,6 @@ import { IPurchaseContext } from '../interfaces/purchase-context.interface';
 import { IContactFormAdminContext } from '../interfaces/contact-form-admin-context.interface';
 import { IContactFormUserContext } from '../interfaces/contact-form-user-context.interface';
 import { IUpdateOrderContext } from '../interfaces/update-order-context.interface';
-import { ConsultationReason } from '../interfaces/update-order-context.interface';
 
 export enum Cases {
   RESET_PASSWORD = 'RESET_PASSWORD',
@@ -20,7 +19,7 @@ export enum Cases {
   PURCHASE = 'PURCHASE',
   CONTACT_FORM_ADMIN = 'CONTACT_FORM_ADMIN',
   CONTACT_FORM_USER = 'CONTACT_FORM_USER',
-  UPDATE_ORDER = 'UPDATE_ORDER'
+  UPDATE_ORDER = 'UPDATE_ORDER',
 }
 
 // export class ContactFormDto {
@@ -123,22 +122,22 @@ export class SendMailDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-  addressee: string;
+    addressee: string;
 
   @IsEnum(Cases, {
     message: '$value no está entre los posibles casos para envío de correo',
   })
-  subject: string;
+    subject: string;
 
   @IsDefined({
     message: '$property debe estar definido, revisa los parámetros requeridos',
   })
-  context:
-    | IResetPasswordContext
-    | ICreateUserContext
-    | IPurchaseContext
-    | IContactFormAdminContext
-    | IContactFormUserContext
-    | IUpdateOrderContext
-    | INotSend;
+    context:
+  | IResetPasswordContext
+  | ICreateUserContext
+  | IPurchaseContext
+  | IContactFormAdminContext
+  | IContactFormUserContext
+  | IUpdateOrderContext
+  | INotSend;
 }

@@ -15,14 +15,12 @@ import { IPurchaseContext } from './interfaces/purchase-context.interface';
 import { IContactFormAdminContext } from './interfaces/contact-form-admin-context.interface';
 import { IContactFormUserContext } from './interfaces/contact-form-user-context.interface';
 import { IUpdateOrderContext } from './interfaces/update-order-context.interface';
-import { ConsultationReason } from './interfaces/update-order-context.interface';
-
 
 export type AnyContextType = IResetPasswordContext | ICreateUserContext | IPurchaseContext | IContactFormAdminContext | IContactFormUserContext | IUpdateOrderContext;
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(private readonly mailerService: MailerService) { }
 
   //Si no hay un contexto, simplemente pon '{}'
   async sendMails(sendMailDto: SendMailDto): Promise<IResponse> {
@@ -107,21 +105,21 @@ export class MailService {
           });
           break;
 
-          case Cases.UPDATE_ORDER:
-            if ('consultationReason' in context) 
-          mail = await this.mailerService.sendMail({
-            to: addressee,
-            subject: `Recibiste una solicitud de cambio en la orden - Motivo: "${context.consultationReason}"`,
-            template: Templates.updateOrder,
-            context: context,
-            attachments: [
-              {
-                filename: 'ATCarroLogo.png',
-                path: './src/public/ATCarroLogo.png',
-                cid: 'headerATCLogo',
-              },
-            ],
-          });
+        case Cases.UPDATE_ORDER:
+          if ('consultationReason' in context)
+            mail = await this.mailerService.sendMail({
+              to: addressee,
+              subject: `Recibiste una solicitud de cambio en la orden - Motivo: "${context.consultationReason}"`,
+              template: Templates.updateOrder,
+              context: context,
+              attachments: [
+                {
+                  filename: 'ATCarroLogo.png',
+                  path: './src/public/ATCarroLogo.png',
+                  cid: 'headerATCLogo',
+                },
+              ],
+            });
           break;
 
       }

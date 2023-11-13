@@ -2,13 +2,12 @@ import { Controller, Post, Body, InternalServerErrorException } from '@nestjs/co
 import { MailService } from './mail.service';
 import { IContactFormAdminContext } from './interfaces/contact-form-admin-context.interface';
 import { IContactFormUserContext } from './interfaces/contact-form-user-context.interface';
-import { IUpdateOrderContext } from './interfaces/update-order-context.interface';
+import { ConsultationReason, IUpdateOrderContext } from './interfaces/update-order-context.interface';
 import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { ContactFormDto } from './dto/contactForm.dto';
-import { UpdateOrderDto } from './dto/updateOrder.dto';
+import { UpdateOrderDto, UpdateOrderDtoSwagger } from './dto/updateOrder.dto';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { ADMIN_EMAIL } from 'src/config/env';
-import { ConsultationReason } from './interfaces/update-order-context.interface';
 
 
 @ApiTags('Mail')
@@ -19,10 +18,10 @@ export class ContactController {
   @ApiOperation({
     summary: 'Ruta para enviar solicitud de cambio en la orden',
   })
-  @ApiBody({ type: UpdateOrderDto })
+  @ApiBody({ type: UpdateOrderDtoSwagger })
   @Post('update-order')
   async sendUpdateOrderForm(
-    @Body() updateOrderData: UpdateOrderDto) {
+  @Body() updateOrderData: UpdateOrderDto) {
     try {
       // Obtener el motivo de la consulta
       const consultationReason: ConsultationReason = updateOrderData.consultationReason;
@@ -32,15 +31,15 @@ export class ContactController {
         message: updateOrderData.message,
         userEmail: updateOrderData.userEmail,
         order: updateOrderData.order,
-        consultationReason: updateOrderData.consultationReason,
-      }
+        consultationReason,
+      };
 
       // Enviar correos electrónicos
       await this.mailService.sendMails({
         addressee: ADMIN_EMAIL,
         subject: Cases.UPDATE_ORDER,
         context: orderContext,
-      });      
+      });
 
       // Contexto para el usuario
       const userContext = {
@@ -56,9 +55,9 @@ export class ContactController {
       return {
         status: 200,
         message: 'Solicitud de cambio en la orden enviada con exito',
-      }
+      };
     } catch (error) {
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error);
     }
   }
 
@@ -69,14 +68,14 @@ export class ContactController {
   @ApiBody({ type: ContactFormDto })
   @Post()
   async sendContactForm(
-    @Body() contactData: ContactFormDto,
+  @Body() contactData: ContactFormDto,
     /*  @Res() res: Response, */
   ) {
     try {
       const userContext: IContactFormUserContext = {
         firstname: contactData.name,
       };
-      
+
       await this.mailService.sendMails({
         addressee: contactData.userEmail,
         subject: Cases.CONTACT_FORM_USER,
@@ -89,19 +88,19 @@ export class ContactController {
         message: contactData.message,
         userEmail: contactData.userEmail,
       };
-      
+
       await this.mailService.sendMails({
         addressee: ADMIN_EMAIL,
         subject: Cases.CONTACT_FORM_ADMIN,
         context: adminContext,
       });
-      
+
       return {
         status: 200,
         message: 'Formulario de contacto enviado con éxito',
-      }
+      };
     } catch (error) {
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error);
     }
   }
 }
