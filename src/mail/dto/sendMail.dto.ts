@@ -1,12 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PartialType } from '@nestjs/swagger';
 import {
   IsDefined,
   IsEmail,
   IsEnum,
   IsNotEmpty,
   IsString,
-  IsIn
 } from 'class-validator';
 import { IResetPasswordContext } from '../interfaces/reset-password-context.interface';
 import { ICreateUserContext } from '../interfaces/create-account-context.interface';
@@ -25,89 +23,89 @@ export enum Cases {
   UPDATE_ORDER = 'UPDATE_ORDER'
 }
 
-export class ContactFormDto {
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Recibe el nombre del usuario, requerido',
-  })
-  name: string;
+// export class ContactFormDto {
+//   @IsString({ message: 'El campo $property debe ser un texto' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Recibe el nombre del usuario, requerido',
+//   })
+//   name: string;
 
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Recibe el telefono de contacto del usuario, requerido',
-  })
-  phone: string;
+//   @IsString({ message: 'El campo $property debe ser un texto' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Recibe el telefono de contacto del usuario, requerido',
+//   })
+//   phone: string;
 
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Mensaje del usuario, requerido',
-  })
-  message: string;
+//   @IsString({ message: 'El campo $property debe ser un texto' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Mensaje del usuario, requerido',
+//   })
+//   message: string;
 
-  @IsEmail(undefined, { message: 'El formato del email no es valido' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description:
-      'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
-  })
-  userEmail: string; // Agrega este campo para capturar el correo del usuario
-}
+//   @IsEmail(undefined, { message: 'El formato del email no es valido' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description:
+//       'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
+//   })
+//   userEmail: string; // Agrega este campo para capturar el correo del usuario
+// }
 
-export class UpdateOrderDto {
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Recibe el nro de orden',
-  })
-  order: string;
+// export class UpdateOrderDto {
+//   @IsString({ message: 'El campo $property debe ser un texto' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Recibe el nro de orden',
+//   })
+//   order: string;
 
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Recibe el nombre del usuario, requerido',
-  })
-  name: string;
+//   @IsString({ message: 'El campo $property debe ser un texto' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Recibe el nombre del usuario, requerido',
+//   })
+//   name: string;
 
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Recibe el telefono de contacto del usuario, requerido',
-  })
-  phone: string;
+//   @IsString({ message: 'El campo $property debe ser un texto' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Recibe el telefono de contacto del usuario, requerido',
+//   })
+//   phone: string;
 
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Mensaje del usuario, requerido',
-  })
-  message: string;
+//   @IsString({ message: 'El campo $property debe ser un texto' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Mensaje del usuario, requerido',
+//   })
+//   message: string;
 
-  @IsEmail(undefined, { message: 'El formato del email no es valido' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description:
-      'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
-  })
-  userEmail: string;
+//   @IsEmail(undefined, { message: 'El formato del email no es valido' })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description:
+//       'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
+//   })
+//   userEmail: string;
 
-  @IsEnum(ConsultationReason, {
-    message: 'El motivo de la consulta debe ser uno de: Envio, Producto, Pago, Otro',
-  })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Motivo de la consulta',
-    enum: ['Envio', 'Producto', 'Pago', 'Otro'],
-    example: 'Envio', // Proporciona un ejemplo aquí
-  })
-  @IsDefined({ message: 'El campo $property debe estar definido' })
-  consultationReason: ConsultationReason;
+//   @IsEnum(ConsultationReason, {
+//     message: 'El motivo de la consulta debe ser uno de: Envio, Producto, Pago, Otro',
+//   })
+//   @IsNotEmpty({ message: 'El campo $property está vacío' })
+//   @ApiProperty({
+//     description: 'Motivo de la consulta',
+//     enum: ['Envio', 'Producto', 'Pago', 'Otro'],
+//     example: 'Envio', // Proporciona un ejemplo aquí
+//   })
+//   @IsDefined({ message: 'El campo $property debe estar definido' })
+//   consultationReason: ConsultationReason;
 
-  // Agregar la propiedad context al DTO
-  context: IUpdateOrderContext;
-} 
+//   // Agregar la propiedad context al DTO
+//   context: IUpdateOrderContext;
+// } 
 
 
 //Por si no es necesario el 'context'

@@ -9,6 +9,16 @@ import { IResponse } from 'src/utils/interfaces/response.interface';
 import { SendMailDto } from './dto/sendMail.dto';
 import { Cases } from './dto/sendMail.dto';
 import { Templates } from './templates/enums/templates_enum';
+import { IResetPasswordContext } from './interfaces/reset-password-context.interface';
+import { ICreateUserContext } from './interfaces/create-account-context.interface';
+import { IPurchaseContext } from './interfaces/purchase-context.interface';
+import { IContactFormAdminContext } from './interfaces/contact-form-admin-context.interface';
+import { IContactFormUserContext } from './interfaces/contact-form-user-context.interface';
+import { IUpdateOrderContext } from './interfaces/update-order-context.interface';
+import { ConsultationReason } from './interfaces/update-order-context.interface';
+
+
+export type AnyContextType = IResetPasswordContext | ICreateUserContext | IPurchaseContext | IContactFormAdminContext | IContactFormUserContext | IUpdateOrderContext;
 
 @Injectable()
 export class MailService {
@@ -98,9 +108,10 @@ export class MailService {
           break;
 
           case Cases.UPDATE_ORDER:
+            if ('consultationReason' in context) 
           mail = await this.mailerService.sendMail({
             to: addressee,
-            subject: `Recibiste una solicitud de cambio en la orden`,
+            subject: `Recibiste una solicitud de cambio en la orden - Motivo: "${context.consultationReason}"`,
             template: Templates.updateOrder,
             context: context,
             attachments: [
