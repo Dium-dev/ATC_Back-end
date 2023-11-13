@@ -92,7 +92,7 @@ export class AdminProductsController {
     const excelData: Buffer = await this.adminProductsService.getExcelData(url);
     console.log(excelData);
     const csvData: string = this.adminProductsService.excelToCsv(excelData);
-    
+
     const jsonData: ExcelProductDto[] =
       await this.adminProductsService.csvToJson(csvData);
 

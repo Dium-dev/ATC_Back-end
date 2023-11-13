@@ -308,7 +308,7 @@ export class ProductsService {
         price: Number(product['Precio COP']),
         condition: product.Condicion,
         availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: [product.Fotos].flat(),
+        image: product.Fotos.split(','), // cambiar en caso de que las fotos esten separadas por un espacio " "
         year: product.Año,
         brandId,
         categoryId,

@@ -13,7 +13,7 @@ import * as XLSX from 'xlsx';
 import * as Papa from 'papaparse';
 
 /* entities */
-import { Product } from 'src/products/entities/product.entity';
+import { ConditionProduct, Product, stateproduct } from 'src/products/entities/product.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 
@@ -59,6 +59,7 @@ export class AdminProductsService {
       const workbook = XLSX.read(excelData, { type: 'buffer' });
 
       const sheetName = workbook.SheetNames[0];
+
       if (!sheetName)
         throw new ConflictException(
           'Hubo un problema a la hora de trabajár el Excel!. Recuerde ponerle un nombre a la hoja de trabajo',
@@ -115,9 +116,7 @@ export class AdminProductsService {
             const filteredRow = {};
             // Copiar y renombrar las propiedades A hasta l
             for (const prop in row) {
-              if (prop == 'C') {
-                filteredRow[propertyMapping[prop]] = row[prop].split(',');
-              } else if (prop <= 'L' && propertyMapping[prop]) {
+              if (prop <= 'L' && propertyMapping[prop]) {
                 filteredRow[propertyMapping[prop]] = row[prop];
               }
             }
@@ -170,13 +169,13 @@ export class AdminProductsService {
   async JsonToDatabase(
     allProducts: any[],
   ): Promise<IResponseCreateOrUpdateProducts> {
-
     for (const [index, value] of allProducts.entries()) {
       const thisProduct: Product | null =
         await this.productsService.findByPkToValidateExistentProduct(
           value['Número de publicación'],
           {},
         );
+
       if (thisProduct) {
         await this.updateProduct(thisProduct, value, index);
       } else {
@@ -240,7 +239,6 @@ export class AdminProductsService {
         product.Marca,
         index,
       );
-
       //Se actualiza el producto
       thisProduct.title = product.Título;
       thisProduct.description = product.Descripción;
@@ -248,9 +246,12 @@ export class AdminProductsService {
       thisProduct.stock = Number(product.Stock);
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
-      thisProduct.image = [product.Fotos];
-      thisProduct.condition = product.Condicion;
-      thisProduct.year = product.Año;
+      thisProduct.image = [''];
+      thisProduct.year = product.Título.split(' ')[3].includes('-')
+        ? product.Título.split(' ')[3]
+        : product.Título.split(' ')[4].includes('-')
+          ? product.Título.split(' ')[4]
+          : null;
       thisProduct.brandId = brandId;
       thisProduct.categoryId = categoryId;
 
