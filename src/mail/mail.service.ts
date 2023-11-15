@@ -24,7 +24,7 @@ export class MailService {
 
   //Si no hay un contexto, simplemente pon '{}'
   async sendMails(sendMailDto: SendMailDto): Promise<IResponse> {
-    const { addressee, subject, context } = sendMailDto;
+    const { addressee, subject, context } = sendMailDto;    
     try {
       let mail;
       switch (subject) {
@@ -90,9 +90,12 @@ export class MailService {
           });
           break;
         case Cases.CONTACT_FORM_ADMIN:
+          if ('userId' in context)
           mail = await this.mailerService.sendMail({
             to: addressee,
-            subject: 'Recibiste una consulta de usuario',
+            subject: context.userId
+            ? `Ayuda para Usuario ID: ${context.userId}`
+            : 'Recibiste una Consulta Gral',
             template: Templates.contactFormAdmin,
             context: context,
             attachments: [
@@ -124,16 +127,16 @@ export class MailService {
 
       }
       //If mail.accepted: [ user_email ]
-      if (mail.accepted.length)
+      if (mail && mail.accepted && mail.accepted.length) {
         return {
           statusCode: 200,
           message: 'El link para recuperar la contraseña ha sido enviado',
         };
-      // if mail.rejected: [ user_email ]
-      if (mail.rejected.length)
+      } else {
         throw new InternalServerErrorException(
           'Error al enviar el correo de recuperación',
         );
+      }
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }

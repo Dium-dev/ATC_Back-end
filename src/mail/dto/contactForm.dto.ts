@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsString,
 } from 'class-validator';
 
@@ -33,5 +34,13 @@ export class ContactFormDto {
     description:
       'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
   })
-    userEmail: string; // Agrega este campo para capturar el correo del usuario
+    userEmail: string; 
+
+    // @IsNumber()
+    @ApiProperty({
+      description: 'ID del usuario (opcional, para usuarios autenticados)',
+      required: false,
+    })
+    userId?: number; 
+  
 }

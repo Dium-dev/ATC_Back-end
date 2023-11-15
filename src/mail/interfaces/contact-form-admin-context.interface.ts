@@ -3,4 +3,5 @@ export interface IContactFormAdminContext {
   phone: string;
   message: string;
   userEmail: string;
+  userId?: number;
 }
