@@ -101,6 +101,7 @@ export class ProductsService {
         'state',
         'stock',
         'price',
+        'condition',
         'availability',
         'image',
         'model',
@@ -305,13 +306,10 @@ export class ProductsService {
         state: product.Estado,
         stock: Number(product.Stock),
         price: Number(product['Precio COP']),
+        condition: product.Condicion,
         availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: [''],
-        year: product.Título.split(' ')[3].includes('-')
-          ? product.Título.split(' ')[3]
-          : product.Título.split(' ')[4].includes('-')
-          ? product.Título.split(' ')[4]
-          : null,
+        image: product.Fotos.split(','), // cambiar en caso de que las fotos esten separadas por un espacio " "
+        year: product.Año,
         brandId,
         categoryId,
       });
@@ -321,7 +319,7 @@ export class ProductsService {
       throw new InternalServerErrorException(
         `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
           product.Título
-        } del indice ${index + 2}`,
+        } del indice ${index + 2}.\n ${error.message}`,
       );
     }
   }
