@@ -109,7 +109,7 @@ export class MailService {
           if ('consultationReason' in context)
             mail = await this.mailerService.sendMail({
               to: addressee,
-              subject: `Recibiste una solicitud de cambio en la orden - Motivo: "${context.consultationReason}"`,
+              subject: `Recibiste una solicitud de cambio en la orden nro ${context.order} - Motivo: "${context.consultationReason}"`,
               template: Templates.updateOrder,
               context: context,
               attachments: [
