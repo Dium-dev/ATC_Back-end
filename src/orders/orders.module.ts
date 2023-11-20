@@ -9,10 +9,10 @@ import { UsersModule } from 'src/users/users.module';
   imports: [
     forwardRef(() => ShoppingCartModule),
     forwardRef(() => PaymentsModule),
-    forwardRef(() => UsersModule)
+    forwardRef(() => UsersModule),
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
   exports: [OrdersService],
 })
-export class OrdersModule { }
+export class OrdersModule {}

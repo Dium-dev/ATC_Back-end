@@ -13,5 +13,5 @@ export class CreatePaymentDto {
     description: 'Aqui es donde iria el id de la orden',
   })
   @IsString()
-    orderId: string;
+  orderId: string;
 }

@@ -19,7 +19,7 @@ import { InjectModel } from '@nestjs/sequelize';
 @Injectable()
 export class ReviewsService {
   constructor(
-    @InjectModel(Review) private reviewModel:typeof Review,
+    @InjectModel(Review) private reviewModel: typeof Review,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
   ) {}
@@ -31,12 +31,11 @@ export class ReviewsService {
     try {
       const user = await this.userService.findByPkGenericUser(id, {});
 
-        const Newreview = await this.reviewModel.create({
+      const Newreview = await this.reviewModel.create({
         ...createReviewDto,
         userId: id,
       });
       if (!Newreview)
-
         throw new InternalServerErrorException(
           'Algo salió mal al momento de crear la reseña',
         );

@@ -59,9 +59,7 @@ export class UsersController {
   })
   @Post('register')
   @HttpCode(201)
-  async create(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<ICreateUser> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<ICreateUser> {
     const newUser = await this.usersService
       .verifyEmail(createUserDto.email)
       .then(async () => {

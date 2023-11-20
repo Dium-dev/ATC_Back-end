@@ -6,10 +6,7 @@ import { MailService } from 'src/mail/mail.service';
 import { OrdersModule } from 'src/orders/orders.module';
 
 @Module({
-  imports: [
-    forwardRef(() => UsersModule),
-    forwardRef(() => OrdersModule)
-  ],
+  imports: [forwardRef(() => UsersModule), forwardRef(() => OrdersModule)],
   controllers: [PaymentsController],
   providers: [PaymentsService, MailService],
   exports: [PaymentsService],

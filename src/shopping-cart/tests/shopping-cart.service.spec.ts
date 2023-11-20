@@ -3,8 +3,21 @@ import { ShoppingCartService } from '../shopping-cart.service';
 import { ShoppingCart } from '../entities/shopping-cart.entity';
 import { SequelizeModule, getModelToken } from '@nestjs/sequelize';
 import { faker } from '@faker-js/faker';
-import { NewCartProduct, generateResponse, generatesArrayOfProducts, generatesCartProduct, generatesProduct, generatesShoppingCartInstance } from './faker';
-import { BadRequestException, HttpException, InternalServerErrorException, NotFoundException, forwardRef } from '@nestjs/common';
+import {
+  NewCartProduct,
+  generateResponse,
+  generatesArrayOfProducts,
+  generatesCartProduct,
+  generatesProduct,
+  generatesShoppingCartInstance,
+} from './faker';
+import {
+  BadRequestException,
+  HttpException,
+  InternalServerErrorException,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { Product, stateproduct } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
@@ -23,18 +36,19 @@ describe('ShoppingCartService', () => {
         forwardRef(() => UsersModule),
         SequelizeModule.forFeature([CartProduct, ShoppingCart, User, Product]),
       ],
-      providers: [
-        ShoppingCartService,
-      ],
+      providers: [ShoppingCartService],
     })
       .useMocker(createMock)
       .compile();
 
     service = module.get<ShoppingCartService>(ShoppingCartService);
-    shoppingCartModel = module.get<typeof ShoppingCart>(getModelToken(ShoppingCart));
+    shoppingCartModel = module.get<typeof ShoppingCart>(
+      getModelToken(ShoppingCart),
+    );
     productModel = module.get<typeof Product>(getModelToken(Product));
-    cartProductModel = module.get<typeof CartProduct>(getModelToken(CartProduct));
-
+    cartProductModel = module.get<typeof CartProduct>(
+      getModelToken(CartProduct),
+    );
   });
 
   //createCartProduct method -------------------------------------------------------------------
@@ -67,85 +81,85 @@ describe('ShoppingCartService', () => {
 
   //postProductInCart method--------------------------------------------------------------------
   describe('postProductInCart method', () => {
-
     //Will be used for assertion purposes
     let productFound;
 
-    let productId:string;
-    let cartId:string;
-    let amount:number;
+    let productId: string;
+    let cartId: string;
+    let amount: number;
     let findProduct;
     let findCart;
     let createCartProduct;
 
-
     beforeEach(() => {
       productId = faker.string.uuid();
       cartId = faker.string.uuid();
-      amount = faker.number.int({ min: 1, max:3 }); 
+      amount = faker.number.int({ min: 1, max: 3 });
       /* amount`s max value is 3 because stock`s min value equals 5.
       Otherwise it will throw an exception (Check shoppingCartService) */
 
       //productFound is returned here for assertion purposes
-      findProduct = jest.spyOn(productModel, 'findByPk').mockImplementation( (id:string, options) => {
-        productFound = generatesProduct(id, stateproduct.Active);
-        return productFound;
-      });
+      findProduct = jest
+        .spyOn(productModel, 'findByPk')
+        .mockImplementation((id: string, options) => {
+          productFound = generatesProduct(id, stateproduct.Active);
+          return productFound;
+        });
 
-      findCart = jest.spyOn(shoppingCartModel, 'findByPk').mockImplementation( (id) => {
-        return true;
-      });
+      findCart = jest
+        .spyOn(shoppingCartModel, 'findByPk')
+        .mockImplementation((id) => {
+          return true;
+        });
 
-      createCartProduct = jest.spyOn(cartProductModel, 'create').mockImplementation( (data: NewCartProduct) => {
-        return generatesCartProduct(data);
-      });
+      createCartProduct = jest
+        .spyOn(cartProductModel, 'create')
+        .mockImplementation((data: NewCartProduct) => {
+          return generatesCartProduct(data);
+        });
     });
 
     it('Must add a new product to the shoppingCart', async () => {
-
-      const result = await service.postProductInCart(productId, cartId, amount );
+      const result = await service.postProductInCart(productId, cartId, amount);
 
       expect(findProduct).toReturnWith(productFound);
       expect(findCart).toBeCalledWith(cartId);
       expect(createCartProduct).toBeCalledWith({ amount, cartId, productId });
-      expect(result).toEqual({ statusCode: 200, message: 'Producto agregado con exito!' });
-      
-
+      expect(result).toEqual({
+        statusCode: 200,
+        message: 'Producto agregado con exito!',
+      });
     });
 
     it('Must throw an exception when the product to add is not found', async () => {
       findProduct.mockReset();
       findProduct.mockImplementation(() => false);
-      
+
       await expect(async () => {
-        await service.postProductInCart(productId, cartId, amount );
-      })
-        .rejects.toThrow(NotFoundException);
+        await service.postProductInCart(productId, cartId, amount);
+      }).rejects.toThrow(NotFoundException);
 
       expect(findProduct).toBeCalled();
     });
 
     it('Must throw an exception when the product to add is inactive', async () => {
       findProduct.mockReset();
-      findProduct.mockImplementation( (id:string, options) => {
+      findProduct.mockImplementation((id: string, options) => {
         productFound = generatesProduct(id, stateproduct.Inactive);
         return productFound;
       });
 
       await expect(async () => {
-        await service.postProductInCart(productId, cartId, amount );
-      })
-        .rejects.toThrow(NotFoundException);
+        await service.postProductInCart(productId, cartId, amount);
+      }).rejects.toThrow(NotFoundException);
 
       expect(findProduct).toBeCalled();
     });
 
     it('Must throw an exception when amount parameter is greater than the product`s stock', async () => {
-
       await expect(async () => {
-        await service.postProductInCart(productId, cartId, 15 );
-      })
-        .rejects.toThrow(BadRequestException);
+        await service.postProductInCart(productId, cartId, 15);
+      }).rejects.toThrow(BadRequestException);
 
       expect(findProduct).toBeCalled();
     });
@@ -155,9 +169,8 @@ describe('ShoppingCartService', () => {
       findCart.mockImplementation(() => false);
 
       await expect(async () => {
-        await service.postProductInCart(productId, cartId, amount );
-      })
-        .rejects.toThrow(NotFoundException);
+        await service.postProductInCart(productId, cartId, amount);
+      }).rejects.toThrow(NotFoundException);
 
       expect(findCart).toBeCalled();
     });
@@ -169,9 +182,8 @@ describe('ShoppingCartService', () => {
       });
 
       await expect(async () => {
-        await service.postProductInCart(productId, cartId, amount );
-      })
-        .rejects.toThrow(InternalServerErrorException);
+        await service.postProductInCart(productId, cartId, amount);
+      }).rejects.toThrow(InternalServerErrorException);
 
       expect(createCartProduct).toBeCalled();
     });
@@ -180,36 +192,35 @@ describe('ShoppingCartService', () => {
   describe('remove method', () => {
     let findCartProduct;
     const destroy = jest.fn(() => 'Deleted successfully');
-    let cartProductId:string;
-    let productId:string;
-    
+    let cartProductId: string;
+    let productId: string;
+
     beforeEach(() => {
       cartProductId = faker.string.uuid();
       productId = faker.string.uuid();
 
-      findCartProduct = jest.spyOn(cartProductModel, 'findOne').mockImplementation(() => {
-        return {
-          destroy: destroy,
-        };
-      });
-
+      findCartProduct = jest
+        .spyOn(cartProductModel, 'findOne')
+        .mockImplementation(() => {
+          return {
+            destroy: destroy,
+          };
+        });
     });
 
     it('Must remove an specific cartProduct instance from database', async () => {
-
       const response = generateResponse(204, 'Producto eliminado exitosamente');
 
       const result = await service.remove(cartProductId, productId);
 
       expect(findCartProduct).toBeCalledWith({
-        where:{
+        where: {
           cartId: cartProductId,
           productId: productId,
         },
       });
       expect(destroy).toBeCalled();
       expect(result).toEqual(response);
-
     });
 
     it('Must throw an exception when the carProduct to destroy is not found', async () => {
@@ -223,16 +234,17 @@ describe('ShoppingCartService', () => {
   });
 
   describe('CreateShoppingCart method', () => {
-    let userId:string;
+    let userId: string;
     let createMocked;
 
     beforeEach(() => {
       userId = faker.string.uuid();
-      createMocked = jest.spyOn(shoppingCartModel, 'create').mockImplementation(() => true);
+      createMocked = jest
+        .spyOn(shoppingCartModel, 'create')
+        .mockImplementation(() => true);
     });
 
     it('Must create a ShoppingCart instance', async () => {
-
       const result = await service.CreateShoppingCart(userId, {});
 
       expect(createMocked).toBeCalledWith({ userId });
@@ -252,16 +264,17 @@ describe('ShoppingCartService', () => {
   describe('destroyShoppingCart', () => {
     let userId;
     let destroyMocked;
-    
+
     beforeEach(() => {
       userId = faker.string.uuid();
-      destroyMocked = jest.spyOn(shoppingCartModel, 'destroy').mockImplementation(() => {
-        return 1;
-      });
+      destroyMocked = jest
+        .spyOn(shoppingCartModel, 'destroy')
+        .mockImplementation(() => {
+          return 1;
+        });
     });
 
     it('Must destroy an specific shoppingCart', async () => {
-
       const result = await service.destroyShoppingCart(userId, {});
 
       expect(result).toBeUndefined();
@@ -279,34 +292,35 @@ describe('ShoppingCartService', () => {
   });
 
   describe('getCart method', () => {
-
     it('Must find an specific cart and return its associated data', async () => {
-
       const userId = faker.string.uuid();
       const products = generatesArrayOfProducts(4);
       const total = products.reduce((acc, product) => acc + product.price, 0);
       let newShoppingCart;
 
-      const findShoppingCart = jest.spyOn(shoppingCartModel, 'findOne').mockImplementation((id:string) => {
-        newShoppingCart = generatesShoppingCartInstance(id);
-        const shoppingCart = {
-          ...newShoppingCart,
-          products: products,
-        };
+      const findShoppingCart = jest
+        .spyOn(shoppingCartModel, 'findOne')
+        .mockImplementation((id: string) => {
+          newShoppingCart = generatesShoppingCartInstance(id);
+          const shoppingCart = {
+            ...newShoppingCart,
+            products: products,
+          };
 
-        return shoppingCart;
-      });
+          return shoppingCart;
+        });
 
-      const findCartProduct = jest.spyOn(cartProductModel, 'findOne').mockImplementation(() => {
-        const data = {
-          amount: 1,
-          productId: faker.string.uuid(),
-          cartId: faker.string.uuid(),
-        };
+      const findCartProduct = jest
+        .spyOn(cartProductModel, 'findOne')
+        .mockImplementation(() => {
+          const data = {
+            amount: 1,
+            productId: faker.string.uuid(),
+            cartId: faker.string.uuid(),
+          };
 
-        return generatesCartProduct(data);
-      });
-
+          return generatesCartProduct(data);
+        });
 
       const result = await service.getCart(userId);
 
@@ -314,7 +328,7 @@ describe('ShoppingCartService', () => {
       expect(findCartProduct).toBeCalledTimes(products.length);
       expect(result.id).toBe(newShoppingCart.id);
       expect(result.total).toBe(total);
-      
+
       for (const product in products) {
         expect(result.products[product]).toEqual({
           id: products[product].id,
@@ -325,36 +339,38 @@ describe('ShoppingCartService', () => {
         });
       }
     });
-
   });
 
   describe('getCartProducts method', () => {
-
     it('Must find an specific cart and return its associated data', async () => {
       const cartId = faker.string.uuid();
       const products = generatesArrayOfProducts(4);
       const total = products.reduce((acc, product) => acc + product.price, 0);
       let newShoppingCart;
 
-      const findShoppingCart = jest.spyOn(shoppingCartModel, 'findByPk').mockImplementation((id:string, options) => {
-        newShoppingCart = generatesShoppingCartInstance(id);
-        const shoppingCart = {
-          ...newShoppingCart,
-          products: products,
-        };
+      const findShoppingCart = jest
+        .spyOn(shoppingCartModel, 'findByPk')
+        .mockImplementation((id: string, options) => {
+          newShoppingCart = generatesShoppingCartInstance(id);
+          const shoppingCart = {
+            ...newShoppingCart,
+            products: products,
+          };
 
-        return shoppingCart;
-      });
+          return shoppingCart;
+        });
 
-      const findCartProduct = jest.spyOn(cartProductModel, 'findOne').mockImplementation(() => {
-        const data = {
-          amount: 1,
-          productId: faker.string.uuid(),
-          cartId: faker.string.uuid(),
-        };
+      const findCartProduct = jest
+        .spyOn(cartProductModel, 'findOne')
+        .mockImplementation(() => {
+          const data = {
+            amount: 1,
+            productId: faker.string.uuid(),
+            cartId: faker.string.uuid(),
+          };
 
-        return generatesCartProduct(data);
-      });
+          return generatesCartProduct(data);
+        });
 
       //Calling the method
       const result = await service.getCartProducts(cartId);
@@ -378,19 +394,23 @@ describe('ShoppingCartService', () => {
     it('Must throw an exception when a ShoppingCart is not found', async () => {
       const cartId = faker.string.uuid();
 
-      const findShoppingCart = jest.spyOn(shoppingCartModel, 'findByPk').mockImplementation((id:string, options) => undefined );
+      const findShoppingCart = jest
+        .spyOn(shoppingCartModel, 'findByPk')
+        .mockImplementation((id: string, options) => undefined);
 
-      await expect( async () => {
+      await expect(async () => {
         await service.getCartProducts(cartId);
       }).rejects.toThrow(NotFoundException);
-
     });
   });
 
   describe('updateProductQuantity method', () => {
     it('Must update the specified CartProductUpdate', async () => {
       //For assertions purposes
-      const response = generateResponse(200, 'Cantidad de producto actualizada con éxito!');
+      const response = generateResponse(
+        200,
+        'Cantidad de producto actualizada con éxito!',
+      );
       const cartProductData = {
         amount: 4, //faker.number.int({ max:4 }), //It can`t be greater than five, otherwise test will fail (check generateProduct method)
         productId: faker.string.uuid(),
@@ -401,19 +421,29 @@ describe('ShoppingCartService', () => {
       const cartProductId = faker.string.uuid();
       const newQuantity = 5;
 
-      const findCartProduct = jest.spyOn(cartProductModel, 'findByPk').mockImplementation(() => {
-        cartProduct = {
-          ...generatesCartProduct(cartProductData),
-          save:jest.fn(async () => 'XD'),
-        };
+      const findCartProduct = jest
+        .spyOn(cartProductModel, 'findByPk')
+        .mockImplementation(() => {
+          cartProduct = {
+            ...generatesCartProduct(cartProductData),
+            save: jest.fn(async () => 'XD'),
+          };
 
-        return cartProduct;
-      });
-      const findProduct = jest.spyOn(productModel, 'findByPk').mockImplementation(() => {
-        return generatesProduct(cartProductData.productId, stateproduct.Active);
-      });
+          return cartProduct;
+        });
+      const findProduct = jest
+        .spyOn(productModel, 'findByPk')
+        .mockImplementation(() => {
+          return generatesProduct(
+            cartProductData.productId,
+            stateproduct.Active,
+          );
+        });
 
-      const result = await service.updateProductQuantity({ cartProductId, newQuantity });
+      const result = await service.updateProductQuantity({
+        cartProductId,
+        newQuantity,
+      });
 
       expect(findCartProduct).toBeCalled();
       expect(findProduct).toBeCalled();
@@ -425,7 +455,9 @@ describe('ShoppingCartService', () => {
       const cartProductId = faker.string.uuid();
       const newQuantity = 5;
 
-      const findCartProduct = jest.spyOn(cartProductModel, 'findByPk').mockImplementation(() => false);
+      const findCartProduct = jest
+        .spyOn(cartProductModel, 'findByPk')
+        .mockImplementation(() => false);
 
       await expect(async () => {
         await service.updateProductQuantity({ cartProductId, newQuantity });

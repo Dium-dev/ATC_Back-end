@@ -310,8 +310,8 @@ export class ProductsService {
         year: product.Título.split(' ')[3].includes('-')
           ? product.Título.split(' ')[3]
           : product.Título.split(' ')[4].includes('-')
-            ? product.Título.split(' ')[4]
-            : null,
+          ? product.Título.split(' ')[4]
+          : null,
         brandId,
         categoryId,
       });
