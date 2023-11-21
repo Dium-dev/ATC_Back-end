@@ -87,7 +87,11 @@ export class PaymentsController {
   @Post('webhook/:orderid')
   async notifWebHook(@Query() query, @Param('orderid') orderid: string) {
     if (query.type && query.type == 'payment') {
-      await this.paymentsService.actualizeOrder(query['data.id'], orderid);
+      const actualizeOrder = await this.paymentsService.actualizeOrder(
+        query['data.id'],
+        orderid,
+      );
+      return actualizeOrder;
     }
   }
 }

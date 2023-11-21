@@ -7,12 +7,12 @@ import {
   forwardRef,
   Inject,
 } from '@nestjs/common';
-import { Product, stateproduct } from 'src/products/entities/product.entity';
+import { Product, stateproduct } from '../products/entities/product.entity';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { Transaction } from 'sequelize';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 import { ProductsService } from 'src/products/products.service';
 import { InjectModel } from '@nestjs/sequelize';
 import { OrdersService } from 'src/orders/orders.service';
@@ -21,16 +21,16 @@ import { OrdersService } from 'src/orders/orders.service';
 export class ShoppingCartService {
   constructor(
     //Injecting shoppingCart model
-    @InjectModel(ShoppingCart) 
-    private shoppingCartModel:typeof ShoppingCart,
+    @InjectModel(ShoppingCart)
+    private shoppingCartModel: typeof ShoppingCart,
     //Injecting CartProduct model
-    @InjectModel(CartProduct) 
+    @InjectModel(CartProduct)
     private cartProductModel: typeof CartProduct,
     //Injecting Product model
-    @InjectModel(Product) 
+    @InjectModel(Product)
     private productModel: typeof Product,
     //Injecting User model
-    @InjectModel(User) 
+    @InjectModel(User)
     private userModel: typeof User,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
@@ -59,21 +59,33 @@ export class ShoppingCartService {
     cartId: string,
     amount: number,
   ): Promise<{ statusCode: number; message: string }> {
+    try {
+      const thisProduct: boolean = await this.getThisProduct(productId, amount);
 
-    const thisProduct: boolean = await this.getThisProduct(productId, amount);
+      const thisShoppingCart: boolean = await this.getThisShoppingCart(cartId);
 
-    const thisShoppingCart: boolean = await this.getThisShoppingCart(cartId);
-
-    if (thisProduct === true && thisShoppingCart === true) {
-      await CartProduct.create({
-        amount,
-        productId,
-        cartId,
-      });
-      return {
-        statusCode: 200,
-        message: 'Producto agregado con exito!',
-      };
+      if (thisProduct && thisShoppingCart) {
+        await this.cartProductModel.create({
+          amount,
+          productId,
+          cartId,
+        });
+        return {
+          statusCode: 200,
+          message: 'Producto agregado con exito!',
+        };
+      }
+    } catch (error) {
+      switch (error.constructor) {
+        case NotFoundException:
+          throw new NotFoundException(error.message);
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrio un error en el servidor al tratar de buscar un producto',
+          );
+      }
     }
   }
 
@@ -99,9 +111,12 @@ export class ShoppingCartService {
 
   private async getThisProduct(id: string, cantidad: number): Promise<boolean> {
     try {
-      const thisProducto = await this.productModel.findByPk(id, {
-        attributes: ['id', 'state', 'stock', 'price'],
-      });
+      const thisProducto = await this.productsService.findByPkGenericProduct(
+        id,
+        {
+          attributes: ['id', 'state', 'stock', 'price'],
+        },
+      );
       if (!thisProducto)
         throw new NotFoundException(
           'No se encontró el producto entre nuestro catalogo de disponibles.',
@@ -189,14 +204,17 @@ export class ShoppingCartService {
           },
         ],
       });
-      const cart = await ShoppingCart.findByPk(user.cart.dataValues.id, {
-        include: [
-          {
-            model: Product,
-            attributes: ['id', 'title', 'price'],
-          },
-        ],
-      });
+      const cart = await this.shoppingCartModel.findByPk(
+        user.cart.dataValues.id,
+        {
+          include: [
+            {
+              model: Product,
+              attributes: ['id', 'title', 'price'],
+            },
+          ],
+        },
+      );
 
       const products = await Promise.all(
         cart.products?.map(async (product) => {
@@ -291,7 +309,7 @@ export class ShoppingCartService {
     newQuantity: number;
   }): Promise<{ statusCode: number; message: string }> {
     try {
-      const cartProductToUpdate = await CartProduct.findByPk(
+      const cartProductToUpdate = await this.cartProductModel.findByPk(
         updateInfo.cartProductId,
       );
 
@@ -305,7 +323,6 @@ export class ShoppingCartService {
         cartProductToUpdate.productId, // Usar el productId de la tabla intermedia
         updateInfo.newQuantity,
       );
-
 
       if (thisProduct) {
         cartProductToUpdate.amount = updateInfo.newQuantity;

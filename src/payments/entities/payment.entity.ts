@@ -40,5 +40,5 @@ export class Payment extends Model<Payment> {
   @Column({
     allowNull: false,
   })
-    user_email: string;
+  user_email: string;
 }

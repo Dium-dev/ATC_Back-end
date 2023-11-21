@@ -15,20 +15,20 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
-import { IResponse } from 'src/utils/interfaces/response.interface';
-import { MailService } from 'src/mail/mail.service';
-import { Cases } from 'src/mail/dto/sendMail.dto';
+import { IResponse } from '../utils/interfaces/response.interface';
+import { MailService } from '../mail/mail.service';
+import { Cases } from '../mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
-import { ICreateUserContext } from 'src/mail/interfaces/create-account-context.interface';
+import { ICreateUserContext } from '../mail/interfaces/create-account-context.interface';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
 import { FindOptions, or } from 'sequelize';
-import { EModelsTable } from 'src/utils/custom/EmodelsTable.enum';
-import { DirectionsService } from 'src/directions/directions.service';
-import { ReviewsService } from 'src/reviews/reviews.service';
-import { OrdersService } from 'src/orders/orders.service';
-import { PaymentsService } from 'src/payments/payments.service';
+import { EModelsTable } from '../utils/custom/EmodelsTable.enum';
+import { DirectionsService } from '../directions/directions.service';
+import { ReviewsService } from '../reviews/reviews.service';
+import { OrdersService } from '../orders/orders.service';
+import { PaymentsService } from '../payments/payments.service';
 import { GenericPaginateUserInt } from './interfaces/genericsIntUsers.interface';
 
 @Injectable()
@@ -258,7 +258,7 @@ export class UsersService {
         return await this.shopCartService
           .destroyShoppingCart({ userId: id }, transaction)
           .then(async () => {
-            await transaction.commit().then(async () => user.save());
+            await user.save().then(async () => await transaction.commit());
             return {
               message: `Se inactivó la cuenta del Usuario: ${
                 user.firstName + ' ' + user.lastName
@@ -271,7 +271,7 @@ export class UsersService {
         return await this.shopCartService
           .CreateShoppingCart({ userId: id }, transaction)
           .then(async () => {
-            await transaction.commit().then(async () => user.save());
+            await user.save().then(async () => await transaction.commit());
             return {
               message: `Se ah restaurado la cuenta del Usuario ${
                 user.firstName + ' ' + user.lastName
