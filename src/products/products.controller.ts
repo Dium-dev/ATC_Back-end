@@ -10,8 +10,6 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductsDto } from './dto/query-product.dto';
 import { IGetProducts } from './interfaces/getProducts.interface';
 import { ApiParam, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';

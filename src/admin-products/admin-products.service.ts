@@ -13,7 +13,7 @@ import * as XLSX from 'xlsx';
 import * as Papa from 'papaparse';
 
 /* entities */
-import { Product } from 'src/products/entities/product.entity';
+import { ConditionProduct, Product, stateproduct } from 'src/products/entities/product.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 
@@ -92,8 +92,39 @@ export class AdminProductsService {
       Papa.parse(csvData, {
         header: true,
         skipEmptyLines: true,
+
         complete: (result) => {
-          resolve(result.data);
+          // Mapeo de nombres de propiedades
+          const propertyMapping = {
+            '': 'Número de publicación',
+            'A': 'Título',
+            'B': 'Categoría',
+            'C': 'Fotos',
+            'D': 'Stock',
+            'E': 'Precio COP',
+            'F': 'Estado',
+            'G': 'Descripción',
+            'H': 'Condicion',
+            'I': 'Disponibilidad de stock (días)',
+            'J': 'Marca',
+            'K': 'Modelo',
+            'L': 'Año',
+          };
+
+          // Transformar el resultado para incluir solo las propiedades A hasta K con nuevos nombres
+          const transformedData = result.data.map((row) => {
+            const filteredRow = {};
+            // Copiar y renombrar las propiedades A hasta l
+            for (const prop in row) {
+              if (prop <= 'L' && propertyMapping[prop]) {
+                filteredRow[propertyMapping[prop]] = row[prop];
+              }
+            }
+            return filteredRow;
+          });
+
+          transformedData.shift();
+          resolve(transformedData);
         },
         error: (error) => {
           reject(error);

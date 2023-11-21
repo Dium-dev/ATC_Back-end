@@ -54,7 +54,7 @@ export class ShoppingCartService {
     }
   } */
 
-   async postProductInCart(
+  async postProductInCart(
     productId: string,
     cartId: string,
     amount: number,
