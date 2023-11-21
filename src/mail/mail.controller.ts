@@ -81,15 +81,16 @@ export class ContactController {
         subject: Cases.CONTACT_FORM_USER,
         context: userContext,
       });
-
+      
       const adminContext: IContactFormAdminContext = {
         name: contactData.name,
         phone: contactData.phone,
         message: contactData.message,
         userEmail: contactData.userEmail,
+        userId: contactData.userId
       };
 
-      await this.mailService.sendMails({
+            await this.mailService.sendMails({
         addressee: ADMIN_EMAIL,
         subject: Cases.CONTACT_FORM_ADMIN,
         context: adminContext,

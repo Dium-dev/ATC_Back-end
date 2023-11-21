@@ -3,20 +3,25 @@ html(lang='es')
   head
     meta(charset='utf-8')
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title Nueva consulta de usuario
+    title 
+      | #{userId ? 'Ayuda a Usuario - ' + userId : 'Nueva Consulta Gral'}
   header(style='text-align:center; padding-top:4vh; padding-bottom:4vh; background-color:white;')
     img(src='cid:headerATCLogo', style='max-width:100%; align-content:center;')
   body
     article(style='border-bottom:solid red; padding-bottom:2vh;')
-      h2(style='color: red; text-align:left') ¡Nueva consulta de usuario!
-      p(style='color:black; text-align:left') El usuario #{name} te ha enviado un mensaje desde el formulario de contacto.
+      h2(style='color: red; text-align:left') 
+        | #{userId ? 'Ayuda a Usuario - ' + userId : '¡Nueva Consulta Gral!'}
+      p(style='color:black; text-align:left') 
+        | #{userId ? name + ' te solicita ayuda desde el dashboard de usuario.' : name + ' te envía una consulta desde el formulario de contacto.'}
       p(style='text-align:left') Detalles de la consulta:
       ul(style='color:black; text-align:left')
-        li(style='margin-bottom:8px') <b>Nombre del usuario:</b> #{name}
+        li(style='margin-bottom:8px') <b>Nombre:</b> #{name}
         li(style='margin-bottom:8px') <b>Teléfono:</b> #{phone}
         li(style='margin-bottom:8px') <b>Correo:</b> #{userEmail}
         li(style='margin-bottom:8px') <b>Mensaje:</b> #{message}
-      p(style='text-align:left') Por favor, responde al usuario a la brevedad posible.
+        if userId
+          li(style='margin-bottom:8px') <b>User ID:</b> #{userId}
+      p(style='text-align:left') Por favor, responde a la brevedad posible.
     footer
       p(style='color:black; text-align:left') No responda a este remitente
       p(style='color:black; text-align:left')
