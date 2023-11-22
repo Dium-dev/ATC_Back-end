@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { OrderStateEnum } from '../../orders/entities/order.entity';
-import { stateproduct } from '../../products/entities/product.entity';
+import { StateProduct } from '../../products/entities/product.entity';
 import { PaymentState } from '../entities/payment.entity';
 
 export const createUserObject = () => {
@@ -28,7 +28,7 @@ export const createProductsObject = (number: number) => {
       id: faker.string.uuid(),
       title: faker.string.alpha(),
       description: faker.lorem.words(),
-      state: stateproduct.Active,
+      state: StateProduct.Active,
       stock: 0,
       availability: 3,
       price: faker.number.int(5000),

@@ -6,8 +6,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductsDto } from './dto/query-product.dto';
 import { FindOptions, Op } from 'sequelize';
 import { Brand } from 'src/brands/entities/brand.entity';
@@ -101,6 +99,7 @@ export class ProductsService {
         'state',
         'stock',
         'price',
+        'mostSelled',
         'condition',
         'availability',
         'image',
@@ -320,6 +319,22 @@ export class ProductsService {
         `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
           product.Título
         } del indice ${index + 2}.\n ${error.message}`,
+      );
+    }
+  }
+
+  public async updateMostSell(id: string) {
+    try {
+      const product = await Product.findByPk(id);
+      product.mostSelled = !product.mostSelled;
+      await product.save();
+      return {
+        statusCode: 204,
+        message: 'Producto actualizado exitosamente',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        "Ocurrio un error a la hora de actualizar la propiedad 'masVendido' del producto.",
       );
     }
   }

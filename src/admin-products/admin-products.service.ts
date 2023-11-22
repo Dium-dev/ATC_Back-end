@@ -13,7 +13,7 @@ import * as XLSX from 'xlsx';
 import * as Papa from 'papaparse';
 
 /* entities */
-import { ConditionProduct, Product, stateproduct } from 'src/products/entities/product.entity';
+import { Product } from 'src/products/entities/product.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 
@@ -247,11 +247,7 @@ export class AdminProductsService {
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
       thisProduct.image = [''];
-      thisProduct.year = product.Título.split(' ')[3].includes('-')
-        ? product.Título.split(' ')[3]
-        : product.Título.split(' ')[4].includes('-')
-        ? product.Título.split(' ')[4]
-        : null;
+      thisProduct.year = product.Año,
       thisProduct.brandId = brandId;
       thisProduct.categoryId = categoryId;
 
