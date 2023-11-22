@@ -8,16 +8,21 @@ import {
   Delete,
   Query,
   HttpCode,
+  UseGuards,
+  HttpException,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductsDto } from './dto/query-product.dto';
 import { IGetProducts } from './interfaces/getProducts.interface';
 import { ApiParam, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { IProductXcategory } from './interfaces/product-x-category.interface';
 import { IProduct } from './interfaces/getProduct.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
+import { Product } from './entities/product.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
+import { GetUser } from 'src/auth/auth-user.decorator';
+import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
+import { Rol, User } from 'src/users/entities/user.entity';
 
 @ApiTags('Products')
 @Controller('products')
@@ -125,5 +130,20 @@ export class ProductsController {
   async remove(@Param('id') id: string): Promise<IResponse> {
     const response = await this.productsService.remove(id);
     return response;
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Patch('mostSelled/:id')
+  async updateMostSell(
+    // @GetUser() user: User,
+    @Param('id') id: string,
+  ): Promise<IResponse> {
+    try {
+      // if (user.rol != Rol.admin) throw new HttpException('Forbidden resources.', 204);
+      const response = await this.productsService.updateMostSell(id);
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 }

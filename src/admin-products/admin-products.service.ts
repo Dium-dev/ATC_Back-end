@@ -92,8 +92,39 @@ export class AdminProductsService {
       Papa.parse(csvData, {
         header: true,
         skipEmptyLines: true,
+
         complete: (result) => {
-          resolve(result.data);
+          // Mapeo de nombres de propiedades
+          const propertyMapping = {
+            '': 'Número de publicación',
+            'A': 'Título',
+            'B': 'Categoría',
+            'C': 'Fotos',
+            'D': 'Stock',
+            'E': 'Precio COP',
+            'F': 'Estado',
+            'G': 'Descripción',
+            'H': 'Condicion',
+            'I': 'Disponibilidad de stock (días)',
+            'J': 'Marca',
+            'K': 'Modelo',
+            'L': 'Año',
+          };
+
+          // Transformar el resultado para incluir solo las propiedades A hasta K con nuevos nombres
+          const transformedData = result.data.map((row) => {
+            const filteredRow = {};
+            // Copiar y renombrar las propiedades A hasta l
+            for (const prop in row) {
+              if (prop <= 'L' && propertyMapping[prop]) {
+                filteredRow[propertyMapping[prop]] = row[prop];
+              }
+            }
+            return filteredRow;
+          });
+
+          transformedData.shift();
+          resolve(transformedData);
         },
         error: (error) => {
           reject(error);
@@ -216,11 +247,7 @@ export class AdminProductsService {
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
       thisProduct.image = [''];
-      thisProduct.year = product.Título.split(' ')[3].includes('-')
-        ? product.Título.split(' ')[3]
-        : product.Título.split(' ')[4].includes('-')
-        ? product.Título.split(' ')[4]
-        : null;
+      thisProduct.year = product.Año,
       thisProduct.brandId = brandId;
       thisProduct.categoryId = categoryId;
 
