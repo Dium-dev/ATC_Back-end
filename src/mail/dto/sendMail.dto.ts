@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PartialType } from '@nestjs/swagger';
 import {
   IsDefined,
   IsEmail,
@@ -11,7 +10,8 @@ import { IResetPasswordContext } from '../interfaces/reset-password-context.inte
 import { ICreateUserContext } from '../interfaces/create-account-context.interface';
 import { IPurchaseContext } from '../interfaces/purchase-context.interface';
 import { IContactFormAdminContext } from '../interfaces/contact-form-admin-context.interface';
-import { IContactFormUserContext } from '../interfaces/contact-form-user-cotext.interface';
+import { IContactFormUserContext } from '../interfaces/contact-form-user-context.interface';
+import { IUpdateOrderContext } from '../interfaces/update-order-context.interface';
 
 export enum Cases {
   RESET_PASSWORD = 'RESET_PASSWORD',
@@ -19,38 +19,9 @@ export enum Cases {
   PURCHASE = 'PURCHASE',
   CONTACT_FORM_ADMIN = 'CONTACT_FORM_ADMIN',
   CONTACT_FORM_USER = 'CONTACT_FORM_USER',
+  UPDATE_ORDER = 'UPDATE_ORDER',
 }
 
-export class ContactFormDto {
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Recibe el nombre del usuario, requerido',
-  })
-  name: string;
-
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Recibe el telefono de contacto del usuario, requerido',
-  })
-  phone: string;
-
-  @IsString({ message: 'El campo $property debe ser un texto' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description: 'Mensaje del usuario, requerido',
-  })
-  message: string;
-
-  @IsEmail(undefined, { message: 'El formato del email no es valido' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description:
-      'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
-  })
-  userEmail: string; // Agrega este campo para capturar el correo del usuario
-}
 
 //Por si no es necesario el 'context'
 interface INotSend {
@@ -67,21 +38,22 @@ export class SendMailDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-  addressee: string;
+    addressee: string;
 
   @IsEnum(Cases, {
     message: '$value no está entre los posibles casos para envío de correo',
   })
-  subject: string;
+    subject: string;
 
   @IsDefined({
     message: '$property debe estar definido, revisa los parámetros requeridos',
   })
-  context:
-    | IResetPasswordContext
-    | ICreateUserContext
-    | IPurchaseContext
-    | IContactFormAdminContext
-    | IContactFormUserContext
-    | INotSend;
+    context:
+  | IResetPasswordContext
+  | ICreateUserContext
+  | IPurchaseContext
+  | IContactFormAdminContext
+  | IContactFormUserContext
+  | IUpdateOrderContext
+  | INotSend;
 }
