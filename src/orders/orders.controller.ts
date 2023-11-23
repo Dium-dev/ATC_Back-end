@@ -55,8 +55,7 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @GetUser() user: UserChangePasswordDto,
-    @Body() createOrderDto: CreateOrderDto,
+  @GetUser() user: UserChangePasswordDto,
   ) {
     const { userId } = user;
     const response = await this.ordersService.create(userId);

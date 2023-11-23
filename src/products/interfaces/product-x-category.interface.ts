@@ -1,9 +1,9 @@
-import { stateproduct } from '../entities/product.entity';
+import { StateProduct } from '../entities/product.entity';
 
 export interface IItemsProducXcategory {
   id: string;
   title: string;
-  state: stateproduct;
+  state: StateProduct;
   price: number;
   image: string[];
   category: {

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { stateproduct } from 'src/products/entities/product.entity';
+import { StateProduct } from 'src/products/entities/product.entity';
 
 export interface NewCartProduct {
   amount: number;
@@ -14,7 +14,7 @@ export const generatesShoppingCartInstance = (userId: string) => {
   };
 };
 
-export const generatesProduct = (productId, state: stateproduct) => {
+export const generatesProduct = (productId, state: StateProduct) => {
   return {
     id: productId,
     state: state,
@@ -30,7 +30,7 @@ export const generatesArrayOfProducts = (amount: number) => {
 
   while (amount > 0) {
     const productId = faker.string.uuid();
-    arrayOfProducts.push(generatesProduct(productId, stateproduct.Active));
+    arrayOfProducts.push(generatesProduct(productId, StateProduct.Active));
     --amount;
   }
 
