@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsEnum, Length } from 'class-validator';
-import { ConditionProduct, stateproduct } from 'src/products/entities/product.entity';
+import { ConditionProduct, StateProduct } from 'src/products/entities/product.entity';
 
 export class ExcelProductDto {
   @IsNotEmpty({
@@ -37,8 +37,8 @@ export class ExcelProductDto {
     message:
       "El campo \"Estado\", no debe estar vacío. Debe contener los valores 'Activa' o'Inactiva'",
   })
-  @IsEnum(stateproduct)
-    Estado: stateproduct;
+  @IsEnum(StateProduct)
+    Estado: StateProduct;
 
   @IsEnum(ConditionProduct)
     Condicion: ConditionProduct;

@@ -14,8 +14,7 @@ import { OrderProduct } from '../../orders/entities/orderProduct.entity';
 import { CartProduct } from '../../shopping-cart/entities/cart-product.entity';
 import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export enum stateproduct {
+export enum StateProduct {
   Active = 'Activo',
   Inactive = 'Inactivo',
 }
@@ -56,10 +55,10 @@ export class Product extends Model<Product> {
     description: string;
 
   @Column({
-    type: DataType.ENUM(...Object.values(stateproduct)),
+    type: DataType.ENUM(...Object.values(StateProduct)),
     allowNull: false,
   })
-    state: stateproduct;
+    state: StateProduct;
 
   @Column({
     allowNull: false,
@@ -84,6 +83,12 @@ export class Product extends Model<Product> {
     allowNull: true,
   })
     availability: number;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+    mostSelled: boolean;
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),
