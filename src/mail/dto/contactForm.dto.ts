@@ -41,6 +41,5 @@ export class ContactFormDto {
       description: 'ID del usuario (opcional, para usuarios autenticados)',
       required: false,
     })
-    userId?: string; 
-  
+    userId?: string;  
 }
