@@ -16,15 +16,21 @@ import { IContactFormAdminContext } from './interfaces/contact-form-admin-contex
 import { IContactFormUserContext } from './interfaces/contact-form-user-context.interface';
 import { IUpdateOrderContext } from './interfaces/update-order-context.interface';
 
-export type AnyContextType = IResetPasswordContext | ICreateUserContext | IPurchaseContext | IContactFormAdminContext | IContactFormUserContext | IUpdateOrderContext;
+export type AnyContextType =
+  | IResetPasswordContext
+  | ICreateUserContext
+  | IPurchaseContext
+  | IContactFormAdminContext
+  | IContactFormUserContext
+  | IUpdateOrderContext;
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService) { }
+  constructor(private readonly mailerService: MailerService) {}
 
   //Si no hay un contexto, simplemente pon '{}'
   async sendMails(sendMailDto: SendMailDto): Promise<IResponse> {
-    const { addressee, subject, context } = sendMailDto;    
+    const { addressee, subject, context } = sendMailDto;
     try {
       let mail;
       switch (subject) {
@@ -91,21 +97,21 @@ export class MailService {
           break;
         case Cases.CONTACT_FORM_ADMIN:
           if ('userId' in context)
-          mail = await this.mailerService.sendMail({
-            to: addressee,
-            subject: context.userId
-            ? `Ayuda para Usuario ID: ${context.userId}`
-            : 'Recibiste una Consulta Gral',
-            template: Templates.contactFormAdmin,
-            context: context,
-            attachments: [
-              {
-                filename: 'ATCarroLogo.png',
-                path: './src/public/ATCarroLogo.png',
-                cid: 'headerATCLogo',
-              },
-            ],
-          });
+            mail = await this.mailerService.sendMail({
+              to: addressee,
+              subject: context.userId
+                ? `Ayuda para Usuario ID: ${context.userId}`
+                : 'Recibiste una Consulta Gral',
+              template: Templates.contactFormAdmin,
+              context: context,
+              attachments: [
+                {
+                  filename: 'ATCarroLogo.png',
+                  path: './src/public/ATCarroLogo.png',
+                  cid: 'headerATCLogo',
+                },
+              ],
+            });
           break;
 
         case Cases.UPDATE_ORDER:
@@ -124,7 +130,6 @@ export class MailService {
               ],
             });
           break;
-
       }
       //If mail.accepted: [ user_email ]
       if (mail && mail.accepted && mail.accepted.length) {

@@ -11,10 +11,10 @@ import { Payment } from './entities/payment.entity';
   imports: [
     SequelizeModule.forFeature([Payment]),
     forwardRef(() => UsersModule),
-    forwardRef(() => OrdersModule)
+    forwardRef(() => OrdersModule),
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService, MailService],
   exports: [PaymentsService],
 })
-export class PaymentsModule { }
+export class PaymentsModule {}

@@ -21,7 +21,7 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   // Ruta para crear un pago
- /*  @ApiOperation({
+  /*  @ApiOperation({
     summary: 'Ruta para realizar pagos.',
   })
   @UseGuards(JwtAuthGuard)

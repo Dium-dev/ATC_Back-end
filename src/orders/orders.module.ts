@@ -14,7 +14,7 @@ import { OrderProduct } from './entities/orderProduct.entity';
     forwardRef(() => ShoppingCartModule),
     forwardRef(() => PaymentsModule),
     forwardRef(() => UsersModule),
-    SequelizeModule.forFeature([Order,OrderProduct])
+    SequelizeModule.forFeature([Order, OrderProduct]),
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

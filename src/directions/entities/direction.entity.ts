@@ -49,7 +49,7 @@ export class Direction extends Model<Direction> {
   calle: string;
 
   @HasMany(() => Order)
-  orders: Order[]
+  orders: Order[];
 
   @ForeignKey(() => User)
   @Column({

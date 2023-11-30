@@ -33,7 +33,12 @@ export class PaymentsService {
     });
   }
 
-  async createPayment(amount: number, user: User, orderId: string, transaction?: Transaction) {
+  async createPayment(
+    amount: number,
+    user: User,
+    orderId: string,
+    transaction?: Transaction,
+  ) {
     // Crea un objeto de preferencia con los detalles del pago
     const preference: CreatePreferencePayload = {
       items: [
@@ -58,20 +63,21 @@ export class PaymentsService {
 
     const response = await mercadopago.preferences.create(preference);
 
-    const newPayment = await this.paymentModel.create({
-      id: response.body.id,
-      orderId,
-      user_email: user.email,
-      amount,
-      state: PaymentState.PENDING,
-    }, { transaction });
-
+    const newPayment = await this.paymentModel.create(
+      {
+        id: response.body.id,
+        orderId,
+        user_email: user.email,
+        amount,
+        state: PaymentState.PENDING,
+      },
+      { transaction },
+    );
 
     return {
       url: response.body.init_point,
       paymentId: response.body.id,
     };
-
   }
 
   async actualizePayment(state: string, orderId: string) {
@@ -81,16 +87,16 @@ export class PaymentsService {
       state == 'success'
         ? (order.state = OrderStateEnum.PAGO)
         : state == 'pending'
-          ? (order.state = OrderStateEnum.PENDIENTE)
-          : (order.state = OrderStateEnum.RECHAZADO);
+        ? (order.state = OrderStateEnum.PENDIENTE)
+        : (order.state = OrderStateEnum.RECHAZADO);
       await order.save();
 
       const payment = await Payment.findOne({ where: { orderId } });
       state == 'success'
         ? (payment.state = PaymentState.SUCCESS)
         : state == 'pending'
-          ? (payment.state = PaymentState.PENDING)
-          : (payment.state = PaymentState.FAILED);
+        ? (payment.state = PaymentState.PENDING)
+        : (payment.state = PaymentState.FAILED);
       await payment.save();
 
       if (state == 'success') {

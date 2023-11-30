@@ -43,7 +43,7 @@ export class OrdersService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) { }
+  ) {}
 
   async findOneOrder(id: string) {
     try {
@@ -61,8 +61,8 @@ export class OrdersService {
             },
           },
           {
-            model: Direction
-          }
+            model: Direction,
+          },
         ],
       });
 
@@ -100,8 +100,8 @@ export class OrdersService {
             },
           },
           {
-            model: Direction
-          }
+            model: Direction,
+          },
         ],
       });
 
@@ -123,40 +123,50 @@ export class OrdersService {
   }
 
   //Crear Orden
-  async create(data: { userId: string, directionId: string }): Promise<object> {
-    const transaction: Transaction = await this.sequelize.transaction()
+  async create(data: { userId: string; directionId: string }): Promise<object> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      const { userId, directionId } = data
+      const { userId, directionId } = data;
       //Obtenemos el id del carrito del usuario que realiza la peticion
       const thisUser = await this.userService.findByPkGenericUser(userId, {
         include: [
           {
-            model: ShoppingCart, attributes: ['id'], include: [{ model: Product, attributes: ['id', 'stock', 'price', 'state'] }]
+            model: ShoppingCart,
+            attributes: ['id'],
+            include: [
+              { model: Product, attributes: ['id', 'stock', 'price', 'state'] },
+            ],
           },
         ],
-        transaction
+        transaction,
       });
 
       //Aqui obtenemos el monto total y los productos para realizar la orden
-      const { total, products } = await this.shoppingCartService.getCartProductsForNewOrder(
-        { where: { cartId: thisUser.cart.id }, transaction },
-        thisUser.cart.products
+      const { total, products } =
+        await this.shoppingCartService.getCartProductsForNewOrder(
+          { where: { cartId: thisUser.cart.id }, transaction },
+          thisUser.cart.products,
+        );
+
+      const newOrder = await this.orderModel.create(
+        {
+          total,
+          userId,
+          directionId,
+        },
+        { transaction },
       );
 
-      const newOrder = await this.orderModel.create({
-        total,
-        userId,
-        directionId
-      }, { transaction });
-
       for (const product of Object(products)) {
-
-        await this.orderProductModel.create({
-          amount: product.amount,
-          price: product.price,
-          orderId: newOrder.id,
-          productId: product.id,
-        }, { transaction });
+        await this.orderProductModel.create(
+          {
+            amount: product.amount,
+            price: product.price,
+            orderId: newOrder.id,
+            productId: product.id,
+          },
+          { transaction },
+        );
       }
       const urlBuy = await this.paymentsService.createPayment(
         total,
@@ -165,11 +175,17 @@ export class OrdersService {
         transaction,
       );
 
-      await this.shoppingCartService.destroyShoppingCart({ userId }, transaction)
+      await this.shoppingCartService.destroyShoppingCart(
+        { userId },
+        transaction,
+      );
 
-      await this.shoppingCartService.CreateShoppingCart({ userId }, transaction)
+      await this.shoppingCartService.CreateShoppingCart(
+        { userId },
+        transaction,
+      );
 
-      await transaction.commit()
+      await transaction.commit();
       return {
         statusCode: 201,
         data: `Nueva orden creada exitosamente. _id: ${newOrder.id}`,
@@ -177,15 +193,19 @@ export class OrdersService {
         ...urlBuy,
       };
     } catch (error) {
-      transaction.rollback()
-      throw new InternalServerErrorException(`Ocurrió un error al crear su orden. \n ${error.message}`);
+      transaction.rollback();
+      throw new InternalServerErrorException(
+        `Ocurrió un error al crear su orden. \n ${error.message}`,
+      );
     }
   }
 
   async updateStateOrder(updateDto: UpdateOrderDto): Promise<UpdateStateOrder> {
-    const transaction = await this.sequelize.transaction()
+    const transaction = await this.sequelize.transaction();
     try {
-      const order = await this.orderModel.findByPk(updateDto.idOrder, { transaction });
+      const order = await this.orderModel.findByPk(updateDto.idOrder, {
+        transaction,
+      });
       if (!order) throw new NotFoundException('Orden no encontrada');
 
       //* Cancelar orden
@@ -196,10 +216,8 @@ export class OrdersService {
         );
 
       if (updateDto.OrderStateEnum === OrderStateEnum.CANCELADO) {
-
         order.state = updateDto.OrderStateEnum;
         order.save({ transaction });
-
       }
 
       return {
@@ -213,28 +231,44 @@ export class OrdersService {
 
   async findAll(getAllOrdersDto: GetAllOrdersDto): Promise<IGetOrders> {
     try {
-
-
       const limit = parseInt(getAllOrdersDto.limit);
       const page = parseInt(getAllOrdersDto.page);
 
       //Querying
-      const { rows: orders, count: totalOrders } = await this.orderModel.findAndCountAll({
-        limit,
-        offset: (page - 1) * limit,
-        order: [['created_at', getAllOrdersDto.order]],
-        attributes: ['id', 'total','state','comment'],
-        where: { state: { [Op.or]: getAllOrdersDto.status.split(',').map(status => ({ [Op.eq]: OrderStateEnum[status.trim()] })) } },
-        include: [
-          { model: Product, attributes: ['id', 'title'], through: { attributes: ['id', 'price', 'amount'] } },
-          { model: Direction, attributes: ['id', 'codigoPostal', 'ciudad', 'estado', 'calle'] },
-          { model: User, attributes: ['id', 'email', 'firstName', 'lastName', 'phone'] }
-        ]
-      })
-
+      const { rows: orders, count: totalOrders } =
+        await this.orderModel.findAndCountAll({
+          limit,
+          offset: (page - 1) * limit,
+          order: [['created_at', getAllOrdersDto.order]],
+          attributes: ['id', 'total', 'state', 'comment'],
+          where: {
+            state: {
+              [Op.or]: getAllOrdersDto.status
+                .split(',')
+                .map((status) => ({ [Op.eq]: OrderStateEnum[status.trim()] })),
+            },
+          },
+          include: [
+            {
+              model: Product,
+              attributes: ['id', 'title'],
+              through: { attributes: ['id', 'price', 'amount'] },
+            },
+            {
+              model: Direction,
+              attributes: ['id', 'codigoPostal', 'ciudad', 'estado', 'calle'],
+            },
+            {
+              model: User,
+              attributes: ['id', 'email', 'firstName', 'lastName', 'phone'],
+            },
+          ],
+        });
 
       if (!orders.length)
-        throw new NotFoundException('No se encontraron órdenes con los filtros aplicados');
+        throw new NotFoundException(
+          'No se encontraron órdenes con los filtros aplicados',
+        );
 
       const totalPages = Math.ceil(totalOrders / Number(limit));
 
@@ -246,6 +280,4 @@ export class OrdersService {
       throw new HttpException(error.message, error.status);
     }
   }
-
-
 }

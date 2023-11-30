@@ -68,7 +68,7 @@ export class Order extends Model<Order> {
 
   @BelongsTo(() => User)
   user: User;
-  
+
   @ForeignKey(() => Direction)
   @Column({
     type: DataType.UUID,
@@ -78,6 +78,4 @@ export class Order extends Model<Order> {
 
   @BelongsTo(() => Direction)
   direction: Direction;
-
-  
 }
