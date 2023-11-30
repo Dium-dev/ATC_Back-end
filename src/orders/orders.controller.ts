@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Body,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
@@ -20,7 +21,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   //Obtener una orden por id
   @ApiOperation({ summary: 'Obtener orden' })
@@ -52,20 +53,19 @@ export class OrdersController {
     summary: 'Crear orden',
     description: 'Es necesario tener un producto en el carrito.',
   })
-  @UseGuards(JwtAuthGuard)
+  /* @UseGuards(JwtAuthGuard) */
   @Post()
   async create(
-    @GetUser() user: UserChangePasswordDto,
-    @Body() createOrderDto: CreateOrderDto,
+    /* @GetUser() user: UserChangePasswordDto, */
+    @Body() user: CreateOrderDto,
   ) {
-    const { userId } = user;
-    const response = await this.ordersService.create(userId);
+    const response = await this.ordersService.create(user);
     return response;
   }
 
   @Get()
   async getAllOrders(
-    @Body() getAllOrders: GetAllOrdersDto,
+    @Query() getAllOrders: GetAllOrdersDto,
   ): Promise<IGetOrders> {
     const response = await this.ordersService.findAll(getAllOrders);
     return response;

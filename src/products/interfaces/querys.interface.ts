@@ -11,12 +11,17 @@ interface whereCategoriandBrandId {
   id: { [Op.not]: null } | { [Op.eq]: string } | object;
 }
 
+interface whereInOrders {
+  state: { [Op.or]: { [Op.eq]: string }[] }
+}
+
 export interface IQuery {
   limit: number;
-  page: number;
+  page?: number;
   offset: number;
   order: string[][];
-  whereProduct: IWhereProducts;
-  whereCategoryId: whereCategoriandBrandId;
-  whereBrandId: whereCategoriandBrandId;
+  where?: whereInOrders,
+  whereProduct?: IWhereProducts;
+  whereCategoryId?: whereCategoriandBrandId;
+  whereBrandId?: whereCategoriandBrandId;
 }

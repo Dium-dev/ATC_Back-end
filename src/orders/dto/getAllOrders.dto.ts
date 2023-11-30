@@ -4,10 +4,11 @@ import {
   ArrayMinSize,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
+  IsString,
   IsPositive,
 } from 'class-validator';
 import { OrderStateEnum } from '../entities/order.entity';
+
 
 export enum DateOrder {
   Latest = 'created_at DESC',
@@ -19,46 +20,28 @@ export class GetAllOrdersDto {
   @IsNotEmpty({
     message: '$property no debe estar vacío',
   })
-  @IsPositive({
-    message: '$property debe ser un número mayor que cero',
-  })
+  @IsString({ message: 'la propiedad $property debe ser un numero' })
   //Número de órdenes por página
-  limit: number;
+  limit: string;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
   })
-  @IsPositive({
-    message: '$property debe ser un número mayor que cero',
-  })
+  @IsString({ message: 'la propiedad $property debe ser un numero' })
   //Según el limit, la página de las órdenes
-  page: number;
+  page: string;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
   })
-  @ArrayMinSize(1, {
-    message: '$property debe ser un array de al menos $constraint1 elemento',
-  })
-  @ArrayMaxSize(4, {
-    message: '$property no debe tener más de $constraint1 elementos',
-  })
-  //@ArrayContains(Object.values(OrderStateEnum))
-  @IsEnum(OrderStateEnum, {
-    message:
-      'Hay un número limitado de valores permitidos para $property y $value no lo es',
-    each: true,
-  })
+  @IsString({ message: 'la propiedad $property debe ser un tipo de estado de las ordenes' })
   //El estado actual de la orden
-  status: string[];
+  status: string;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
   })
-  @IsEnum(DateOrder, {
-    message:
-      'Hay un número limitado de valores permitidos para $property y $value no lo es',
-  })
+  @IsString({message: 'la propiedad $property contener "ASC" o "DESC" acorde al tipo de orden que requiera'})
   //El orden en el que se envían las órdenes
-  order: DateOrder;
+  order: string;
 }

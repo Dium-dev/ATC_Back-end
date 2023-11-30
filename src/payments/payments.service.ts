@@ -13,11 +13,15 @@ import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
 import { CartProduct } from '../shopping-cart/entities/cart-product.entity';
 import { UsersService } from 'src/users/users.service';
 import { OrdersService } from 'src/orders/orders.service';
+import { Transaction } from 'sequelize';
+import { InjectModel } from '@nestjs/sequelize';
 mercadopago.configurations.setAccessToken(ACCESS_TOKEN);
 
 @Injectable()
 export class PaymentsService {
   constructor(
+    @InjectModel(Payment)
+    private paymentModel: typeof Payment,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     @Inject(forwardRef(() => OrdersService))
@@ -29,46 +33,45 @@ export class PaymentsService {
     });
   }
 
-  async createPayment(amount: number, userId: string, orderId?: string) {
-    try {
-      const user = await this.userService.findByPkGenericUser(userId, {});
-      // Crea un objeto de preferencia con los detalles del pago
-      const preference: CreatePreferencePayload = {
-        items: [
-          {
-            title: 'Descripción del producto',
-            quantity: 1,
-            currency_id: 'COP',
-            unit_price: amount,
-          },
-        ],
-        payer: {
-          name: user.firstName,
-          email: user.email,
+  async createPayment(amount: number, user: User, orderId: string, transaction?: Transaction) {
+    // Crea un objeto de preferencia con los detalles del pago
+    const preference: CreatePreferencePayload = {
+      items: [
+        {
+          title: 'Descripción del producto',
+          quantity: 1,
+          currency_id: 'COP',
+          unit_price: amount,
         },
-        back_urls: {
-          success: `${HOST}/payments/success/${orderId}`,
-          failure: `${HOST}/payments/failure/${orderId}`,
-          pending: `${HOST}/payments/pending/${orderId}`,
-        },
-        notification_url: `https://af6f-190-173-138-188.ngrok-free.app/payments/webhook/${orderId}`, //Cambiar por el host del servidor deployado
-      };
-      const response = await mercadopago.preferences.create(preference);
-      await Payment.create({
-        id: response.body.id,
-        orderId,
-        user_email: user.email,
-        amount,
-        state: PaymentState.PENDING,
-      });
+      ],
+      payer: {
+        name: user.firstName,
+        email: user.email,
+      },
+      back_urls: {
+        success: `${HOST}/payments/success/${orderId}`,
+        failure: `${HOST}/payments/failure/${orderId}`,
+        pending: `${HOST}/payments/pending/${orderId}`,
+      },
+      notification_url: `https://af6f-190-173-138-188.ngrok-free.app/payments/webhook/${orderId}`, //Cambiar por el host del servidor deployado
+    };
 
-      return {
-        url: response.body.init_point,
-        paymentId: response.body.id,
-      };
-    } catch (error) {
-      throw new Error('Error al crear el pago:' + error.message);
-    }
+    const response = await mercadopago.preferences.create(preference);
+
+    const newPayment = await this.paymentModel.create({
+      id: response.body.id,
+      orderId,
+      user_email: user.email,
+      amount,
+      state: PaymentState.PENDING,
+    }, { transaction });
+
+
+    return {
+      url: response.body.init_point,
+      paymentId: response.body.id,
+    };
+
   }
 
   async actualizePayment(state: string, orderId: string) {
@@ -78,16 +81,16 @@ export class PaymentsService {
       state == 'success'
         ? (order.state = OrderStateEnum.PAGO)
         : state == 'pending'
-        ? (order.state = OrderStateEnum.PENDIENTE)
-        : (order.state = OrderStateEnum.RECHAZADO);
+          ? (order.state = OrderStateEnum.PENDIENTE)
+          : (order.state = OrderStateEnum.RECHAZADO);
       await order.save();
 
       const payment = await Payment.findOne({ where: { orderId } });
       state == 'success'
         ? (payment.state = PaymentState.SUCCESS)
         : state == 'pending'
-        ? (payment.state = PaymentState.PENDING)
-        : (payment.state = PaymentState.FAILED);
+          ? (payment.state = PaymentState.PENDING)
+          : (payment.state = PaymentState.FAILED);
       await payment.save();
 
       if (state == 'success') {
@@ -109,7 +112,6 @@ export class PaymentsService {
       }
       return `El estado de la orden es:${state}`;
     } catch (error) {
-      console.log(error.message);
       throw new HttpException('Error al actualizar el pago', 404);
     }
   }
@@ -163,7 +165,6 @@ export class PaymentsService {
         await this.actualizePayment('success', orderId);
       }
     } catch (error) {
-      console.log(error.message);
       throw error;
     }
   }
