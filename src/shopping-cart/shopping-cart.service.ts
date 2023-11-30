@@ -7,7 +7,7 @@ import {
   forwardRef,
   Inject,
 } from '@nestjs/common';
-import { Product, stateproduct } from '../products/entities/product.entity';
+import { Product, StateProduct } from '../products/entities/product.entity';
 import { CartProduct } from './entities/cart-product.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { FindOptions, Transaction } from 'sequelize';
@@ -121,7 +121,7 @@ export class ShoppingCartService {
         throw new NotFoundException(
           'No se encontró el producto entre nuestro catalogo de disponibles.',
         );
-      if (thisProducto.state === stateproduct.Inactive)
+      if (thisProducto.state === StateProduct.Inactive)
         throw new NotFoundException(
           'El producto seleccionado no se encuentra disponible para la venta. Consulte en otro momento.',
         );
