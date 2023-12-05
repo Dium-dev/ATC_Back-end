@@ -1,7 +1,8 @@
-import { faker } from '@faker-js/faker';
+import { fa, faker } from '@faker-js/faker';
 import { UserChangePasswordDto } from '../../auth/dto/user-change-password.dto';
 import { CreateReviewDto } from '../dto/create-review.dto';
 import { Rating } from '../entities/review.entity';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 //Generates the kind of user data that is extracted from JWT (check the dto)
 export const createUserObject = (): UserChangePasswordDto => {
@@ -34,4 +35,20 @@ export const newReview = (review: CreateReviewDto, userId: string) => {
   };
 
   return fakeReview;
+};
+
+//Create fake User
+export const newFakeUser = (): CreateUserDto => {
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
+  const pattern =
+    /^(?=.*[A-Za-zñÑáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-zñÑáéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
+  const fakeUser: CreateUserDto = {
+    firstName,
+    lastName,
+    email: faker.internet.email({ firstName, lastName }),
+    password: faker.internet.password({ length: 10, pattern }),
+    phone: faker.phone.number(),
+  };
+  return fakeUser;
 };
