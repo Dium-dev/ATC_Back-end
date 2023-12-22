@@ -26,6 +26,7 @@ enum EModelsTable {
   findAll = 'findAll',
   findOne = 'findOne',
 }
+import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
 
 @Injectable()
 export class ProductsService {
@@ -213,7 +214,6 @@ export class ProductsService {
       }
     }
   }
-
   /* Public functions a utilizar en diferentes modulos */
 
   public async genericProduct(method: EModelsTable, options: FindOptions) {
@@ -336,6 +336,43 @@ export class ProductsService {
       throw new InternalServerErrorException(
         "Ocurrio un error a la hora de actualizar la propiedad 'masVendido' del producto.",
       );
+    }
+  }
+
+  async favOrUnfavProduct(userId: string, productId: string) {
+    try {
+      console.log(userId, productId);
+      const [fav, created] = await UserProductFav.findOrCreate({ where: { userId, productId } });
+
+      if (created) {
+        return {
+          statusCode: 201,
+          message: 'El producto se ha agregado a favoritos',
+        };
+      } else {
+        await fav.destroy();
+        return {
+          statusCode:201,
+          message: 'El producto se ha eliminado',
+        };
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Error al agregar el producto a favoritos');
+    }
+  }
+
+
+  async getProductsFav(userId: string, { limit, page }: any) {
+    try {
+      const { rows:allFavs, count: totalItems } = await UserProductFav.findAndCountAll({ where: { userId } });
+
+      const totalPages = Math.ceil(totalItems / limit);
+      const startIndex = page * limit;
+      const paginatedFavs = allFavs.slice(startIndex, startIndex + limit);
+
+      return { allFavs: paginatedFavs, totalItems, totalPages, page: Number(page) };
+    } catch (error) {
+      throw new InternalServerErrorException('Error del servidor');
     }
   }
 }

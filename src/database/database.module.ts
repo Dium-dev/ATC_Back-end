@@ -12,6 +12,7 @@ import { CartProduct } from '../shopping-cart/entities/cart-product.entity';
 import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
 import { User } from '../users/entities/user.entity';
 import { Payment } from '../payments/entities/payment.entity';
+import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
 
 @Module({
   imports: [
@@ -33,12 +34,13 @@ import { Payment } from '../payments/entities/payment.entity';
         Review,
         Order,
         OrderProduct,
+        UserProductFav,
         Payment,
       ],
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: true },
+      sync: { force: false },
     }),
   ],
   exports: [SequelizeModule],
