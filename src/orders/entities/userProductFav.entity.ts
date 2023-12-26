@@ -1,4 +1,5 @@
 import {
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
@@ -24,9 +25,15 @@ export class UserProductFav extends Model<UserProductFav> {
   })
     userId: string;
 
+  @BelongsTo(() => User)
+    user: User;
+
   @ForeignKey(() => Product)
   @Column({
     allowNull: false,
   })
     productId: string;
+
+  @BelongsTo(() => Product)
+    product: Product;
 }

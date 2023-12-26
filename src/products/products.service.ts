@@ -341,7 +341,6 @@ export class ProductsService {
 
   async favOrUnfavProduct(userId: string, productId: string) {
     try {
-      console.log(userId, productId);
       const [fav, created] = await UserProductFav.findOrCreate({ where: { userId, productId } });
 
       if (created) {
@@ -364,15 +363,19 @@ export class ProductsService {
 
   async getProductsFav(userId: string, { limit, page }: any) {
     try {
-      const { rows:allFavs, count: totalItems } = await UserProductFav.findAndCountAll({ where: { userId } });
+      const offset = limit * (page - 1);
+
+      const { rows: paginatedFavs, count: totalItems } = await UserProductFav.findAndCountAll({
+        where: { userId },
+        offset,
+        limit,
+      });
 
       const totalPages = Math.ceil(totalItems / limit);
-      const startIndex = page * limit;
-      const paginatedFavs = allFavs.slice(startIndex, startIndex + limit);
 
       return { allFavs: paginatedFavs, totalItems, totalPages, page: Number(page) };
     } catch (error) {
-      throw new InternalServerErrorException('Error del servidor');
+      throw new InternalServerErrorException('Error del paginado');
     }
   }
 }
