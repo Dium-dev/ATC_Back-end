@@ -349,7 +349,7 @@ export class ProductsService {
           message: 'El producto se ha agregado a favoritos',
         };
       } else {
-        await fav.destroy();
+        await fav.destroy({force:true});
         return {
           statusCode:201,
           message: 'El producto se ha eliminado',
