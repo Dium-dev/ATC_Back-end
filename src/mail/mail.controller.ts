@@ -1,30 +1,37 @@
-import { Controller, Post, Body, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { MailService } from './mail.service';
 import { IContactFormAdminContext } from './interfaces/contact-form-admin-context.interface';
 import { IContactFormUserContext } from './interfaces/contact-form-user-context.interface';
-import { ConsultationReason, IUpdateOrderContext } from './interfaces/update-order-context.interface';
+import {
+  ConsultationReason,
+  IUpdateOrderContext,
+} from './interfaces/update-order-context.interface';
 import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { ContactFormDto } from './dto/contactForm.dto';
 import { UpdateOrderDto, UpdateOrderDtoSwagger } from './dto/updateOrder.dto';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { ADMIN_EMAIL } from 'src/config/env';
 
-
 @ApiTags('Mail')
 @Controller('contact')
 export class ContactController {
-  constructor(private readonly mailService: MailService) { }
+  constructor(private readonly mailService: MailService) {}
 
   @ApiOperation({
     summary: 'Ruta para enviar solicitud de cambio en la orden',
   })
   @ApiBody({ type: UpdateOrderDtoSwagger })
   @Post('update-order')
-  async sendUpdateOrderForm(
-  @Body() updateOrderData: UpdateOrderDto) {
+  async sendUpdateOrderForm(@Body() updateOrderData: UpdateOrderDto) {
     try {
       // Obtener el motivo de la consulta
-      const consultationReason: ConsultationReason = updateOrderData.consultationReason;
+      const consultationReason: ConsultationReason =
+        updateOrderData.consultationReason;
       const orderContext: IUpdateOrderContext = {
         name: updateOrderData.name,
         phone: updateOrderData.phone,
@@ -61,14 +68,13 @@ export class ContactController {
     }
   }
 
-
   @ApiOperation({
     summary: 'Ruta para contact form del front',
   })
   @ApiBody({ type: ContactFormDto })
   @Post()
   async sendContactForm(
-  @Body() contactData: ContactFormDto,
+    @Body() contactData: ContactFormDto,
     /*  @Res() res: Response, */
   ) {
     try {
@@ -81,16 +87,16 @@ export class ContactController {
         subject: Cases.CONTACT_FORM_USER,
         context: userContext,
       });
-      
+
       const adminContext: IContactFormAdminContext = {
         name: contactData.name,
         phone: contactData.phone,
         message: contactData.message,
         userEmail: contactData.userEmail,
-        userId: contactData.userId
+        userId: contactData.userId,
       };
 
-            await this.mailService.sendMails({
+      await this.mailService.sendMails({
         addressee: ADMIN_EMAIL,
         subject: Cases.CONTACT_FORM_ADMIN,
         context: adminContext,

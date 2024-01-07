@@ -73,7 +73,6 @@ export class AuthService {
 
       return mail;
     } catch (error) {
-      console.log(error);
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);

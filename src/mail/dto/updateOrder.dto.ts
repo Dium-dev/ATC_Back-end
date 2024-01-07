@@ -14,28 +14,28 @@ export class UpdateOrderDto {
   @ApiProperty({
     description: 'Recibe el nro de orden',
   })
-    order: string;
+  order: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Recibe el nombre del usuario, requerido',
   })
-    name: string;
+  name: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Recibe el telefono de contacto del usuario, requerido',
   })
-    phone: string;
+  phone: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Mensaje del usuario, requerido',
   })
-    message: string;
+  message: string;
 
   @IsEmail(undefined, { message: 'El formato del email no es valido' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
@@ -43,7 +43,7 @@ export class UpdateOrderDto {
     description:
       'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
   })
-    userEmail: string;
+  userEmail: string;
 
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
@@ -52,7 +52,7 @@ export class UpdateOrderDto {
     example: 'Envio', // Proporciona un ejemplo aquí
   })
   @IsDefined({ message: 'El campo $property debe estar definido' })
-    consultationReason: ConsultationReason;
+  consultationReason: ConsultationReason;
 }
 
 export class UpdateOrderDtoSwagger extends UpdateOrderDto {}

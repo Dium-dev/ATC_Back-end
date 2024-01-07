@@ -4,5 +4,5 @@ export enum Templates {
   purchase = './purchase',
   contactFormUser = './contactFormUser',
   contactFormAdmin = './contactFormAdmin',
-  updateOrder = './updateOrder'
+  updateOrder = './updateOrder',
 }

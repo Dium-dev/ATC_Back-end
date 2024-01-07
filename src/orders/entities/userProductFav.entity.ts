@@ -1,5 +1,5 @@
 import {
-  BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -8,32 +8,37 @@ import {
 } from 'sequelize-typescript';
 import { Product } from '../../products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
+import { FavProduct } from './favProduct.entity';
 
-@Table({})
+@Table({
+  tableName: 'UserProductFav',
+  timestamps: false,
+  underscored: true,
+  hooks: {
+    async beforeDestroy(instance: UserProductFav) {
+      await FavProduct.destroy({
+        where: { favContId: instance.id },
+        force: true,
+      });
+    },
+  },
+})
 export class UserProductFav extends Model<UserProductFav> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
     primaryKey: true,
     allowNull: false,
+    unique: true,
   })
-    id: string;
+  id: string;
 
   @ForeignKey(() => User)
   @Column({
-    allowNull: false,
+    type: DataType.UUID,
   })
-    userId: string;
+  userId: string;
 
-  @BelongsTo(() => User)
-    user: User;
-
-  @ForeignKey(() => Product)
-  @Column({
-    allowNull: false,
-  })
-    productId: string;
-
-  @BelongsTo(() => Product)
-    product: Product;
+  @BelongsToMany(() => Product, () => FavProduct)
+  products: Product[];
 }
