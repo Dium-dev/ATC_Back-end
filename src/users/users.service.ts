@@ -69,10 +69,10 @@ export class UsersService {
 
       const newUser = await this.userModel.create(data, { transaction });
 
-      await this.shopCartService.CreateShoppingCart(
+      /*await this.shopCartService.CreateShoppingCart(
         { userId: newUser.id },
         transaction,
-      );
+      );*/
 
       await transaction.commit();
 
@@ -100,7 +100,7 @@ export class UsersService {
     } catch (error) {
       await transaction.rollback();
       throw new InternalServerErrorException(
-        'Erron interno del servidor, intente mas tarde',
+        'Erron interno del servidor, intente mas tarde \n' + error.message,
       );
     }
   }

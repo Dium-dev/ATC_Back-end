@@ -1,4 +1,6 @@
 import {
+  AfterCreate,
+  AfterSave,
   Column,
   DataType,
   HasMany,
@@ -10,6 +12,9 @@ import { Direction } from '../../directions/entities/direction.entity';
 import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity';
 import { Review } from '../../reviews/entities/review.entity';
 import { Order } from '../../orders/entities/order.entity';
+import { BelongsToMany } from 'sequelize-typescript';
+import { Product } from 'src/products/entities/product.entity';
+import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
 
 export enum Rol {
   superAdmin = 'superAdmin',
@@ -30,6 +35,18 @@ export enum Rol {
       });
       await Direction.destroy({ where: { userId: instance.id }, force: true });
       await Review.destroy({ where: { userId: instance.id }, force: true });
+      await UserProductFav.destroy({
+        where: { userId: instance.id },
+        force: true,
+      });
+    },
+    async afterCreate(instance: User) {
+      const thisShoppCart = await ShoppingCart.create();
+      const thisFavContainer = await UserProductFav.create();
+      thisShoppCart.userId = instance.id;
+      thisFavContainer.userId = instance.id;
+      thisShoppCart.save();
+      thisFavContainer.save();
     },
   },
 })
@@ -96,4 +113,7 @@ export class User extends Model<User> {
 
   @HasMany(() => Order, { onDelete: 'CASCADE', hooks: true })
   orders: Order[];
+
+  @HasMany(() => UserProductFav, { onDelete: 'CASCADE', hooks: true })
+  favProducts: UserProductFav[];
 }

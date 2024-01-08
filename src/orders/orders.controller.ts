@@ -53,13 +53,13 @@ export class OrdersController {
     summary: 'Crear orden',
     description: 'Es necesario tener un producto en el carrito.',
   })
-  /* @UseGuards(JwtAuthGuard) */
+  
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async create(
-    /* @GetUser() user: UserChangePasswordDto, */
-    @Body() user: CreateOrderDto,
-  ) {
-    const response = await this.ordersService.create(user);
+  async create(@GetUser() user: UserChangePasswordDto) {
+    const { userId } = user;
+    const response = await this.ordersService.create(userId);
+
     return response;
   }
 
