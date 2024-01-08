@@ -109,7 +109,6 @@ export class PaymentsService {
       }
       return `El estado de la orden es:${state}`;
     } catch (error) {
-      console.log(error.message);
       throw new HttpException('Error al actualizar el pago', 404);
     }
   }
@@ -163,7 +162,6 @@ export class PaymentsService {
         await this.actualizePayment('success', orderId);
       }
     } catch (error) {
-      console.log(error.message);
       throw error;
     }
   }

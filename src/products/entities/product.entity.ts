@@ -13,6 +13,9 @@ import { Order } from '../../orders/entities/order.entity';
 import { OrderProduct } from '../../orders/entities/orderProduct.entity';
 import { CartProduct } from '../../shopping-cart/entities/cart-product.entity';
 import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity';
+import { User } from 'src/users/entities/user.entity';
+import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
+import { FavProduct } from 'src/orders/entities/favProduct.entity';
 
 export enum StateProduct {
   Active = 'Activo',
@@ -131,4 +134,7 @@ export class Product extends Model<Product> {
 
   @BelongsToMany(() => Order, () => OrderProduct)
   order: Order[];
+
+  @BelongsToMany(() => UserProductFav, () => FavProduct)
+  favCont: UserProductFav[];
 }
