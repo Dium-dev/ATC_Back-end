@@ -15,6 +15,8 @@ import { IReview } from './interfaces/response-review.interface';
 import { ActivateReviewDto } from './dto/activate-review.dto';
 import { UsersService } from 'src/users/users.service';
 import { InjectModel } from '@nestjs/sequelize';
+import { Sequelize } from 'sequelize-typescript';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class ReviewsService {
@@ -22,63 +24,67 @@ export class ReviewsService {
     @InjectModel(Review) private reviewModel: typeof Review,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
-  ) {}
+    private sequelize: Sequelize,
+  ) { }
 
   async create(
     id: string,
     createReviewDto: CreateReviewDto,
-  ): Promise<IReview | HttpException> {
+  ): Promise<IReview> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      const user = await this.userService.findByPkGenericUser(id, {});
+      const user = await this.userService.findByPkGenericUser(id, {
+        transaction,
+      });
 
       const Newreview = await this.reviewModel.create({
         ...createReviewDto,
-        userId: id,
+        userId: user.id,
       });
-      if (!Newreview)
-        throw new InternalServerErrorException(
-          'Algo salió mal al momento de crear la reseña',
-        );
 
       const response = {
         statusCode: 201,
         data: Newreview,
       };
+
+      (await transaction).commit();
       return response;
     } catch (error) {
-      return new HttpException(error.message, error.status);
+      (await transaction).rollback();
+      throw new InternalServerErrorException(
+        'Algo salió mal al momento de crear la reseña',
+      );
     }
   }
 
-  async findAll(): Promise<IReview | HttpException> {
+  async findAll(): Promise<IReview> {
     try {
       const reviews = await this.reviewModel.findAll({
         include: {
           model: User,
           attributes: ['firstName', 'lastName'],
         },
-        attributes: ['review', 'rating', 'updatedOn', 'active'],
-        where: {
-          active: true,
-        },
+        attributes: ['review', 'rating', 'updated_at'],
       });
-      if (!reviews)
-        throw new InternalServerErrorException(
-          'Algo salió mal al tratar de obtener todas las reseñas',
-        );
 
-      if (!reviews.length)
-        throw new NotFoundException('No se encontraron reseñas activas');
+      if (!reviews.length) throw new NotFoundException();
 
       return { statusCode: 200, data: reviews };
     } catch (error) {
-      return new HttpException(error.message, error.status);
+      switch (error.constructor) {
+        case NotFoundException:
+          throw new NotFoundException('No se encontraron reseñas activas.');
+        default:
+          throw new InternalServerErrorException(
+            'No ha sido posible trabajar en este momento con las reseñas.',
+          );
+      }
     }
   }
 
   async update(
     updateReviewDto: UpdateReviewDto,
-  ): Promise<IReview | HttpException> {
+  ): Promise<IReview> {
     try {
       //Update
       const count = await this.reviewModel.update(updateReviewDto, {
@@ -94,10 +100,6 @@ export class ReviewsService {
 
       //Get review
       const newReview = await this.reviewModel.findOne({
-        include: {
-          model: User,
-          attributes: ['firstName', 'lastName'],
-        },
         attributes: ['review', 'rating', 'updatedOn', 'active'],
         where: {
           id: updateReviewDto.reviewId,
@@ -106,33 +108,39 @@ export class ReviewsService {
 
       return { statusCode: 200, data: newReview };
     } catch (error) {
-      return new HttpException(error.message, error.status);
+      throw new HttpException(error.message, error.status);
     }
   }
 
   async removeOrActivate(
-    activateReviewDto: ActivateReviewDto,
-  ): Promise<IReview | HttpException> {
+    changeReviewState: ActivateReviewDto,
+  ): Promise<IReview> {
     try {
-      const count = await this.reviewModel.update(
-        { active: activateReviewDto.activate },
-        {
+      if (changeReviewState.activate) {
+        await this.reviewModel.restore({
           where: {
-            id: activateReviewDto.reviewId,
+            id: changeReviewState.reviewId,
           },
-        },
-      );
-
-      if (count[0] === 0)
-        throw new BadRequestException(
-          'Algo salió mal, se sugiere verificar el id enviado',
-        );
-      return {
-        statusCode: 200,
-        data: `${count[0]} reseñas fueron actualizadas`,
-      };
+        });
+        return {
+          statusCode: 200,
+          message: 'se actualizó el estado de su reseña a activa',
+        };
+      } else {
+        await this.reviewModel.destroy({
+          where: {
+            id: changeReviewState.reviewId,
+          },
+        });
+        return {
+          statusCode: 200,
+          message: 'se actualizó el estado de su reseña a inactiva',
+        };
+      }
     } catch (error) {
-      return new HttpException(error.message, error.status);
+      throw new InternalServerErrorException(
+        'Ocurrió un error al actualizar el estado de su reseña \nIntente más tarde',
+      );
     }
   }
 }

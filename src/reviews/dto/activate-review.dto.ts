@@ -15,7 +15,7 @@ export class ActivateReviewDto {
 
   @ApiProperty({
     type: 'boolean',
-    description: 'Falso para "borrar" y true para "desborrar" XD',
+    description: 'false para "borrar" y true para "restaurar"',
   })
   @IsBoolean({
     message: '$property debe ser de tipo booleano, en cambio enviaste $value',

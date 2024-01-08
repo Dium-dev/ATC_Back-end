@@ -258,7 +258,7 @@ export class UsersService {
         return await this.shopCartService
           .destroyShoppingCart({ userId: id }, transaction)
           .then(async () => {
-            await user.save().then(async () => await transaction.commit());
+            await user.save().then(async () => transaction.commit());
             return {
               message: `Se inactivó la cuenta del Usuario: ${
                 user.firstName + ' ' + user.lastName
@@ -271,7 +271,7 @@ export class UsersService {
         return await this.shopCartService
           .CreateShoppingCart({ userId: id }, transaction)
           .then(async () => {
-            await user.save().then(async () => await transaction.commit());
+            await user.save().then(async () => transaction.commit());
             return {
               message: `Se ah restaurado la cuenta del Usuario ${
                 user.firstName + ' ' + user.lastName

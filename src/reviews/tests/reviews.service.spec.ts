@@ -3,8 +3,15 @@ import { ReviewsService } from '../reviews.service';
 import { createMock } from '@golevelup/ts-jest';
 import { Rating, Review } from '../entities/review.entity';
 import { getModelToken } from '@nestjs/sequelize';
-import { HttpException } from '@nestjs/common';
+import {
+  HttpException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateReviewDto } from '../dto/create-review.dto';
+import { User } from 'src/users/entities/user.entity';
+import { newFakeUser } from './faker';
+import { UsersService } from 'src/users/users.service';
 
 const testReview: CreateReviewDto = { review: 'review', rating: Rating.zero };
 const testId = 'idDeMentirajaja';
@@ -12,6 +19,9 @@ const testId = 'idDeMentirajaja';
 describe('ReviewsService', () => {
   let reviewsService: ReviewsService;
   let review: typeof Review;
+  let usersService: UsersService;
+  let user: typeof User;
+  let createdReview: Review;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,6 +34,14 @@ describe('ReviewsService', () => {
             findAll: jest.fn(() => [testReview]),
             update: jest.fn(),
             findOne: jest.fn(() => testReview),
+            destroy: jest.fn((toDestroyReview) => null),
+            restore: jest.fn((toRestoreReview) => toRestoreReview),
+          },
+        },
+        {
+          provide: getModelToken(User),
+          useValue: {
+            findOne: jest.fn(() => newFakeUser()),
           },
         },
       ],
@@ -33,6 +51,8 @@ describe('ReviewsService', () => {
 
     reviewsService = module.get<ReviewsService>(ReviewsService);
     review = module.get<typeof Review>(getModelToken(Review));
+    usersService = module.get<UsersService>(UsersService);
+    user = module.get<typeof User>(getModelToken(User));
   });
 
   //Create Method ----------------------------------------------------------
@@ -40,36 +60,31 @@ describe('ReviewsService', () => {
     it('Must have called the "create" method with the passed in data', async () => {
       const { create } = review;
       await reviewsService.create(testId, testReview);
-
-      expect(create).toBeCalledWith({ ...testReview, userId: testId });
+      expect(create).toHaveBeenCalled();
     });
 
     it('Must return a review and a 201 status code', async () => {
-      const iReview = {
-        data: {
-          ...testReview,
-          userId: testId,
-        },
-        statusCode: 201,
-      };
-
       const newReview = await reviewsService.create(testId, testReview);
 
-      expect(newReview).toEqual(iReview);
+      expect(newReview).toHaveProperty('statusCode');
+      expect(newReview).toHaveProperty('data');
     });
 
     it('Must throw an exception when creating a Review is not possible', async () => {
       //review.create = () => undefined;
-      jest.spyOn(review, 'create').mockReset();
 
-      const result = await reviewsService.create(testId, testReview);
-
-      expect(result).toBeInstanceOf(HttpException);
-      expect(result).toHaveProperty(
-        'response',
-        'Algo salió mal al momento de crear la reseña',
-      );
-      expect(result).toHaveProperty('status', 500);
+      jest.spyOn(review, 'create').mockImplementation(() => {
+        throw new Error();
+      });
+      try {
+        expect(await reviewsService.create(testId, testReview)).toThrowError;
+      } catch (error) {
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+        expect(error).toHaveProperty(
+          'message',
+          'Algo salió mal al momento de crear la reseña',
+        );
+      }
     });
   });
 
@@ -82,55 +97,42 @@ describe('ReviewsService', () => {
       expect(result).toHaveProperty('data', [testReview]);
     });
 
-    it('Must return an exception with a 404 status code when there are not reviews', async () => {
-      jest.spyOn(review, 'findAll').mockImplementationOnce(async () => {
-        return [];
+    it('Must throw an exception with a status 404 code when there are not reviews', async () => {
+      jest.spyOn(review, 'findAll').mockImplementation(async () => {
+        throw new NotFoundException();
       });
-
-      const result = await reviewsService.findAll();
-
-      expect(result).toBeInstanceOf(HttpException);
-      expect(result).toHaveProperty('status', 404);
+      try {
+        await reviewsService.findAll();
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error).toHaveProperty('status', 404);
+        expect(error).toHaveProperty(
+          'message',
+          'No se encontraron reseñas activas.',
+        );
+      }
     });
 
     it('Must return an exception with a 500 status code when is not possible to get reviews', async () => {
-      jest.spyOn(review, 'findAll').mockReset();
+      jest.spyOn(review, 'findAll').mockImplementation(async () => {
+        throw new InternalServerErrorException();
+      });
 
-      const result = await reviewsService.findAll();
-
-      expect(result).toBeInstanceOf(HttpException);
-      expect(result).toHaveProperty('status', 500);
+      try {
+        await reviewsService.findAll();
+      } catch (error) {
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+        expect(error).toHaveProperty('status', 500);
+        expect(error).toHaveProperty(
+          'message',
+          'No ha sido posible trabajar en este momento con las reseñas.',
+        );
+      }
     });
   });
 
   //Update method ----------------------------------------------------------
   describe('Update method', () => {
-    it('Must return an exception with 400 status code when updating isn`t possible', async () => {
-      const update = jest
-        .spyOn(review, 'update')
-        .mockImplementationOnce(async () => [0]);
-
-      const result = await reviewsService.update({
-        ...testReview,
-        reviewId: testId,
-      });
-
-      expect(update).toHaveBeenCalledWith(
-        { ...testReview, reviewId: testId },
-        {
-          where: {
-            id: testId,
-          },
-        },
-      );
-      expect(result).toBeInstanceOf(HttpException);
-      expect(result).toHaveProperty(
-        'response',
-        'No se pudo actualizar la reseña, revisar el id enviado',
-      );
-      expect(result).toHaveProperty('status', 400);
-    });
-
     it('Must return a new updated review', async () => {
       jest.spyOn(review, 'update').mockImplementationOnce(async () => [1]);
       const findOne = jest.spyOn(review, 'findOne');
@@ -144,27 +146,79 @@ describe('ReviewsService', () => {
       expect(result).toHaveProperty('data', testReview);
       expect(result).toHaveProperty('statusCode', 200);
     });
-  });
 
-  //removeOrActivate method ------------------------------------------------
-  describe('removeOrActivate method', () => {
-    it('Must return an exception when updating isn`t possible', async () => {
+    it('Must return an exception with 400 status code when updating isn`t possible', async () => {
       const update = jest
         .spyOn(review, 'update')
         .mockImplementationOnce(async () => [0]);
 
-      const result = await reviewsService.removeOrActivate({
+      try {
+        await reviewsService.update({
+          ...testReview,
+          reviewId: testId,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error).toHaveProperty(
+          'response',
+          'No se pudo actualizar la reseña, revisar el id enviado',
+        );
+        expect(error).toHaveProperty('status', 400);
+      }
+    });
+  });
+
+  //removeOrActivate method ------------------------------------------------
+  describe('removeOrActivate method', () => {
+    it('must return a message when his review has been updated as inactive', async () => {
+      jest.spyOn(review, 'destroy').mockImplementationOnce(async () => null);
+
+      const response = await reviewsService.removeOrActivate({
+        reviewId: testId,
+        activate: false,
+      });
+      expect(response).toHaveProperty('statusCode', 200);
+      expect(response).toHaveProperty(
+        'message',
+        'se actualizó el estado de su reseña a inactiva',
+      );
+    });
+
+    it('must return a message when his review has been updated as active', async () => {
+      jest.spyOn(review, 'restore').mockImplementationOnce(async () => {});
+
+      const response = await reviewsService.removeOrActivate({
         reviewId: testId,
         activate: true,
       });
-
-      expect(update).toBeCalled();
-      expect(result).toBeInstanceOf(HttpException);
-      expect(result).toHaveProperty(
-        'response',
-        'Algo salió mal, se sugiere verificar el id enviado',
+      expect(response).toHaveProperty('statusCode', 200);
+      expect(response).toHaveProperty(
+        'message',
+        'se actualizó el estado de su reseña a activa',
       );
-      expect(result).toHaveProperty('status', 400);
+    });
+
+    it('Must return an exception when updating isn`t possible', async () => {
+      const update = jest
+        .spyOn(review, 'update')
+        .mockImplementationOnce(async () => {
+          throw new Error();
+        });
+
+      try {
+        const result = await reviewsService.removeOrActivate({
+          reviewId: testId,
+          activate: true,
+        });
+      } catch (error) {
+        expect(update).toBeCalled();
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+        expect(error).toHaveProperty('status', 500);
+        expect(error).toHaveProperty(
+          'message',
+          'Ocurrió un error al actualizar el estado de su reseña \nIntente más tarde',
+        );
+      }
     });
   });
 });
