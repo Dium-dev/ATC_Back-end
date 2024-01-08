@@ -66,6 +66,8 @@ export class BrandsService {
     try {
       const allBrands = await this.findOneBrand('Todas');
       miCache.set('AllBrands_Id', allBrands.id);
-    } catch (error) {}
+    } catch (error) {
+      throw new InternalServerErrorException('Ocurrio un error con la cache del servidor')
+    }
   }
 }
