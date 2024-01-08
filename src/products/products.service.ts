@@ -27,6 +27,8 @@ enum EModelsTable {
   findOne = 'findOne',
 }
 import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
+import { InjectModel } from '@nestjs/sequelize';
+import { FavProduct } from 'src/orders/entities/favProduct.entity';
 
 @Injectable()
 export class ProductsService {
@@ -35,6 +37,10 @@ export class ProductsService {
     private adminProductsService: AdminProductsService,
     @Inject(forwardRef(() => ShoppingCartService))
     private shoppingCartService: ShoppingCartService,
+    @InjectModel(FavProduct)
+    private FavProductModel: typeof FavProduct,
+    @InjectModel(UserProductFav)
+    private UserProductFavModel: typeof UserProductFav,
   ) {}
 
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
@@ -341,7 +347,16 @@ export class ProductsService {
 
   async favOrUnfavProduct(userId: string, productId: string) {
     try {
-      const [fav, created] = await UserProductFav.findOrCreate({ where: { userId, productId } });
+      const favContId = await this.UserProductFavModel.findOne({
+        where: { userId },
+        attributes: ['id'],
+      });
+      const [fav, created] = await this.FavProductModel.findOrCreate({
+        where: {
+          favContId: favContId.id,
+          productId,
+        },
+      });
 
       if (created) {
         return {
@@ -349,31 +364,42 @@ export class ProductsService {
           message: 'El producto se ha agregado a favoritos',
         };
       } else {
-        await fav.destroy({force:true});
+        await fav.destroy({ force: true });
         return {
-          statusCode:201,
+          statusCode: 201,
           message: 'El producto se ha eliminado',
         };
       }
     } catch (error) {
-      throw new InternalServerErrorException('Error al agregar el producto a favoritos');
+      throw new InternalServerErrorException(
+        'Error al agregar/elminar el producto de favoritos',
+      );
     }
   }
-
 
   async getProductsFav(userId: string, { limit, page }: any) {
     try {
       const offset = limit * (page - 1);
 
-      const { rows: paginatedFavs, count: totalItems } = await UserProductFav.findAndCountAll({
-        where: { userId },
-        offset,
-        limit,
-      });
+      const { rows: paginatedFavs, count: totalItems } =
+        await UserProductFav.findAndCountAll({
+          where: { userId },
+          offset,
+          limit,
+          subQuery: false,
+          include: [
+            { model: Product, attributes: ['id'], through: { attributes: [] } },
+          ],
+        });
 
       const totalPages = Math.ceil(totalItems / limit);
 
-      return { allFavs: paginatedFavs, totalItems, totalPages, page: Number(page) };
+      return {
+        allFavs: paginatedFavs,
+        totalItems,
+        totalPages,
+        page: Number(page),
+      };
     } catch (error) {
       throw new InternalServerErrorException('Error del paginado');
     }

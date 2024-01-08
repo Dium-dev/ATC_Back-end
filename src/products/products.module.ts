@@ -7,10 +7,18 @@ import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { AdminProductsModule } from 'src/admin-products/admin-products.module';
 import { ShoppingCartModule } from 'src/shopping-cart/shopping-cart.module';
+import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
+import { FavProduct } from 'src/orders/entities/favProduct.entity';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Product, Categories, Brand]),
+    SequelizeModule.forFeature([
+      Product,
+      Categories,
+      Brand,
+      UserProductFav,
+      FavProduct,
+    ]),
     forwardRef(() => AdminProductsModule),
     forwardRef(() => ShoppingCartModule),
   ],

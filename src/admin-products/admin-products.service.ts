@@ -97,18 +97,18 @@ export class AdminProductsService {
           // Mapeo de nombres de propiedades
           const propertyMapping = {
             '': 'Número de publicación',
-            'A': 'Título',
-            'B': 'Categoría',
-            'C': 'Fotos',
-            'D': 'Stock',
-            'E': 'Precio COP',
-            'F': 'Estado',
-            'G': 'Descripción',
-            'H': 'Condicion',
-            'I': 'Disponibilidad de stock (días)',
-            'J': 'Marca',
-            'K': 'Modelo',
-            'L': 'Año',
+            A: 'Título',
+            B: 'Categoría',
+            C: 'Fotos',
+            D: 'Stock',
+            E: 'Precio COP',
+            F: 'Estado',
+            G: 'Descripción',
+            H: 'Condicion',
+            I: 'Disponibilidad de stock (días)',
+            J: 'Marca',
+            K: 'Modelo',
+            L: 'Año',
           };
 
           // Transformar el resultado para incluir solo las propiedades A hasta K con nuevos nombres
@@ -247,8 +247,7 @@ export class AdminProductsService {
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
       thisProduct.image = [''];
-      thisProduct.year = product.Año,
-      thisProduct.brandId = brandId;
+      (thisProduct.year = product.Año), (thisProduct.brandId = brandId);
       thisProduct.categoryId = categoryId;
 
       await thisProduct.save();

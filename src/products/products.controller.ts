@@ -26,7 +26,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) { }
+  constructor(private readonly productsService: ProductsService) {}
 
   @ApiOperation({
     summary: 'Obtener productos',
@@ -159,21 +159,27 @@ export class ProductsController {
   })
   @Post('/fav/:productId')
   async favProduct(
-  @GetUser() { userId }: any,
+    @GetUser() { userId }: any,
     @Param('productId') productId: string,
   ) {
-    const response = await this.productsService.favOrUnfavProduct(userId, productId);
+    const response = await this.productsService.favOrUnfavProduct(
+      userId,
+      productId,
+    );
     return response;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('fav/all')
   async getProductsFav(
-  @GetUser() { userId }: any,
+    @GetUser() { userId }: any,
     @Query('page') page: string,
     @Query('limit') limit: string,
   ) {
-    const response = await this.productsService.getProductsFav(userId, { limit, page });
+    const response = await this.productsService.getProductsFav(userId, {
+      limit,
+      page,
+    });
     return response;
   }
 }
