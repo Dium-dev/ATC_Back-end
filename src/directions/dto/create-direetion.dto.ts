@@ -1,26 +1,27 @@
-import { IsString, IsInt, IsNotEmpty } from 'class-validator';
+import { IsString, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Direction } from '../entities/direction.entity';
 
-export class CreateDireetionDto {
-  @IsNotEmpty({ message: 'Debe agregar un codigo postal' })
-  @IsInt({ message: 'El código postal debe ser un número entero' })
-  @ApiProperty({ description: 'Codigo Postal' })
-  codigoPostal: number;
-
+export class CreateDirectionDto extends Direction {
   @IsNotEmpty({ message: 'Debe agregar una ciudad' })
   @IsString({ message: 'La ciudad debe ser un string' })
   @ApiProperty({ description: 'Ciudad' })
-  ciudad: string;
+  city: string;
 
   @IsNotEmpty({ message: 'Debe agregar un estado' })
   @IsString({ message: 'El estado debe ser un string' })
   @ApiProperty({ description: 'Estado' })
-  estado: string;
+  district: string;
 
-  @IsNotEmpty({ message: 'Debe agregar una calle' })
-  @IsString({ message: 'La calle debe ser un string' })
+  @IsNotEmpty({ message: 'Debe agregar una dirección' })
+  @IsString({ message: 'La dirección debe ser un string' })
   @ApiProperty({ description: 'Calle' })
-  calle: string;
+  address: string;
+
+  @IsOptional({always: true})
+  @IsString({message: 'La propiedad "Referencia de la dirección" debe ser de tipo string'})
+  @ApiProperty({description: 'Debe contener una descripción de referencia sobre la dirección, teniendo en cuenta datos como\n- Numero de departamento\n- Altura\n- piso\nEntre otros datos que considere importante', nullable: true})
+  addressReference?: string;
 
   @IsNotEmpty({ message: 'Debe agregar un userId' })
   @IsString({ message: 'El userId debe ser un string' })

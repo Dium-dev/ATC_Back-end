@@ -6,13 +6,11 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CreateDireetionDto } from './dto/create-direetion.dto';
-import { UpdateDireetionDto } from './dto/update-direetion.dto';
+import { CreateDirectionDto } from './dto/create-direetion.dto';
+import { UpdateDirectionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
 
 import {
-  IDirection,
-  IDirections,
   IResDirection,
 } from './interfaces/direction.interface';
 
@@ -27,15 +25,9 @@ export class DirectionsService {
     private userService: UsersService,
   ) {}
 
-  async create(createDireetionDto: CreateDireetionDto): Promise<IResDirection> {
+  async create(createDirectionDto: CreateDirectionDto): Promise<IResDirection> {
     try {
-      const newDirection = await Direction.create({
-        codigoPostal: createDireetionDto.codigoPostal,
-        ciudad: createDireetionDto.ciudad,
-        estado: createDireetionDto.estado,
-        calle: createDireetionDto.calle,
-        userId: createDireetionDto.userId,
-      });
+      const newDirection = await Direction.create(createDirectionDto);
 
       if (!newDirection) {
         throw new BadRequestException();
@@ -54,9 +46,9 @@ export class DirectionsService {
     }
   }
 
-  async findAll(id: string): Promise<IDirections> {
+  async findAll(id: string): Promise<IResDirection> {
     try {
-      const directions = await Direction.findAll({
+      const direction = await Direction.findAll({
         where: {
           userId: {
             [Op.eq]: id,
@@ -64,14 +56,14 @@ export class DirectionsService {
         },
       });
 
-      if (directions) {
+      if (direction) {
         return {
           statusCode: 200,
-          directions,
+          direction,
         };
       } else {
         throw new NotFoundException(
-          'no hay direcciones para el usuario solicitado',
+          'El usuario no cuenta aun con direcciones.',
         );
       }
     } catch (error) {
@@ -90,43 +82,23 @@ export class DirectionsService {
   }
 
   async update(
-    id: string,
-    updateDireetionDto: UpdateDireetionDto,
-  ): Promise<{ statusCode: number; direction: IDirection }> {
+    {id,address,city, district,userId}: UpdateDirectionDto,
+  ): Promise<IResDirection> {
     try {
-      const thisDirection = await Direction.findByPk(id);
-
-      if (thisDirection) {
-        if (updateDireetionDto.codigoPostal) {
-          thisDirection.codigoPostal = updateDireetionDto.codigoPostal;
-        }
-
-        if (updateDireetionDto.ciudad) {
-          thisDirection.ciudad = updateDireetionDto.ciudad;
-        }
-
-        if (updateDireetionDto.estado) {
-          thisDirection.estado = updateDireetionDto.estado;
-        }
-
-        if (updateDireetionDto.calle) {
-          thisDirection.calle = updateDireetionDto.calle;
-        }
-
-        await thisDirection.save();
-
+      const thisDirection = await Direction.update({address, city, district},{where: {id, userId}});
+    if (thisDirection){
         return {
           statusCode: 200,
-          direction: thisDirection,
+          message: 'Se ha actualizado correctamente su dirección.',
         };
       } else {
-        throw new NotFoundException('direccion no encontrada');
+        throw new NotFoundException('Dirección no encontrada');
       }
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new NotFoundException('direccion no encontrada');
+        throw new NotFoundException(error.message);
       } else {
-        throw new InternalServerErrorException('Error del servidor');
+        throw new InternalServerErrorException('Ocurrió un error en el servidor al intentar actualizar su dirrección');
       }
     }
   }
