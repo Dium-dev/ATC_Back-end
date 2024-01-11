@@ -18,9 +18,16 @@ export class CreateDirectionDto extends Direction {
   @ApiProperty({ description: 'Calle' })
   address: string;
 
-  @IsOptional({always: true})
-  @IsString({message: 'La propiedad "Referencia de la dirección" debe ser de tipo string'})
-  @ApiProperty({description: 'Debe contener una descripción de referencia sobre la dirección, teniendo en cuenta datos como\n- Numero de departamento\n- Altura\n- piso\nEntre otros datos que considere importante', nullable: true})
+  @IsOptional({ always: true })
+  @IsString({
+    message:
+      'La propiedad "Referencia de la dirección" debe ser de tipo string',
+  })
+  @ApiProperty({
+    description:
+      'Debe contener una descripción de referencia sobre la dirección, teniendo en cuenta datos como\n- Numero de departamento\n- Altura\n- piso\nEntre otros datos que considere importante',
+    nullable: true,
+  })
   addressReference?: string;
 
   @IsNotEmpty({ message: 'Debe agregar un userId' })

@@ -71,9 +71,7 @@ export class DirectionsController {
   async update(
     @Body() updateDirectionDto: UpdateDirectionDto,
   ): Promise<IResDirection> {
-    const response = await this.directionsService.update(
-      updateDirectionDto,
-    );
+    const response = await this.directionsService.update(updateDirectionDto);
     return response;
   }
 

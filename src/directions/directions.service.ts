@@ -10,9 +10,7 @@ import { CreateDirectionDto } from './dto/create-direetion.dto';
 import { UpdateDirectionDto } from './dto/update-direetion.dto';
 import { Direction } from './entities/direction.entity';
 
-import {
-  IResDirection,
-} from './interfaces/direction.interface';
+import { IResDirection } from './interfaces/direction.interface';
 
 import { Op } from 'sequelize';
 import { IResponse } from 'src/utils/interfaces/response.interface';
@@ -77,12 +75,20 @@ export class DirectionsService {
     }
   }
 
-  async update(
-    {id,address,city, district, addressReference,userId}: UpdateDirectionDto,
-  ): Promise<IResDirection> {
+  async update({
+    id,
+    address,
+    city,
+    district,
+    addressReference,
+    userId,
+  }: UpdateDirectionDto): Promise<IResDirection> {
     try {
-      const thisDirection = await Direction.update({address, city, district, addressReference},{where: {id, userId}});
-    if (thisDirection){
+      const thisDirection = await Direction.update(
+        { address, city, district, addressReference },
+        { where: { id, userId } },
+      );
+      if (thisDirection) {
         return {
           statusCode: 200,
           message: 'Se ha actualizado correctamente su dirección.',
@@ -94,7 +100,9 @@ export class DirectionsService {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       } else {
-        throw new InternalServerErrorException('Ocurrió un error en el servidor al intentar actualizar su dirrección');
+        throw new InternalServerErrorException(
+          'Ocurrió un error en el servidor al intentar actualizar su dirrección',
+        );
       }
     }
   }
