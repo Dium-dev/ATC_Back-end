@@ -59,12 +59,6 @@ export class DirectionsController {
     return response;
   }
 
-  @ApiOperation({ summary: 'Obtener dirección por id' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.directionsService.findOne(+id);
-  }
-
   @ApiOperation({ summary: 'Modificar una direccion' })
   @ApiBody({ type: UpdateDirectionDto })
   @ApiResponse({

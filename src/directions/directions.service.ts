@@ -77,15 +77,11 @@ export class DirectionsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} direction`;
-  }
-
   async update(
-    {id,address,city, district,userId}: UpdateDirectionDto,
+    {id,address,city, district, addressReference,userId}: UpdateDirectionDto,
   ): Promise<IResDirection> {
     try {
-      const thisDirection = await Direction.update({address, city, district},{where: {id, userId}});
+      const thisDirection = await Direction.update({address, city, district, addressReference},{where: {id, userId}});
     if (thisDirection){
         return {
           statusCode: 200,
