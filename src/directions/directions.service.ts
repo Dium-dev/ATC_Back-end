@@ -54,7 +54,7 @@ export class DirectionsService {
         },
       });
 
-      if (direction) {
+      if (direction[0]) {
         return {
           statusCode: 200,
           direction,
