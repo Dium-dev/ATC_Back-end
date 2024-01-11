@@ -9,7 +9,7 @@ import * as morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.enableCors();
   app.use(morgan('dev'));
   app.useGlobalPipes(new ValidationPipe());
   // eslint-disable-next-line @typescript-eslint/no-shadow
