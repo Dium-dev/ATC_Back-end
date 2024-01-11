@@ -28,6 +28,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Transaction } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { Direction } from 'src/directions/entities/direction.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -123,7 +124,7 @@ export class OrdersService {
   }
 
   //Crear Orden
-  async create(data: { userId: string; directionId: string }): Promise<object> {
+  async create(data: CreateOrderDto): Promise<object> {
     const transaction: Transaction = await this.sequelize.transaction();
     try {
       const { userId, directionId } = data;
