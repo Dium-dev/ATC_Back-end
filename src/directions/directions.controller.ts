@@ -8,8 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { DirectionsService } from './directions.service';
-import { CreateDireetionDto } from './dto/create-direetion.dto';
-import { UpdateDireetionDto } from './dto/update-direetion.dto';
+import { CreateDirectionDto } from './dto/create-direetion.dto';
+import { UpdateDirectionDto } from './dto/update-direetion.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -17,16 +17,16 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { IDirections, IResDirection } from './interfaces/direction.interface';
+import { IResDirection } from './interfaces/direction.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 
 @ApiTags('Directions')
 @Controller('directions')
-export class DireetionsController {
+export class DirectionsController {
   constructor(private readonly directionsService: DirectionsService) {}
 
   @ApiOperation({ summary: 'Crear una nueva dirección' })
-  @ApiBody({ type: CreateDireetionDto })
+  @ApiBody({ type: CreateDirectionDto })
   @ApiResponse({
     status: 201,
     description: 'La dirección ha sido creada exitosamente',
@@ -35,9 +35,9 @@ export class DireetionsController {
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
   @Post()
   async create(
-    @Body() createDireetionDto: CreateDireetionDto,
+    @Body() createDirectionDto: CreateDirectionDto,
   ): Promise<IResDirection> {
-    const response = await this.directionsService.create(createDireetionDto);
+    const response = await this.directionsService.create(createDirectionDto);
     return response;
   }
 
@@ -54,39 +54,24 @@ export class DireetionsController {
     type: 'string',
   })
   @Get(':id')
-  async findAll(@Param('id') id: string): Promise<IDirections> {
+  async findAll(@Param('id') id: string): Promise<IResDirection> {
     const response = await this.directionsService.findAll(id);
     return response;
   }
 
-  @ApiOperation({ summary: 'Obtener dirección por id' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.directionsService.findOne(+id);
-  }
-
   @ApiOperation({ summary: 'Modificar una direccion' })
-  @ApiBody({ type: UpdateDireetionDto })
+  @ApiBody({ type: UpdateDirectionDto })
   @ApiResponse({
     status: 200,
     description: 'La dirección ha sido modificada exitosamente',
   })
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
-  @ApiParam({
-    name: 'id',
-    description: 'id de la dirección a modificar',
-    type: 'string',
-  })
-  @Patch(':id')
+  @Patch()
   async update(
-    @Param('id') id: string,
-    @Body() updateDireetionDto: UpdateDireetionDto,
+    @Body() updateDirectionDto: UpdateDirectionDto,
   ): Promise<IResDirection> {
-    const response = await this.directionsService.update(
-      id,
-      updateDireetionDto,
-    );
+    const response = await this.directionsService.update(updateDirectionDto);
     return response;
   }
 

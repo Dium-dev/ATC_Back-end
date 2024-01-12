@@ -1,18 +1,6 @@
-export interface IDirection {
-  id: string;
-  codigoPostal: number;
-  ciudad: string;
-  estado: string;
-  calle: string;
-  userId: string;
-}
+import { IResponse } from 'src/utils/interfaces/response.interface';
+import { Direction } from '../entities/direction.entity';
 
-export interface IDirections {
-  statusCode: number;
-  directions: IDirection[];
-}
-
-export interface IResDirection {
-  statusCode: number;
-  direction: IDirection;
+export interface IResDirection extends IResponse {
+  direction?: Direction | Direction[];
 }

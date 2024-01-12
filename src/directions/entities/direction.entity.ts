@@ -25,28 +25,28 @@ export class Direction extends Model<Direction> {
   id: string;
 
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   })
-  codigoPostal: number;
+  city: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  ciudad: string;
+  district: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  estado: string;
+  address: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
-  calle: string;
+  addressReference?: string;
 
   @HasMany(() => Order)
   orders: Order[];
