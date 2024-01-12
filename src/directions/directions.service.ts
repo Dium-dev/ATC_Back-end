@@ -54,24 +54,19 @@ export class DirectionsService {
         },
       });
 
-      if (direction[0]) {
+      if (direction.length) {
         return {
           statusCode: 200,
           direction,
         };
       } else {
-        throw new NotFoundException(
-          'El usuario no cuenta aun con direcciones.',
-        );
+        return {
+          statusCode: 204,
+          message: 'No tiene aun ninguna dirección subida.'
+        }
       }
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(
-          'no hay direcciones para el usuario solicitado',
-        );
-      } else {
-        throw new InternalServerErrorException('Error del servidor');
-      }
+      throw new InternalServerErrorException('Error del servidor a la hora de consultar las direcciones del ususario');
     }
   }
 
