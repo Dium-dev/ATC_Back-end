@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Body,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
@@ -54,15 +55,22 @@ export class OrdersController {
   })
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@GetUser() user: UserChangePasswordDto) {
+  async create(
+    @GetUser() user: UserChangePasswordDto,
+    @Body() createOrder: CreateOrderDto,
+  ) {
     const { userId } = user;
-    const response = await this.ordersService.create(userId);
+    const response = await this.ordersService.create({
+      userId,
+      directionId: createOrder.directionId,
+    });
+
     return response;
   }
 
   @Get()
   async getAllOrders(
-    @Body() getAllOrders: GetAllOrdersDto,
+    @Query() getAllOrders: GetAllOrdersDto,
   ): Promise<IGetOrders> {
     const response = await this.ordersService.findAll(getAllOrders);
     return response;

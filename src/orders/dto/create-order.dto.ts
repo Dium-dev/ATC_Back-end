@@ -1,36 +1,15 @@
-import {
-  ArrayMinSize,
-  IsArray,
-  IsInstance,
-  IsNotEmpty,
-  IsNumber,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
-import { AmountPricePerProduct } from './amount-price-product';
-import { Type } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsNumber(
-    {},
-    {
-      message: '$property debe ser un número, en cambio enviaste: $value',
-    },
-  )
-  @IsNotEmpty({
-    message: '$property no puede estar vacío',
-  })
-  total: number;
+  @IsUUID('4', { message: 'Se debe proporcionar el Id del usuario' })
+  @IsOptional({ message: 'El campo $property no debe estar vacio' })
+  /*El campo es opcional porque en cierta instancia (controller) no es requerida del body, 
+  en cambio en el service se indica como tipo de dato del create*/
+  userId?: string;
 
-  @IsArray({
-    message: '$property debe ser un array válido',
+  @IsUUID('4', {
+    message: 'Recuerda mandar el Id de la direccion seleccionada',
   })
-  @ArrayMinSize(1, {
-    message: '$property no puede ser un array vacío',
-  })
-  @ValidateNested({
-    each: true,
-  })
-  @Type(() => AmountPricePerProduct)
-  products: AmountPricePerProduct[];
+  @IsNotEmpty({ message: 'El campo $property no debe estar vacio' })
+  directionId: string;
 }

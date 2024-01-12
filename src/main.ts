@@ -4,12 +4,17 @@ import { AppModule } from './app.module';
 import { Categories } from './categories/entities/category.entity';
 import { Brand } from './brands/entities/brand.entity';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PORT } from './config/env';
+import { FRONT_HOST, PORT } from './config/env';
 import * as morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.enableCors({
+    origin: FRONT_HOST,
+    methods: ['GET', 'POST', 'PATHC', 'DELETE'],
+    allowedHeaders:['Authorization'],
+    credentials: true,
+  });
   app.use(morgan('dev'));
   app.useGlobalPipes(new ValidationPipe());
   // eslint-disable-next-line @typescript-eslint/no-shadow
