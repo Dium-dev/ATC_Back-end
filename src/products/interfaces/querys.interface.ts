@@ -23,6 +23,6 @@ export interface IQuery {
   order: string[][];
   where?: WhereInOrders;
   whereProduct?: IWhereProducts;
-  whereCategoryId?: WhereCategoriandBrandId;
-  whereBrandId?: WhereCategoriandBrandId;
+  whereCategoryId?: whereCategoriandBrandId;
+  whereBrandId?: whereCategoriandBrandId;
 }
