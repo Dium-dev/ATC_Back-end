@@ -76,11 +76,13 @@ export class DirectionsService {
     city,
     district,
     addressReference,
+    neighborhood,
+    phone,
     userId,
   }: UpdateDirectionDto): Promise<IResDirection> {
     try {
       const thisDirection = await Direction.update(
-        { address, city, district, addressReference },
+        { address, city, district, addressReference, neighborhood, phone },
         { where: { id, userId } },
       );
       if (thisDirection) {
