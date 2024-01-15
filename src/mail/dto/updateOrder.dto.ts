@@ -37,14 +37,6 @@ export class UpdateOrderDto {
   })
   message: string;
 
-  @IsEmail(undefined, { message: 'El formato del email no es valido' })
-  @IsNotEmpty({ message: 'El campo $property está vacío' })
-  @ApiProperty({
-    description:
-      'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
-  })
-  userEmail: string;
-
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Motivo de la consulta',

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsEmail } from 'class-validator';
+import { User } from '../entities/user.entity';
 
-export class UpdateUserDto {
+export class UpdateUserDto extends User{
   @IsOptional()
   @IsString({ message: '$property debe ser un string' })
   @ApiProperty({
@@ -34,4 +35,6 @@ export class UpdateUserDto {
       'Recibe el $property del usuario y verifica si es el formato adecuado. Opcional',
   })
   phone: string;
+
+
 }

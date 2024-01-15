@@ -17,11 +17,12 @@ import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 import { GetAllOrdersDto } from './dto/getAllOrders.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   //Obtener una orden por id
   @ApiOperation({ summary: 'Obtener orden' })
@@ -37,15 +38,20 @@ export class OrdersController {
     type: 'string',
   })
   @Get(':id')
-  async findOneOrder(@Param('id') id: string): Promise<IOrder> {
-    const response = await this.ordersService.findOneOrder(id);
+  async findOneOrder(
+    @GetUser() { userId }: IGetUser,
+    @Param('id') id: string
+  ): Promise<IOrder> {
+    const response = await this.ordersService.findOneOrder(id, userId);
     return response;
   }
 
   //Obtener órdenes por usuario
   @Get('user-orders/:id')
-  async findAlByUser(@Param('id') id: string): Promise<IOrder> {
-    const response = await this.ordersService.findAllByUser(id);
+  async findAlByUser(
+    @GetUser() { userId }: IGetUser,
+  ): Promise<IOrder> {
+    const response = await this.ordersService.findAllByUser(userId);
     return response;
   }
 
@@ -56,10 +62,9 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @GetUser() user: UserChangePasswordDto,
+    @GetUser() { userId }: IGetUser,
     @Body() createOrder: CreateOrderDto,
   ) {
-    const { userId } = user;
     const response = await this.ordersService.create({
       userId,
       directionId: createOrder.directionId,
@@ -68,6 +73,7 @@ export class OrdersController {
     return response;
   }
 
+  /* Ajustar despues para que solo los usuarios de Rol x puedan acceder a la misma */
   @Get()
   async getAllOrders(
     @Query() getAllOrders: GetAllOrdersDto,

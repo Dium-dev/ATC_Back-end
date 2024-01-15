@@ -37,7 +37,7 @@ export class SendMailDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-  addressee: string;
+  EmailAddress: string;
 
   @IsEnum(Cases, {
     message: '$value no está entre los posibles casos para envío de correo',

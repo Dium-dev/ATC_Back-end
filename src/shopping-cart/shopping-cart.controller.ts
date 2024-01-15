@@ -13,6 +13,7 @@ import { GetUser } from '../auth/auth-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guarg';
 import { UserChangePasswordDto } from '../auth/dto/user-change-password.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 
 @ApiTags('Shopping cart')
 @Controller('shopping-cart')
@@ -63,7 +64,7 @@ export class ShoppingCartController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getCart(@GetUser() { userId }: UserChangePasswordDto) {
+  async getCart(@GetUser() { userId }: IGetUser) {
     const cart = await this.shoppingCartService.getCart(userId);
     return cart;
   }

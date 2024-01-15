@@ -44,13 +44,13 @@ export class OrdersService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) {}
+  ) { }
 
-  async findOneOrder(id: string) {
+  async findOneOrder(id: string, userId: string) {
     try {
       const order = await this.orderModel.findOne({
         where: {
-          id: id,
+          id, userId
         },
         attributes: ['id', 'total', 'state'],
         include: [
@@ -85,11 +85,11 @@ export class OrdersService {
   }
 
   //Obtener todas las órdenes de un usuario en particular
-  async findAllByUser(id: string): Promise<IOrder> {
+  async findAllByUser(userId: string): Promise<IOrder> {
     try {
       const orders = await this.orderModel.findAll({
         where: {
-          userId: id,
+          userId,
         },
         attributes: ['id', 'total', 'state'],
         include: [

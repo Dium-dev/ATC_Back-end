@@ -14,11 +14,13 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { GetUser } from '../auth/auth-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guarg';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+
 
 @ApiTags('Payments')
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(private readonly paymentsService: PaymentsService) { }
 
   // Ruta para crear un pago
   /*  @ApiOperation({
@@ -27,7 +29,7 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @Post('create-payment')
   async createPayment(
-    @GetUser() { userId }: any,
+    @GetUser() { userId }: IGetUser,
     @Body() { amount, orderId }: CreatePaymentDto,
     @Res() res: Response,
   ) {

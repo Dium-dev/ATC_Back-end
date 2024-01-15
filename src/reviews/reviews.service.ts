@@ -25,7 +25,7 @@ export class ReviewsService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) {}
+  ) { }
 
   async create(id: string, createReviewDto: CreateReviewDto): Promise<IReview> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -79,12 +79,13 @@ export class ReviewsService {
     }
   }
 
-  async update(updateReviewDto: UpdateReviewDto): Promise<IReview> {
+  async update(updateReviewDto: UpdateReviewDto, userId: string): Promise<IReview> {
     try {
       //Update
       const count = await this.reviewModel.update(updateReviewDto, {
         where: {
           id: updateReviewDto.reviewId,
+          userId
         },
       });
 

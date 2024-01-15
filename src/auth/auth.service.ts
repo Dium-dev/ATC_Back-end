@@ -18,6 +18,8 @@ import { JWT_SECRET } from '../config/env';
 import { IResponse } from '../utils/interfaces/response.interface';
 import { MailService } from '../mail/mail.service';
 import { Cases } from '../mail/dto/sendMail.dto';
+import { IGetUser } from './interefaces/getUser.interface';
+import { Rol } from 'src/users/entities/user.entity';
 @Injectable()
 export class AuthService {
   constructor(
@@ -25,7 +27,7 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly mailsService: MailService,
-  ) {}
+  ) { }
 
   async generatePassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
@@ -33,10 +35,11 @@ export class AuthService {
     return hashedPassword;
   }
 
-  async generateToken(userId: string, userEmail: string): Promise<string> {
+  async generateToken(userId: string, userEmail: string, rol: Rol): Promise<string> {
     const token = await this.jwtService.signAsync({
-      sub: userId,
-      username: userEmail,
+      userId: userId,
+      userEmail: userEmail,
+      rol: rol
     });
     return token;
   }
@@ -65,7 +68,7 @@ export class AuthService {
         link: `https://link-del-front-pasado-por-env?token=${token}`,
       };
       const mailData = {
-        addressee: user.email,
+        EmailAddress: user.email,
         subject: Cases.RESET_PASSWORD,
         context: context,
       };
@@ -129,13 +132,13 @@ export class AuthService {
 
   async changePassword(
     changePassword: ChangePasswordDto,
-    user: UserChangePasswordDto,
+    user: IGetUser,
   ): Promise<IResponse> {
     try {
       const { oldPassword, newPassword } = changePassword;
-      const { username } = user;
+      const { userEmail } = user;
 
-      const userFind = await this.usersService.findOneByEmail(username);
+      const userFind = await this.usersService.findOneByEmail(userEmail);
 
       const validatePassword = await this.comparePassword(
         oldPassword,

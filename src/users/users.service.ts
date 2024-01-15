@@ -51,7 +51,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -69,16 +69,11 @@ export class UsersService {
 
       const newUser = await this.userModel.create(data, { transaction });
 
-      /*await this.shopCartService.CreateShoppingCart(
-        { userId: newUser.id },
-        transaction,
-      );*/
-
       await transaction.commit();
 
       const response = {
         statusCode: 201,
-        token: await this.authService.generateToken(newUser.id, newUser.email),
+        token: await this.authService.generateToken(newUser.id, newUser.email, newUser.rol),
       };
 
       //Setting up for email sending
@@ -89,7 +84,7 @@ export class UsersService {
       };
 
       const mailData = {
-        addressee: createUserDto.email,
+        EmailAddress: createUserDto.email,
         subject: Cases.CREATE_ACCOUNT,
         context: context,
       };
@@ -121,6 +116,7 @@ export class UsersService {
           token: await this.authService.generateToken(
             checkUser.id,
             checkUser.email,
+            checkUser.rol
           ),
         };
 
@@ -186,33 +182,14 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<IResponse> {
     try {
-      const user = await User.findByPk(id);
-
+      const user = await User.update(updateUserDto, { where: { id } });
       if (user) {
-        if (updateUserDto.firstName) {
-          user.firstName = updateUserDto.firstName;
-        }
-        if (updateUserDto.lastName) {
-          user.lastName = updateUserDto.lastName;
-        }
-        if (updateUserDto.email) {
-          user.email = updateUserDto.email;
-        }
-
-        if (updateUserDto.phone) {
-          user.phone = updateUserDto.phone;
-        }
-
-        await user.save();
-
         return {
           statusCode: 204,
           message: 'Usuario actualizado correctamente',
-        };
+        };        
       } else {
-        throw new BadRequestException(
-          'El id enviado no corresponde a ningun usuario',
-        );
+        throw new BadRequestException('No hay usuario que coincida con el Id recibido en la base de datos.')
       }
     } catch (error) {
       switch (error.constructor) {
@@ -260,9 +237,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -273,9 +249,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });

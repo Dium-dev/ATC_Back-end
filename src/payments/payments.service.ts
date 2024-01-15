@@ -162,7 +162,7 @@ export class PaymentsService {
         };
 
         const mailData = {
-          addressee: user.email,
+          EmailAddress: user.email,
           subject: Cases.PURCHASE,
           context: context,
         };

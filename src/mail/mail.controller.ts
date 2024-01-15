@@ -16,18 +16,23 @@ import { ContactFormDto } from './dto/contactForm.dto';
 import { UpdateOrderDto, UpdateOrderDtoSwagger } from './dto/updateOrder.dto';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { ADMIN_EMAIL } from 'src/config/env';
+import { GetUser } from 'src/auth/auth-user.decorator';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 
 @ApiTags('Mail')
 @Controller('contact')
 export class ContactController {
-  constructor(private readonly mailService: MailService) {}
+  constructor(private readonly mailService: MailService) { }
 
   @ApiOperation({
     summary: 'Ruta para enviar solicitud de cambio en la orden',
   })
   @ApiBody({ type: UpdateOrderDtoSwagger })
   @Post('update-order')
-  async sendUpdateOrderForm(@Body() updateOrderData: UpdateOrderDto) {
+  async sendUpdateOrderForm(
+    @GetUser() { userEmail }: IGetUser,
+    @Body() updateOrderData: UpdateOrderDto
+  ) {
     try {
       // Obtener el motivo de la consulta
       const consultationReason: ConsultationReason =
@@ -36,14 +41,14 @@ export class ContactController {
         name: updateOrderData.name,
         phone: updateOrderData.phone,
         message: updateOrderData.message,
-        userEmail: updateOrderData.userEmail,
+        userEmail,
         order: updateOrderData.order,
         consultationReason,
       };
 
       // Enviar correos electrónicos
       await this.mailService.sendMails({
-        addressee: ADMIN_EMAIL,
+        EmailAddress: ADMIN_EMAIL,
         subject: Cases.UPDATE_ORDER,
         context: orderContext,
       });
@@ -54,7 +59,7 @@ export class ContactController {
       };
 
       await this.mailService.sendMails({
-        addressee: updateOrderData.userEmail,
+        EmailAddress: userEmail,
         subject: Cases.CONTACT_FORM_USER,
         context: userContext,
       });
@@ -74,16 +79,26 @@ export class ContactController {
   @ApiBody({ type: ContactFormDto })
   @Post()
   async sendContactForm(
+    @GetUser() user: IGetUser,
     @Body() contactData: ContactFormDto,
-    /*  @Res() res: Response, */
   ) {
     try {
+      let thisEmail: string
+      console.log(user);
+      
+      if (!user) {
+        thisEmail = contactData.userEmail
+      } else {
+        thisEmail = user.userEmail
+      }
+      console.log(thisEmail);
       const userContext: IContactFormUserContext = {
         firstname: contactData.name,
       };
 
+
       await this.mailService.sendMails({
-        addressee: contactData.userEmail,
+        EmailAddress: thisEmail,
         subject: Cases.CONTACT_FORM_USER,
         context: userContext,
       });
@@ -92,12 +107,12 @@ export class ContactController {
         name: contactData.name,
         phone: contactData.phone,
         message: contactData.message,
-        userEmail: contactData.userEmail,
+        userEmail: thisEmail,
         userId: contactData.userId,
       };
 
       await this.mailService.sendMails({
-        addressee: ADMIN_EMAIL,
+        EmailAddress: ADMIN_EMAIL,
         subject: Cases.CONTACT_FORM_ADMIN,
         context: adminContext,
       });
