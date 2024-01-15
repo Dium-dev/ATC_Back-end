@@ -30,6 +30,24 @@ export class CreateDirectionDto extends Direction {
   })
   addressReference?: string;
 
+  @IsOptional({always: true})
+  @IsString({message: 'La propiedad "barrio" debe ser de tipo string'})
+  @ApiProperty({
+    description:
+      'Debe contener el nombre del barrio al que el usuario pertenece como parte de la descripción de su dirección',
+    nullable: true,
+  })
+  neighborhood?: string;
+
+  @IsOptional({always: true})
+  @IsString({message: 'La propiedad "barrio" debe ser de tipo string'})
+  @ApiProperty({
+    description:
+      'Debe contener el numero de telefono del usuario o perteneciente e la ubicación.\nDe no pasarle nada, el se completa con el numero del usuario',
+    nullable: true,
+  })
+  phone?: string;
+
   @IsNotEmpty({ message: 'Debe agregar un userId' })
   @IsString({ message: 'El userId debe ser un string' })
   @ApiProperty({ description: 'userId' })

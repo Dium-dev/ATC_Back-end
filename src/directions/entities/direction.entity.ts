@@ -14,6 +14,15 @@ import { Order } from 'src/orders/entities/order.entity';
   timestamps: true,
   underscored: true,
   paranoid: true,
+  hooks: {
+    async afterCreate(instance: Direction) {
+      if(!instance.phone){
+        const thisPhoneNumber = await User.findByPk(instance.userId);
+        instance.phone=thisPhoneNumber.phone;
+        instance.save()
+      }
+    }
+  }
 })
 export class Direction extends Model<Direction> {
   @Column({
@@ -47,6 +56,19 @@ export class Direction extends Model<Direction> {
     allowNull: true,
   })
   addressReference?: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  neighborhood?: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  phone?: string;
+
 
   @HasMany(() => Order)
   orders: Order[];
