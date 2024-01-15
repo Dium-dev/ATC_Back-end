@@ -7,12 +7,12 @@ import { Direction } from '../directions/entities/direction.entity';
 import { AuthModule } from '../auth/auth.module';
 import { AuthService } from '../auth/auth.service';
 import { ShoppingCart } from '../shopping-cart/entities/shopping-cart.entity';
-import { MailService } from '../mail/mail.service';
 import { ShoppingCartModule } from '../shopping-cart/shopping-cart.module';
 import { DirectionsModule } from '../directions/directions.module';
 import { ReviewsModule } from '../reviews/reviews.module';
 import { OrdersModule } from '../orders/orders.module';
 import { PaymentsModule } from '../payments/payments.module';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -22,10 +22,11 @@ import { PaymentsModule } from '../payments/payments.module';
     forwardRef(() => ReviewsModule),
     forwardRef(() => OrdersModule),
     forwardRef(() => PaymentsModule),
+    forwardRef(() => MailModule),
     SequelizeModule.forFeature([User, Direction, ShoppingCart]),
   ],
-  providers: [UsersService, AuthService, MailService],
+  providers: [UsersService],
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

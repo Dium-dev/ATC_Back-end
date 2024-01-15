@@ -3,6 +3,8 @@ import {
   BadRequestException,
   InternalServerErrorException,
   HttpException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { IResponse } from 'src/utils/interfaces/response.interface';
@@ -15,16 +17,22 @@ import { IPurchaseContext } from './interfaces/purchase-context.interface';
 import { IContactFormAdminContext } from './interfaces/contact-form-admin-context.interface';
 import { IContactFormUserContext } from './interfaces/contact-form-user-context.interface';
 import { IUpdateOrderContext } from './interfaces/update-order-context.interface';
+import { UsersService } from 'src/users/users.service';
 
 export type AnyContextType = IResetPasswordContext | ICreateUserContext | IPurchaseContext | IContactFormAdminContext | IContactFormUserContext | IUpdateOrderContext;
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService) { }
+  constructor(
+    @Inject(forwardRef(() => MailerService))
+    private readonly mailerService: MailerService,
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
+  ) { }
 
   //Si no hay un contexto, simplemente pon '{}'
   async sendMails(sendMailDto: SendMailDto): Promise<IResponse> {
-    const { addressee, subject, context } = sendMailDto;    
+    const { addressee, subject, context } = sendMailDto;
     try {
       let mail;
       switch (subject) {
@@ -91,21 +99,21 @@ export class MailService {
           break;
         case Cases.CONTACT_FORM_ADMIN:
           if ('userId' in context)
-          mail = await this.mailerService.sendMail({
-            to: addressee,
-            subject: context.userId
-            ? `Ayuda para Usuario ID: ${context.userId}`
-            : 'Recibiste una Consulta Gral',
-            template: Templates.contactFormAdmin,
-            context: context,
-            attachments: [
-              {
-                filename: 'ATCarroLogo.png',
-                path: './src/public/ATCarroLogo.png',
-                cid: 'headerATCLogo',
-              },
-            ],
-          });
+            mail = await this.mailerService.sendMail({
+              to: addressee,
+              subject: context.userId
+                ? `Ayuda para Usuario ID: ${context.userId}`
+                : 'Recibiste una Consulta Gral',
+              template: Templates.contactFormAdmin,
+              context: context,
+              attachments: [
+                {
+                  filename: 'ATCarroLogo.png',
+                  path: './src/public/ATCarroLogo.png',
+                  cid: 'headerATCLogo',
+                },
+              ],
+            });
           break;
 
         case Cases.UPDATE_ORDER:

@@ -38,7 +38,7 @@ export class UsersService {
     private userModel: typeof User,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
-    @Inject(MailService)
+    @Inject(forwardRef(() => MailService))
     private mailsService: MailService,
     @Inject(forwardRef(() => ShoppingCartService))
     private shopCartService: ShoppingCartService,
@@ -51,7 +51,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -260,9 +260,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => await transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -273,9 +272,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => await transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });

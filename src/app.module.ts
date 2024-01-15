@@ -15,6 +15,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { OrdersModule } from './orders/orders.module';
 import { DatabaseModule } from './database/database.module';
 import { PaymentsModule } from './payments/payments.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -32,8 +33,9 @@ import { PaymentsModule } from './payments/payments.module';
     OrdersModule,
     DatabaseModule,
     PaymentsModule,
+    MailerModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

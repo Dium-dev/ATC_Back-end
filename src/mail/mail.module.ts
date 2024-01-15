@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ContactController } from './mail.controller';
 import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -6,6 +6,8 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { EMAIL_USER } from '../config/env';
 import { transporter } from '../utils/mailer/mailer';
 import { join } from 'path';
+import { UsersService } from 'src/users/users.service';
+import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     MailerModule.forRoot({
@@ -21,9 +23,11 @@ import { join } from 'path';
         },
       },
     }),
+    forwardRef(() => UsersModule),
+    forwardRef(() => MailerModule),
   ],
   controllers: [ContactController],
   providers: [MailService],
   exports: [MailService],
 })
-export class MailModule {}
+export class MailModule { }
