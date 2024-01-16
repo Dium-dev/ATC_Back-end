@@ -8,15 +8,14 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Categories } from './entities/category.entity';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  async getAllCategories(): Promise<{ id: string; name: string }[]> {
+  async getAllCategories(): Promise<Categories[]> {
     const cateogries = await this.categoriesService.findAllCategories();
     return cateogries;
   }

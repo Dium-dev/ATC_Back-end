@@ -29,7 +29,7 @@ import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -127,7 +127,7 @@ export class UsersController {
   @Patch(':id')
   async update(
     @GetUser() { userId }: IGetUser,
-    @Body() updateUserDto: UpdateUserDto,
+      @Body() updateUserDto: UpdateUserDto,
   ): Promise<IResponse> {
     const response = this.usersService.update(userId, updateUserDto);
     return response;

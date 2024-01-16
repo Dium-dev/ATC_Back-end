@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { IContactFormAdminContext } from './interfaces/contact-form-admin-context.interface';
@@ -18,25 +19,28 @@ import { Cases } from 'src/mail/dto/sendMail.dto';
 import { ADMIN_EMAIL } from 'src/config/env';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 
 @ApiTags('Mail')
 @Controller('contact')
 export class ContactController {
-  constructor(private readonly mailService: MailService) { }
+  constructor(private readonly mailService: MailService) {}
 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Ruta para enviar solicitud de cambio en la orden',
   })
   @ApiBody({ type: UpdateOrderDtoSwagger })
   @Post('update-order')
   async sendUpdateOrderForm(
-    @GetUser() { userEmail }: IGetUser,
-    @Body() updateOrderData: UpdateOrderDto
+  @GetUser() { userEmail }: IGetUser,
+    @Body() updateOrderData: UpdateOrderDto,
   ) {
     try {
       // Obtener el motivo de la consulta
       const consultationReason: ConsultationReason =
         updateOrderData.consultationReason;
+
       const orderContext: IUpdateOrderContext = {
         name: updateOrderData.name,
         phone: updateOrderData.phone,
@@ -78,27 +82,14 @@ export class ContactController {
   })
   @ApiBody({ type: ContactFormDto })
   @Post()
-  async sendContactForm(
-    @GetUser() user: IGetUser,
-    @Body() contactData: ContactFormDto,
-  ) {
+  async sendContactForm(@Body() contactData: ContactFormDto) {
     try {
-      let thisEmail: string
-      console.log(user);
-      
-      if (!user) {
-        thisEmail = contactData.userEmail
-      } else {
-        thisEmail = user.userEmail
-      }
-      console.log(thisEmail);
       const userContext: IContactFormUserContext = {
         firstname: contactData.name,
       };
 
-
       await this.mailService.sendMails({
-        EmailAddress: thisEmail,
+        EmailAddress: contactData.userEmail,
         subject: Cases.CONTACT_FORM_USER,
         context: userContext,
       });
@@ -107,7 +98,7 @@ export class ContactController {
         name: contactData.name,
         phone: contactData.phone,
         message: contactData.message,
-        userEmail: thisEmail,
+        userEmail: contactData.userEmail,
         userId: contactData.userId,
       };
 

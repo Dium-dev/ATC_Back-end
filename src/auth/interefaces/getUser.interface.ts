@@ -1,7 +1,7 @@
-import { Rol } from "src/users/entities/user.entity"
+import { Rol } from 'src/users/entities/user.entity';
 
 export interface IGetUser {
-    userId?: string
-    userEmail?: string
-    rol?: Rol
+  userId?: string;
+  userEmail?: string;
+  rol?: Rol;
 }

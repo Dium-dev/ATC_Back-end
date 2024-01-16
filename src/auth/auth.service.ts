@@ -27,7 +27,7 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly mailsService: MailService,
-  ) { }
+  ) {}
 
   async generatePassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
@@ -35,7 +35,11 @@ export class AuthService {
     return hashedPassword;
   }
 
-  async generateToken(userId: string, userEmail: string, rol: Rol): Promise<string> {
+  async generateToken(
+    userId: string,
+    userEmail: string,
+    rol: Rol,
+  ): Promise<string> {
     const token = await this.jwtService.signAsync({
       userId: userId,
       userEmail: userEmail,

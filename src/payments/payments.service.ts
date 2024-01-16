@@ -87,16 +87,16 @@ export class PaymentsService {
       state == 'success'
         ? (order.state = OrderStateEnum.PAGO)
         : state == 'pending'
-        ? (order.state = OrderStateEnum.PENDIENTE)
-        : (order.state = OrderStateEnum.RECHAZADO);
+          ? (order.state = OrderStateEnum.PENDIENTE)
+          : (order.state = OrderStateEnum.RECHAZADO);
       await order.save();
 
       const payment = await Payment.findOne({ where: { orderId } });
       state == 'success'
         ? (payment.state = PaymentState.SUCCESS)
         : state == 'pending'
-        ? (payment.state = PaymentState.PENDING)
-        : (payment.state = PaymentState.FAILED);
+          ? (payment.state = PaymentState.PENDING)
+          : (payment.state = PaymentState.FAILED);
       await payment.save();
 
       if (state == 'success') {

@@ -17,5 +17,5 @@ export class UpdateDirectionDto extends CreateDirectionDto {
     message: 'El Id de la dirección debe ser una string de tipo UUID',
   })
   @ApiProperty({ description: 'Id de la dirección a actualizar.' })
-  id: string;
+    id: string;
 }

@@ -37,22 +37,22 @@ export class SendMailDto {
   @IsNotEmpty({
     message: '$property no puede estar vacío',
   })
-  EmailAddress: string;
+    EmailAddress: string;
 
   @IsEnum(Cases, {
     message: '$value no está entre los posibles casos para envío de correo',
   })
-  subject: string;
+    subject: string;
 
   @IsDefined({
     message: '$property debe estar definido, revisa los parámetros requeridos',
   })
-  context:
-    | IResetPasswordContext
-    | ICreateUserContext
-    | IPurchaseContext
-    | IContactFormAdminContext
-    | IContactFormUserContext
-    | IUpdateOrderContext
-    | INotSend;
+    context:
+  | IResetPasswordContext
+  | ICreateUserContext
+  | IPurchaseContext
+  | IContactFormAdminContext
+  | IContactFormUserContext
+  | IUpdateOrderContext
+  | INotSend;
 }

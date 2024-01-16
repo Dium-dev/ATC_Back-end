@@ -51,7 +51,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -73,7 +73,11 @@ export class UsersService {
 
       const response = {
         statusCode: 201,
-        token: await this.authService.generateToken(newUser.id, newUser.email, newUser.rol),
+        token: await this.authService.generateToken(
+          newUser.id,
+          newUser.email,
+          newUser.rol,
+        ),
       };
 
       //Setting up for email sending
@@ -116,7 +120,7 @@ export class UsersService {
           token: await this.authService.generateToken(
             checkUser.id,
             checkUser.email,
-            checkUser.rol
+            checkUser.rol,
           ),
         };
 
@@ -187,9 +191,11 @@ export class UsersService {
         return {
           statusCode: 204,
           message: 'Usuario actualizado correctamente',
-        };        
+        };
       } else {
-        throw new BadRequestException('No hay usuario que coincida con el Id recibido en la base de datos.')
+        throw new BadRequestException(
+          'No hay usuario que coincida con el Id recibido en la base de datos.',
+        );
       }
     } catch (error) {
       switch (error.constructor) {
@@ -237,8 +243,9 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
-                } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -249,8 +256,9 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
-                } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });

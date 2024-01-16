@@ -22,7 +22,7 @@ import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) { }
+  constructor(private readonly ordersService: OrdersService) {}
 
   //Obtener una orden por id
   @ApiOperation({ summary: 'Obtener orden' })
@@ -40,7 +40,7 @@ export class OrdersController {
   @Get(':id')
   async findOneOrder(
     @GetUser() { userId }: IGetUser,
-    @Param('id') id: string
+      @Param('id') id: string,
   ): Promise<IOrder> {
     const response = await this.ordersService.findOneOrder(id, userId);
     return response;
@@ -48,9 +48,7 @@ export class OrdersController {
 
   //Obtener órdenes por usuario
   @Get('user-orders/:id')
-  async findAlByUser(
-    @GetUser() { userId }: IGetUser,
-  ): Promise<IOrder> {
+  async findAlByUser(@GetUser() { userId }: IGetUser): Promise<IOrder> {
     const response = await this.ordersService.findAllByUser(userId);
     return response;
   }
@@ -62,7 +60,7 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @GetUser() { userId }: IGetUser,
+  @GetUser() { userId }: IGetUser,
     @Body() createOrder: CreateOrderDto,
   ) {
     const response = await this.ordersService.create({

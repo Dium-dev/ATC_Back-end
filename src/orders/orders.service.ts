@@ -44,13 +44,14 @@ export class OrdersService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) { }
+  ) {}
 
   async findOneOrder(id: string, userId: string) {
     try {
       const order = await this.orderModel.findOne({
         where: {
-          id, userId
+          id,
+          userId,
         },
         attributes: ['id', 'total', 'state'],
         include: [

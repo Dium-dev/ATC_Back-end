@@ -26,7 +26,7 @@ export type AnyContextType =
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService) { }
+  constructor(private readonly mailerService: MailerService) {}
 
   //Si no hay un contexto, simplemente pon '{}'
   async sendMails(sendMailDto: SendMailDto): Promise<IResponse> {

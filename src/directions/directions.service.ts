@@ -23,9 +23,15 @@ export class DirectionsService {
     private userService: UsersService,
   ) {}
 
-  async create(createDirectionDto: CreateDirectionDto): Promise<IResDirection> {
+  async create(
+    createDirectionDto: CreateDirectionDto,
+    userId: string,
+  ): Promise<IResDirection> {
     try {
-      const newDirection = await Direction.create(createDirectionDto);
+      const newDirection = await Direction.create({
+        ...createDirectionDto,
+        userId,
+      });
 
       if (!newDirection) {
         throw new BadRequestException();
@@ -44,13 +50,11 @@ export class DirectionsService {
     }
   }
 
-  async findAll(id: string): Promise<IResDirection> {
+  async findAll(userId: string): Promise<IResDirection> {
     try {
       const direction = await Direction.findAll({
         where: {
-          userId: {
-            [Op.eq]: id,
-          },
+          userId,
         },
       });
 
@@ -62,11 +66,13 @@ export class DirectionsService {
       } else {
         return {
           statusCode: 204,
-          message: 'No tiene aun ninguna dirección subida.'
-        }
+          message: 'No tiene aun ninguna dirección subida.',
+        };
       }
     } catch (error) {
-      throw new InternalServerErrorException('Error del servidor a la hora de consultar las direcciones del ususario');
+      throw new InternalServerErrorException(
+        'Error del servidor a la hora de consultar las direcciones del ususario',
+      );
     }
   }
 
@@ -104,12 +110,15 @@ export class DirectionsService {
     }
   }
 
-  async remove(id: string): Promise<IResponse> {
+  async remove(id: string, userId: string): Promise<IResponse> {
     try {
-      const toRemoveDirection = await Direction.findByPk(id);
+      const toRemoveDirection = await Direction.destroy({
+        where: { id, userId },
+        force: true,
+      });
+      console.log(toRemoveDirection);
 
       if (toRemoveDirection) {
-        await toRemoveDirection.destroy();
         return {
           statusCode: 204,
           message: 'Direccion eliminada exitosamente',

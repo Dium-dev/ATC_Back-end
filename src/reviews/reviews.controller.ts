@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, UseGuards } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -30,7 +23,7 @@ import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 @ApiTags('Reviews')
 @Controller('reviews')
 export class ReviewsController {
-  constructor(private readonly reviewsService: ReviewsService) { }
+  constructor(private readonly reviewsService: ReviewsService) {}
 
   //El id viene por parámetro solo en la versión de desarroll. Ccuando se agreguen los guards
   // No será necesario un parámetro, así que no le hagas docu al id, Ok?
@@ -54,7 +47,7 @@ export class ReviewsController {
   //Controller------------------------------------------------------------------------------
   async create(
     @GetUser() user: IGetUser,
-    @Body() createReviewDto: CreateReviewDto,
+      @Body() createReviewDto: CreateReviewDto,
   ): Promise<IReview> {
     //Se extrae el id del objeto req.user que nos retorna el decorador @GetUser
     const { userId } = user;
@@ -84,6 +77,7 @@ export class ReviewsController {
   }
 
   @Patch('update')
+  @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateReviewDto })
   @ApiOperation({ summary: 'Actualiza un review' })
   //Posibles respuestas--------------------------------------------------------
@@ -101,7 +95,7 @@ export class ReviewsController {
   //Controller-----------------------------------------------------------------
   async update(
     @GetUser() { userId }: IGetUser,
-    @Body() updateReviewDto: UpdateReviewDto,
+      @Body() updateReviewDto: UpdateReviewDto,
   ): Promise<IReview> {
     const response = await this.reviewsService.update(updateReviewDto, userId);
     return response;

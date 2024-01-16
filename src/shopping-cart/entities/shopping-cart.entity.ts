@@ -31,11 +31,11 @@ export class ShoppingCart extends Model {
     allowNull: false,
     unique: true,
   })
-  id: string;
+    id: string;
 
   @BelongsToMany(() => Product, () => CartProduct)
-  products: Product[];
+    products: Product[];
 
   @ForeignKey(() => User)
-  userId: string;
+    userId: string;
 }

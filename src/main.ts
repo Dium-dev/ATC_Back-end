@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: FRONT_HOST,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders:['Authorization'],
+    allowedHeaders: ['Authorization', 'x-token'],
     credentials: true,
   });
   app.use(morgan('dev'));
