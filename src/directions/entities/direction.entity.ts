@@ -16,13 +16,13 @@ import { Order } from 'src/orders/entities/order.entity';
   paranoid: true,
   hooks: {
     async afterCreate(instance: Direction) {
-      if(!instance.phone){
+      if (!instance.phone) {
         const thisPhoneNumber = await User.findByPk(instance.userId);
-        instance.phone=thisPhoneNumber.phone;
-        instance.save()
+        instance.phone = thisPhoneNumber.phone;
+        instance.save();
       }
-    }
-  }
+    },
+  },
 })
 export class Direction extends Model<Direction> {
   @Column({
@@ -31,54 +31,53 @@ export class Direction extends Model<Direction> {
     allowNull: false,
     primaryKey: true,
   })
-  id: string;
+    id: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  city: string;
+    city: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  district: string;
+    district: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  address: string;
+    address: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-  addressReference?: string;
+    addressReference?: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-  neighborhood?: string;
+    neighborhood?: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-  phone?: string;
-
+    phone?: string;
 
   @HasMany(() => Order)
-  orders: Order[];
+    orders: Order[];
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
   })
-  userId: string;
+    userId: string;
 
   @BelongsTo(() => User)
-  user: User;
+    user: User;
 }

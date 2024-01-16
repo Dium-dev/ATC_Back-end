@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
-  HttpException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, UseGuards } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -28,8 +17,8 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { GetUser } from 'src/auth/auth-user.decorator';
-import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
 import { IReview } from './interfaces/response-review.interface';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -57,9 +46,9 @@ export class ReviewsController {
   @ApiBearerAuth('Bearer')
   //Controller------------------------------------------------------------------------------
   async create(
-    @GetUser() user: UserChangePasswordDto,
-    @Body() createReviewDto: CreateReviewDto,
-  ): Promise<IReview | HttpException> {
+    @GetUser() user: IGetUser,
+      @Body() createReviewDto: CreateReviewDto,
+  ): Promise<IReview> {
     //Se extrae el id del objeto req.user que nos retorna el decorador @GetUser
     const { userId } = user;
     const response = await this.reviewsService.create(userId, createReviewDto);
@@ -82,12 +71,13 @@ export class ReviewsController {
     description: 'Hubo un problema en el servidor',
   })
   //Controller------------------------------------------------------------------
-  async findAll(): Promise<IReview | HttpException> {
+  async findAll(): Promise<IReview> {
     const response = await this.reviewsService.findAll();
     return response;
   }
 
   @Patch('update')
+  @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateReviewDto })
   @ApiOperation({ summary: 'Actualiza un review' })
   //Posibles respuestas--------------------------------------------------------
@@ -104,9 +94,10 @@ export class ReviewsController {
   })
   //Controller-----------------------------------------------------------------
   async update(
-    @Body() updateReviewDto: UpdateReviewDto,
-  ): Promise<IReview | HttpException> {
-    const response = await this.reviewsService.update(updateReviewDto);
+    @GetUser() { userId }: IGetUser,
+      @Body() updateReviewDto: UpdateReviewDto,
+  ): Promise<IReview> {
+    const response = await this.reviewsService.update(updateReviewDto, userId);
     return response;
   }
 
@@ -124,7 +115,7 @@ export class ReviewsController {
   })
   async removeOrActivate(
     @Body() activateReview: ActivateReviewDto,
-  ): Promise<IReview | HttpException> {
+  ): Promise<IReview> {
     const response = await this.reviewsService.removeOrActivate(activateReview);
     return response;
   }

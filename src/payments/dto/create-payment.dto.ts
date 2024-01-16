@@ -7,11 +7,11 @@ export class CreatePaymentDto {
     example: 2000,
   })
   @IsNumber()
-  amount: number;
+    amount: number;
 
   @ApiProperty({
     description: 'Aqui es donde iria el id de la orden',
   })
   @IsString()
-  orderId: string;
+    orderId: string;
 }

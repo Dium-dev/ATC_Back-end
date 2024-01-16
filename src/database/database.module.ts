@@ -42,7 +42,7 @@ import { FavProduct } from 'src/orders/entities/favProduct.entity';
       autoLoadModels: true,
       synchronize: true,
       logging: false,
-      sync: { force: true },
+      sync: { force: false },
     }),
   ],
   exports: [SequelizeModule],

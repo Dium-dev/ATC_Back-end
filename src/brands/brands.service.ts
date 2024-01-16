@@ -5,8 +5,6 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
 import { Op } from 'sequelize';
 import { miCache } from 'src/utils/nodeCache/nodeCache';
@@ -18,7 +16,8 @@ export class BrandsService {
     @Inject(forwardRef(() => ProductsService))
     private productService: ProductsService,
   ) {}
-  async findAllBrands(): Promise<{ id: string; name: string }[]> {
+
+  async findAllBrands(): Promise<Brand[]> {
     try {
       const allBrands = await Brand.findAll();
       if (!allBrands.length)
@@ -67,7 +66,9 @@ export class BrandsService {
       const allBrands = await this.findOneBrand('Todas');
       miCache.set('AllBrands_Id', allBrands.id);
     } catch (error) {
-      throw new InternalServerErrorException('Ocurrio un error con la cache del servidor')
+      throw new InternalServerErrorException(
+        'Ocurrio un error con la cache del servidor',
+      );
     }
   }
 }

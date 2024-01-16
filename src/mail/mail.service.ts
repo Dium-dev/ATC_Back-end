@@ -30,13 +30,13 @@ export class MailService {
 
   //Si no hay un contexto, simplemente pon '{}'
   async sendMails(sendMailDto: SendMailDto): Promise<IResponse> {
-    const { addressee, subject, context } = sendMailDto;
+    const { EmailAddress, subject, context } = sendMailDto;
     try {
       let mail;
       switch (subject) {
         case Cases.RESET_PASSWORD:
           mail = await this.mailerService.sendMail({
-            to: addressee,
+            to: EmailAddress,
             subject:
               'Se ha solicitado recuperar la contraseña de tu cuenta en ATC.',
             template: Templates.recoverPassword,
@@ -52,7 +52,7 @@ export class MailService {
           break;
         case Cases.CREATE_ACCOUNT:
           mail = await this.mailerService.sendMail({
-            to: addressee,
+            to: EmailAddress,
             subject: 'Nueva cuenta registrada con éxito.',
             template: Templates.createAccount,
             context: context,
@@ -67,7 +67,7 @@ export class MailService {
           break;
         case Cases.PURCHASE:
           mail = await this.mailerService.sendMail({
-            to: addressee,
+            to: EmailAddress,
             subject: 'Nueva compra.',
             template: Templates.purchase,
             context: context,
@@ -82,7 +82,7 @@ export class MailService {
           break;
         case Cases.CONTACT_FORM_USER:
           mail = await this.mailerService.sendMail({
-            to: addressee,
+            to: EmailAddress,
             subject: 'Recibimos tu consulta',
             template: Templates.contactFormUser,
             context: context,
@@ -98,7 +98,7 @@ export class MailService {
         case Cases.CONTACT_FORM_ADMIN:
           if ('userId' in context)
             mail = await this.mailerService.sendMail({
-              to: addressee,
+              to: EmailAddress,
               subject: context.userId
                 ? `Ayuda para Usuario ID: ${context.userId}`
                 : 'Recibiste una Consulta Gral',
@@ -117,7 +117,7 @@ export class MailService {
         case Cases.UPDATE_ORDER:
           if ('consultationReason' in context)
             mail = await this.mailerService.sendMail({
-              to: addressee,
+              to: EmailAddress,
               subject: `Recibiste una solicitud de cambio en la orden nro ${context.order} - Motivo: "${context.consultationReason}"`,
               template: Templates.updateOrder,
               context: context,
@@ -143,7 +143,7 @@ export class MailService {
         );
       }
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw new HttpException(new Error(error.message), error.status);
     }
   }
 }

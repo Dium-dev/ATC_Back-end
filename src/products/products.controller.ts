@@ -7,7 +7,6 @@ import {
   Query,
   HttpCode,
   UseGuards,
-  HttpException,
   Patch,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
@@ -17,11 +16,9 @@ import { ApiParam, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { IProductXcategory } from './interfaces/product-x-category.interface';
 import { IProduct } from './interfaces/getProduct.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
-import { Product } from './entities/product.entity';
-import { UserChangePasswordDto } from 'src/auth/dto/user-change-password.dto';
-import { Rol, User } from 'src/users/entities/user.entity';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 
 @ApiTags('Products')
 @Controller('products')
@@ -125,6 +122,7 @@ export class ProductsController {
     description: 'id del producto a eliminar',
     type: 'string',
   })
+  /* Hacer ajuste para que solo x tipo de rol pueda modificar */
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<IResponse> {
     const response = await this.productsService.remove(id);
@@ -159,7 +157,7 @@ export class ProductsController {
   })
   @Post('/fav/:productId')
   async favProduct(
-    @GetUser() { userId }: any,
+  @GetUser() { userId }: IGetUser,
     @Param('productId') productId: string,
   ) {
     const response = await this.productsService.favOrUnfavProduct(
@@ -172,7 +170,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @Get('fav/all')
   async getProductsFav(
-    @GetUser() { userId }: any,
+  @GetUser() { userId }: IGetUser,
     @Query('page') page: string,
     @Query('limit') limit: string,
   ) {

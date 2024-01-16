@@ -3,13 +3,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Categories } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
-  async findAllCategories(): Promise<{ id: string; name: string }[]> {
+  async findAllCategories(): Promise<Categories[]> {
     try {
       const allCategories = await Categories.findAll();
       if (!allCategories.length)

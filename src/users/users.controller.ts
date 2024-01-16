@@ -23,6 +23,8 @@ import {
 import { ICreateUser } from './interfaces/create-user.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { User } from './entities/user.entity';
+import { GetUser } from 'src/auth/auth-user.decorator';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 
 @ApiTags('Users')
 @Controller('users')
@@ -124,10 +126,10 @@ export class UsersController {
   @HttpCode(204)
   @Patch(':id')
   async update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @GetUser() { userId }: IGetUser,
+      @Body() updateUserDto: UpdateUserDto,
   ): Promise<IResponse> {
-    const response = this.usersService.update(id, updateUserDto);
+    const response = this.usersService.update(userId, updateUserDto);
     return response;
   }
 
@@ -143,8 +145,8 @@ export class UsersController {
   @ApiOperation({
     summary: 'Ruta para eliminar un usuario.',
   })
-  @Delete(':id')
-  deleteUser(@Param('id') id: string) {
-    return this.usersService.deleteUser(id);
+  @Delete()
+  deleteUser(@GetUser() { userId }: IGetUser) {
+    return this.usersService.deleteUser(userId);
   }
 }

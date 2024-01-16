@@ -11,7 +11,7 @@ export class ActivateReviewDto {
     message: '$property must be a valid uuid version $constraint1',
   })
   //reviewId
-  reviewId: string;
+    reviewId: string;
 
   @ApiProperty({
     type: 'boolean',
@@ -21,5 +21,5 @@ export class ActivateReviewDto {
     message: '$property debe ser de tipo booleano, en cambio enviaste $value',
   })
   //activate
-  activate: boolean;
+    activate: boolean;
 }

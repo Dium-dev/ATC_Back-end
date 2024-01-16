@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { DirectionsService } from './directions.service';
 import { CreateDirectionDto } from './dto/create-direetion.dto';
@@ -19,6 +20,9 @@ import {
 } from '@nestjs/swagger';
 import { IResDirection } from './interfaces/direction.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
+import { GetUser } from 'src/auth/auth-user.decorator';
+import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 
 @ApiTags('Directions')
 @Controller('directions')
@@ -33,11 +37,16 @@ export class DirectionsController {
   })
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @Body() createDirectionDto: CreateDirectionDto,
+    @GetUser() { userId }: IGetUser,
+      @Body() createDirectionDto: CreateDirectionDto,
   ): Promise<IResDirection> {
-    const response = await this.directionsService.create(createDirectionDto);
+    const response = await this.directionsService.create(
+      createDirectionDto,
+      userId,
+    );
     return response;
   }
 
@@ -53,9 +62,10 @@ export class DirectionsController {
     description: 'id del usuario del que obtengo las direcciones',
     type: 'string',
   })
-  @Get(':id')
-  async findAll(@Param('id') id: string): Promise<IResDirection> {
-    const response = await this.directionsService.findAll(id);
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async findAll(@GetUser() { userId }: IGetUser): Promise<IResDirection> {
+    const response = await this.directionsService.findAll(userId);
     return response;
   }
 
@@ -87,9 +97,13 @@ export class DirectionsController {
     description: 'id de la dirección a eliminar',
     type: 'string',
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<IResponse> {
-    const response = await this.directionsService.remove(id);
+  async remove(
+    @GetUser() { userId }: IGetUser,
+      @Param('id') id: string,
+  ): Promise<IResponse> {
+    const response = await this.directionsService.remove(id, userId);
     return response;
   }
 }
