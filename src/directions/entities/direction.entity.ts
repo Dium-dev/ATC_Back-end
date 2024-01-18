@@ -31,53 +31,53 @@ export class Direction extends Model<Direction> {
     allowNull: false,
     primaryKey: true,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    city: string;
+  city: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    district: string;
+  district: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    address: string;
+  address: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-    addressReference?: string;
+  addressReference?: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-    neighborhood?: string;
+  neighborhood?: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-    phone?: string;
+  phone?: string;
 
   @HasMany(() => Order)
-    orders: Order[];
+  orders: Order[];
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
   })
-    userId: string;
+  userId: string;
 
   @BelongsTo(() => User)
-    user: User;
+  user: User;
 }

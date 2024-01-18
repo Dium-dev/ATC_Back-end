@@ -76,16 +76,18 @@ export class DirectionsService {
     }
   }
 
-  async update({
-    id,
-    address,
-    city,
-    district,
-    addressReference,
-    neighborhood,
-    phone,
-    userId,
-  }: UpdateDirectionDto): Promise<IResDirection> {
+  async update(
+    {
+      id,
+      address,
+      city,
+      district,
+      addressReference,
+      neighborhood,
+      phone,
+    }: UpdateDirectionDto,
+    userId: string,
+  ): Promise<IResDirection> {
     try {
       const thisDirection = await Direction.update(
         { address, city, district, addressReference, neighborhood, phone },

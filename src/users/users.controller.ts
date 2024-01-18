@@ -127,7 +127,7 @@ export class UsersController {
   @Patch(':id')
   async update(
     @GetUser() { userId }: IGetUser,
-      @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ): Promise<IResponse> {
     const response = this.usersService.update(userId, updateUserDto);
     return response;

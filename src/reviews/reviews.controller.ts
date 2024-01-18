@@ -47,7 +47,7 @@ export class ReviewsController {
   //Controller------------------------------------------------------------------------------
   async create(
     @GetUser() user: IGetUser,
-      @Body() createReviewDto: CreateReviewDto,
+    @Body() createReviewDto: CreateReviewDto,
   ): Promise<IReview> {
     //Se extrae el id del objeto req.user que nos retorna el decorador @GetUser
     const { userId } = user;
@@ -95,7 +95,7 @@ export class ReviewsController {
   //Controller-----------------------------------------------------------------
   async update(
     @GetUser() { userId }: IGetUser,
-      @Body() updateReviewDto: UpdateReviewDto,
+    @Body() updateReviewDto: UpdateReviewDto,
   ): Promise<IReview> {
     const response = await this.reviewsService.update(updateReviewDto, userId);
     return response;

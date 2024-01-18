@@ -20,19 +20,19 @@ export class FavProduct extends Model<FavProduct> {
     allowNull: false,
     unique: true,
   })
-    id: string;
+  id: string;
 
   @ForeignKey(() => UserProductFav)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    favContId: string;
+  favContId: string;
 
   @ForeignKey(() => Product)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    productId: string;
+  productId: string;
 }

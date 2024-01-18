@@ -157,7 +157,7 @@ export class ProductsController {
   })
   @Post('/fav/:productId')
   async favProduct(
-  @GetUser() { userId }: IGetUser,
+    @GetUser() { userId }: IGetUser,
     @Param('productId') productId: string,
   ) {
     const response = await this.productsService.favOrUnfavProduct(
@@ -170,7 +170,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @Get('fav/all')
   async getProductsFav(
-  @GetUser() { userId }: IGetUser,
+    @GetUser() { userId }: IGetUser,
     @Query('page') page: string,
     @Query('limit') limit: string,
   ) {

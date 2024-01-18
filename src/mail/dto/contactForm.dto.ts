@@ -15,21 +15,21 @@ export class ContactFormDto {
   @ApiProperty({
     description: 'Recibe el nombre del usuario, requerido',
   })
-    name: string;
+  name: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Recibe el telefono de contacto del usuario, requerido',
   })
-    phone: string;
+  phone: string;
 
   @IsString({ message: 'El campo $property debe ser un texto' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
   @ApiProperty({
     description: 'Mensaje del usuario, requerido',
   })
-    message: string;
+  message: string;
 
   @IsEmail(undefined, { message: 'El formato del email no es valido' })
   @IsNotEmpty({ message: 'El campo $property está vacío' })
@@ -37,7 +37,7 @@ export class ContactFormDto {
     description:
       'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
   })
-    userEmail: string;
+  userEmail: string;
 
   @IsNotEmpty({ message: 'La propiedad $property, no debe estar vacia' })
   @IsUUID('4', { message: 'La propiedad $property, debe ser un Id de tipo V4' })
@@ -45,5 +45,5 @@ export class ContactFormDto {
     description: 'ID del usuario (opcional, para usuarios autenticados)',
     required: false,
   })
-    userId: string;
+  userId: string;
 }
