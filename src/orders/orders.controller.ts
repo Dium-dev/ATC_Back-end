@@ -40,7 +40,7 @@ export class OrdersController {
   @Get(':id')
   async findOneOrder(
     @GetUser() { userId }: IGetUser,
-      @Param('id') id: string,
+    @Param('id') id: string,
   ): Promise<IOrder> {
     const response = await this.ordersService.findOneOrder(id, userId);
     return response;
@@ -60,7 +60,7 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-  @GetUser() { userId }: IGetUser,
+    @GetUser() { userId }: IGetUser,
     @Body() createOrder: CreateOrderDto,
   ) {
     const response = await this.ordersService.create({

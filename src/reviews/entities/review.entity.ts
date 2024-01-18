@@ -37,20 +37,20 @@ export class Review extends Model<Review> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.STRING(255),
     allowNull: false,
   })
-    review: string;
+  review: string;
 
   @Column({
     type: DataType.ENUM(...Object.values(Rating)), //['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],),
     defaultValue: Rating.zero,
     allowNull: false,
   })
-    rating: Rating;
+  rating: Rating;
 
   @ForeignKey(() => User)
   @Column({
@@ -58,8 +58,8 @@ export class Review extends Model<Review> {
     allowNull: false,
     unique: true,
   })
-    userId: string;
+  userId: string;
 
   @BelongsTo(() => User)
-    user: User;
+  user: User;
 }

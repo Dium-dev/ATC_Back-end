@@ -19,28 +19,28 @@ export class Payment extends Model<Payment> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     allowNull: false,
   })
-    amount: number; // Cantidad de dinero pagada
+  amount: number; // Cantidad de dinero pagada
 
   @Column({
     allowNull: false,
   })
-    orderId: string;
+  orderId: string;
 
   //Esto podría cambiar después
   @Column({
     allowNull: false,
     defaultValue: PaymentState.PENDING,
   })
-    state: PaymentState;
+  state: PaymentState;
 
   //Esto puede cambiar después
   @Column({
     allowNull: false,
   })
-    user_email: string;
+  user_email: string;
 }

@@ -31,14 +31,14 @@ export class UserProductFav extends Model<UserProductFav> {
     allowNull: false,
     unique: true,
   })
-    id: string;
+  id: string;
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
   })
-    userId: string;
+  userId: string;
 
   @BelongsToMany(() => Product, () => FavProduct)
-    products: Product[];
+  products: Product[];
 }

@@ -41,7 +41,7 @@ export class DirectionsController {
   @Post()
   async create(
     @GetUser() { userId }: IGetUser,
-      @Body() createDirectionDto: CreateDirectionDto,
+    @Body() createDirectionDto: CreateDirectionDto,
   ): Promise<IResDirection> {
     const response = await this.directionsService.create(
       createDirectionDto,
@@ -77,11 +77,16 @@ export class DirectionsController {
   })
   @ApiResponse({ status: 400, description: 'Solicitud inválida' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  @UseGuards(JwtAuthGuard)
   @Patch()
   async update(
+    @GetUser() { userId }: IGetUser,
     @Body() updateDirectionDto: UpdateDirectionDto,
   ): Promise<IResDirection> {
-    const response = await this.directionsService.update(updateDirectionDto);
+    const response = await this.directionsService.update(
+      updateDirectionDto,
+      userId,
+    );
     return response;
   }
 
@@ -101,7 +106,7 @@ export class DirectionsController {
   @Delete(':id')
   async remove(
     @GetUser() { userId }: IGetUser,
-      @Param('id') id: string,
+    @Param('id') id: string,
   ): Promise<IResponse> {
     const response = await this.directionsService.remove(id, userId);
     return response;

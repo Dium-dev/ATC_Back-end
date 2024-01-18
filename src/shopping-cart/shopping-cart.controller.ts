@@ -23,7 +23,7 @@ export class ShoppingCartController {
   @ApiOperation({ summary: 'Agregar producto al carrito' })
   @Post()
   async postProductoInShoppingCart(
-  @Body() data: { productId: string; cartId: string; amount: number },
+    @Body() data: { productId: string; cartId: string; amount: number },
   ) {
     const postThisProduct = await this.shoppingCartService.postProductInCart(
       data.productId,
@@ -45,7 +45,7 @@ export class ShoppingCartController {
   })
   @Delete(':cartId/:productId')
   async remove(
-  @Param('cartId') cartId: string,
+    @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
     const response = await this.shoppingCartService.remove(cartId, productId);
@@ -71,7 +71,7 @@ export class ShoppingCartController {
 
   @Patch()
   async updateProductQuantity(
-  @Body() updateInfo: { cartProductId: string; newQuantity: number },
+    @Body() updateInfo: { cartProductId: string; newQuantity: number },
   ) {
     const response = await this.shoppingCartService.updateProductQuantity(
       updateInfo,

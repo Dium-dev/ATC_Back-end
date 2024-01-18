@@ -35,47 +35,47 @@ export class Order extends Model<Order> {
     primaryKey: true,
     allowNull: false,
   })
-    id: string;
+  id: string;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-    total: number;
+  total: number;
 
   @Column({
     type: DataType.ENUM(...Object.values(OrderStateEnum)),
     allowNull: false,
     defaultValue: OrderStateEnum.PENDIENTE,
   })
-    state: OrderStateEnum;
+  state: OrderStateEnum;
 
   @Column({
     type: DataType.TEXT,
     allowNull: true,
   })
-    comment?: string;
+  comment?: string;
 
   @BelongsToMany(() => Product, () => OrderProduct)
-    products: Product[];
+  products: Product[];
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-    userId: string;
+  userId: string;
 
   @BelongsTo(() => User)
-    user: User;
+  user: User;
 
   @ForeignKey(() => Direction)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-    directionId: string;
+  directionId: string;
 
   @BelongsTo(() => Direction)
-    direction: Direction;
+  direction: Direction;
 }

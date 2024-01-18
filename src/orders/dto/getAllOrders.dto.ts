@@ -21,14 +21,14 @@ export class GetAllOrdersDto {
   })
   @IsString({ message: 'la propiedad $property debe ser un numero' })
   //Número de órdenes por página
-    limit: string;
+  limit: string;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
   })
   @IsString({ message: 'la propiedad $property debe ser un numero' })
   //Según el limit, la página de las órdenes
-    page: string;
+  page: string;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
@@ -37,7 +37,7 @@ export class GetAllOrdersDto {
     message: 'la propiedad $property debe ser un tipo de estado de las ordenes',
   })
   //El estado actual de la orden
-    status: string;
+  status: string;
 
   @IsNotEmpty({
     message: '$property no debe estar vacío',
@@ -47,5 +47,5 @@ export class GetAllOrdersDto {
       'la propiedad $property contener "ASC" o "DESC" acorde al tipo de orden que requiera',
   })
   //El orden en el que se envían las órdenes
-    order: string;
+  order: string;
 }
