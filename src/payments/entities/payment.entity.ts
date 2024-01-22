@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { Order } from 'src/orders/entities/order.entity';
 
 export enum PaymentState {
   SUCCESS = 'PAGO',
@@ -26,7 +27,12 @@ export class Payment extends Model<Payment> {
   })
   amount: number; // Cantidad de dinero pagada
 
+  @BelongsTo(() => Order)
+  order: Order
+
+  @ForeignKey(() => Order)
   @Column({
+    type: DataType.UUID,
     allowNull: false,
   })
   orderId: string;
