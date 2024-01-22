@@ -1,25 +1,26 @@
 import {
-  ConflictException,
   Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { ExcelProductDto } from './dto/exelProducts.dto';
-import axios from 'axios';
-
-import * as XLSX from 'xlsx';
-import * as Papa from 'papaparse';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 
 /* entities */
 import { Product } from 'src/products/entities/product.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 
+/* DTOs */
+import { SheetsProductDto } from './dto/sheetsProducts.dto';
+
 /* interface */
 import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-update.interface';
 import { ProductsService } from 'src/products/products.service';
+
+/* .env Variable */
+import { API_KEY } from 'src/config/env';
 
 @Injectable()
 export class AdminProductsService {
@@ -29,108 +30,45 @@ export class AdminProductsService {
   ) {}
 
   //Usa una url al archivo original para obtener la información y retornar un buffer
-  async getExcelData(url: string): Promise<Buffer> {
+  async getSheetsData(url: string): Promise<GoogleSpreadsheet> {
     try {
-      const { data }: { data: Buffer } = await axios.get(url, {
-        responseType: 'arraybuffer',
-      });
+      const sheetsId = url.split('/')[5];
 
-      if (!data)
-        throw new NotFoundException(
-          `No se ha encontrado el contenido de la URL solicitada \'${url}\'`,
-        );
+      const miDoc = new GoogleSpreadsheet(sheetsId, { apiKey: API_KEY });
 
-      return data;
+      await miDoc.loadInfo();
+
+      return miDoc;
     } catch (error) {
-      switch (error.constructor) {
-        case NotFoundException:
-          throw new NotFoundException(error.message);
-        default:
-          throw new InternalServerErrorException(
-            `Hubo un problema al solicitar los datos a la URL: ${url}`,
-          );
-      }
+      throw new InternalServerErrorException(
+        `Hubo un problema al solicitar los datos a la URL: ${url}`,
+      );
     }
   }
 
-  excelToCsv(excelData: Buffer): string {
+  async spreadSheetsToJSON(
+    Data: GoogleSpreadsheet,
+  ): Promise<SheetsProductDto[]> {
     try {
-      //Parse a buffer wich contains the data to save in DB
-      const workbook = XLSX.read(excelData, { type: 'buffer' });
+      const miSheets = Data.sheetsByIndex[0];
 
-      const sheetName = workbook.SheetNames[0];
+      const rowValues = await miSheets.getCellsInRange('A:Z');
+      const headers = rowValues[0];
+      const objectContainer = [];
 
-      if (!sheetName)
-        throw new ConflictException(
-          'Hubo un problema a la hora de trabajár el Excel!. Recuerde ponerle un nombre a la hoja de trabajo',
-        );
-
-      const worksheet = workbook.Sheets[sheetName];
-
-      if (!workbook)
-        throw new ConflictException(
-          'Hubo un problema a la hora de trabajár el Excel!. confirme que la hoja de trabajo esté guardada',
-        );
-
-      const csvData = XLSX.utils.sheet_to_csv(worksheet);
-
-      return csvData;
-    } catch (error) {
-      switch (error.constructor) {
-        case ConflictException:
-          throw new ConflictException(error.message);
-        default:
-          throw new InternalServerErrorException(
-            'Hubo un problema en el servidor al realizar la operación Excel => .csv',
-          );
+      for (const val of Object(rowValues.slice(1))) {
+        const object = {};
+        headers.forEach((header: string, index: number) => {
+          object[header] = val[index] !== '' ? val[index] : undefined;
+        });
+        objectContainer.push(object);
       }
+      return objectContainer;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Hubo problemas al indagar el archivo: Error ' + error.message,
+      );
     }
-  }
-
-  async csvToJson(csvData: string): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      Papa.parse(csvData, {
-        header: true,
-        skipEmptyLines: true,
-
-        complete: (result) => {
-          // Mapeo de nombres de propiedades
-          const propertyMapping = {
-            '': 'Número de publicación',
-            A: 'Título',
-            B: 'Categoría',
-            C: 'Fotos',
-            D: 'Stock',
-            E: 'Precio COP',
-            F: 'Estado',
-            G: 'Descripción',
-            H: 'Condicion',
-            I: 'Disponibilidad de stock (días)',
-            J: 'Marca',
-            K: 'Modelo',
-            L: 'Año',
-          };
-
-          // Transformar el resultado para incluir solo las propiedades A hasta K con nuevos nombres
-          const transformedData = result.data.map((row) => {
-            const filteredRow = {};
-            // Copiar y renombrar las propiedades A hasta l
-            for (const prop in row) {
-              if (prop <= 'L' && propertyMapping[prop]) {
-                filteredRow[propertyMapping[prop]] = row[prop];
-              }
-            }
-            return filteredRow;
-          });
-
-          transformedData.shift();
-          resolve(transformedData);
-        },
-        error: (error) => {
-          reject(error);
-        },
-      });
-    });
   }
 
   /* ya sin utilizar */
@@ -140,7 +78,7 @@ export class AdminProductsService {
   } */
 
   private async createNewProduct(
-    product: ExcelProductDto,
+    product: SheetsProductDto,
     index: number,
   ): Promise<void> {
     const categoryId = await this.getOrCreateInEntitis(
@@ -173,9 +111,8 @@ export class AdminProductsService {
       const thisProduct: Product | null =
         await this.productsService.findByPkToValidateExistentProduct(
           value['Número de publicación'],
-          {},
         );
-
+      console.log(value);
       if (thisProduct) {
         await this.updateProduct(thisProduct, value, index);
       } else {
@@ -195,10 +132,9 @@ export class AdminProductsService {
     index: number,
   ): Promise<string> {
     try {
-      const [thisResult]: [Categories | Brand, boolean] =
-        await Entity.findOrCreate({
-          where: { name },
-        });
+      const thisResult: Categories | Brand = await Entity.findOne({
+        where: { name },
+      });
 
       if (!thisResult)
         throw new NotFoundException(
@@ -214,7 +150,8 @@ export class AdminProductsService {
           throw new NotFoundException(error.message);
         default:
           throw new InternalServerErrorException(
-            `Ocurrio un error al consultar la entidad ${Entity.tableName}`,
+            `Ocurrio un error al consultar la entidad ${Entity.tableName}, con la categoria: ${name} del indice ${index}. Error: ` +
+              error.message,
           );
       }
     }
@@ -222,7 +159,7 @@ export class AdminProductsService {
 
   private async updateProduct(
     thisProduct: Product,
-    product: ExcelProductDto,
+    product: SheetsProductDto,
     index: number,
   ): Promise<void> {
     try {
@@ -244,11 +181,13 @@ export class AdminProductsService {
       thisProduct.description = product.Descripción;
       thisProduct.state = product.Estado;
       thisProduct.stock = Number(product.Stock);
+      thisProduct.price = Number(product['Precio COP']);
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
-      thisProduct.image = [''];
+      thisProduct.image = [`${product.Fotos}`];
       (thisProduct.year = product.Año), (thisProduct.brandId = brandId);
       thisProduct.categoryId = categoryId;
+      thisProduct.model = product.Modelo;
 
       await thisProduct.save();
 

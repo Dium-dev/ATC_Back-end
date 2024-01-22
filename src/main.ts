@@ -44,14 +44,13 @@ bootstrap().then(async () => {
   const categories: { name: string }[] = [
     { name: 'Farolas' },
     { name: 'Stops' },
-    { name: 'Radios' },
+    { name: 'Audio' },
     { name: 'Exploradoras' },
-    { name: 'Parrillas' },
-    { name: 'Bompers' },
+    { name: 'Exterior' },
+    { name: 'Interior' },
     { name: 'Bombillos' },
-    { name: 'Spoilers' },
-    { name: 'Accesorios' },
     { name: 'Repuestos' },
+    { name: 'Ropa y Accesorios' },
   ];
 
   allCategories.length ? null : await Categories.bulkCreate(categories);
@@ -66,7 +65,6 @@ bootstrap().then(async () => {
     { name: 'Chrysler' },
     { name: 'Cupra' },
     { name: 'Citroën' },
-    { name: 'Cupra' },
     { name: 'Daihatsu' },
     { name: 'Dodge' },
     { name: 'Ferrari' },
@@ -102,7 +100,6 @@ bootstrap().then(async () => {
     { name: 'Pontiac' },
     { name: 'Porsche' },
     { name: 'RAM' },
-    { name: 'Range Rover' },
     { name: 'Renault' },
     { name: 'Rover' },
     { name: 'Seat' },
@@ -112,9 +109,9 @@ bootstrap().then(async () => {
     { name: 'Suzuki' },
     { name: 'Tesla' },
     { name: 'Toyota' },
+    { name: 'Todas' },
     { name: 'Volkswagen' },
     { name: 'Volvo' },
-    { name: 'Todas' },
   ];
   const allBrands: { id: string; name: string }[] = await Brand.findAll();
   allBrands.length ? null : await Brand.bulkCreate(brands);

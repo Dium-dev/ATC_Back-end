@@ -18,7 +18,7 @@ import {
   IProductXcategory,
 } from './interfaces/product-x-category.interface';
 import { AdminProductsService } from 'src/admin-products/admin-products.service';
-import { ExcelProductDto } from 'src/admin-products/dto/exelProducts.dto';
+import { SheetsProductDto } from 'src/admin-products/dto/sheetsProducts.dto';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
 
 /* temporal acá */
@@ -298,7 +298,7 @@ export class ProductsService {
 
   public async findByPkToValidateExistentProduct(
     productId: string,
-    options: FindOptions,
+    options?: FindOptions,
   ): Promise<Product | null> {
     try {
       const genericResponseProduct: Product | null = await Product.findByPk(
@@ -314,7 +314,7 @@ export class ProductsService {
   }
 
   public async createGenericProduct(
-    product: ExcelProductDto,
+    product: SheetsProductDto,
     brandId: string,
     categoryId: string,
     index: number,
@@ -327,10 +327,11 @@ export class ProductsService {
         state: product.Estado,
         stock: Number(product.Stock),
         price: Number(product['Precio COP']),
-        condition: product.Condicion,
+        condition: product.Condición,
         availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: product.Fotos.split(','), // cambiar en caso de que las fotos esten separadas por un espacio " "
+        image: product.Fotos.split(','),
         year: product.Año,
+        model: product.Modelo,
         brandId,
         categoryId,
       });

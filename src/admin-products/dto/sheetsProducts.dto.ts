@@ -1,10 +1,16 @@
-import { IsNotEmpty, IsString, IsEnum, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsEnum,
+  Length,
+  IsOptional,
+} from 'class-validator';
 import {
   ConditionProduct,
   StateProduct,
 } from 'src/products/entities/product.entity';
 
-export class ExcelProductDto {
+export class SheetsProductDto {
   @IsNotEmpty({
     message: 'El campo "Número de publicación", no debe estar vacío',
   })
@@ -43,8 +49,12 @@ export class ExcelProductDto {
   @IsEnum(StateProduct)
   Estado: StateProduct;
 
+  @IsNotEmpty({
+    message:
+      'El campo $property, no debe estar vacío y debe ser de una de las tres opciones descritas "Nuevo", "Remanufacturado" o "Usado".',
+  })
   @IsEnum(ConditionProduct)
-  Condicion: ConditionProduct;
+  Condición: ConditionProduct;
 
   @IsNotEmpty({
     message:
@@ -60,6 +70,11 @@ export class ExcelProductDto {
   @IsString()
   Marca: string;
 
+  @IsOptional()
+  @IsString()
+  Modelo: string;
+
+  @IsOptional()
   @IsString()
   Año: string;
 }
