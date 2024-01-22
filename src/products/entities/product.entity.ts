@@ -64,6 +64,7 @@ export class Product extends Model<Product> {
   state: StateProduct;
 
   @Column({
+    type: DataType.ENUM(...Object.values(ConditionProduct)),
     allowNull: false,
   })
   condition: ConditionProduct;
@@ -91,7 +92,7 @@ export class Product extends Model<Product> {
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
-  mostSelled: boolean;
+  mostSelled?: boolean;
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),

@@ -44,13 +44,13 @@ export class QueryProductsDto {
   name?: string;
 
   @IsOptional()
+  /*  @IsUUID('4', { message: '$property debe ser un Id'}) */
   @IsString({ message: 'El ID de categoría debe ser una cadena de texto' })
-  @IsUUID('4', { message: '$property debe ser un Id' })
   @ApiProperty({ description: 'ID de categoría' })
   categoryId?: string;
 
   @IsOptional()
-  @IsUUID('4', { message: '$property debe ser un Id' })
+  /* @IsUUID('4', { message: '$property debe ser un Id' }) */
   @IsString({ message: 'El ID de marca debe ser una cadena de texto' })
   @ApiProperty({ description: 'ID de marca' })
   brandId?: string;

@@ -10,8 +10,9 @@ import {
 } from '@nestjs/common';
 import { AdminProductsService } from './admin-products.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ExcelProductDto } from './dto/exelProducts.dto';
+import { SheetsProductDto } from './dto/sheetsProducts.dto';
 import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-update.interface';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 
 @ApiTags('Admin Products')
 @Controller('admin-products')
@@ -90,12 +91,12 @@ export class AdminProductsController {
   ): Promise<IResponseCreateOrUpdateProducts> {
     /* Se usa la url al archivo excel para generar un buffer, luego a 
     formato csv y por último formato json para para aprovechar la data */
-    const excelData: Buffer = await this.adminProductsService.getExcelData(url);
+    const sheetsData: GoogleSpreadsheet =
+      await this.adminProductsService.getSheetsData(url);
 
-    const csvData: string = this.adminProductsService.excelToCsv(excelData);
-
-    const jsonData: ExcelProductDto[] =
-      await this.adminProductsService.csvToJson(csvData);
+    const jsonData: any = await this.adminProductsService.spreadSheetsToJSON(
+      sheetsData,
+    );
 
     const response: IResponseCreateOrUpdateProducts =
       await this.adminProductsService.JsonToDatabase(jsonData);

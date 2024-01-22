@@ -21,3 +21,4 @@ export const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 export const HOST = process.env.HOST;
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const FRONT_HOST = process.env.FRONT_HOST;
+export const API_KEY = process.env.API_KEY;
