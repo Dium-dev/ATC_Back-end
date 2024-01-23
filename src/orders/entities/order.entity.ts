@@ -5,6 +5,7 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -12,6 +13,7 @@ import { Product } from '../../products/entities/product.entity';
 import { OrderProduct } from './orderProduct.entity';
 import { User } from '../../users/entities/user.entity';
 import { Direction } from 'src/directions/entities/direction.entity';
+import { Payment } from '../../payments/entities/payment.entity';
 
 export enum OrderStateEnum {
   APROBADO = 'APROBADO',
@@ -78,4 +80,14 @@ export class Order extends Model<Order> {
 
   @BelongsTo(() => Direction)
   direction: Direction;
+
+  @ForeignKey(() => Payment)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  paymentId: string;
+
+  @HasOne(() => Payment)
+  payment: Payment;
 }
