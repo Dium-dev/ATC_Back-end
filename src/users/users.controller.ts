@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,11 +26,12 @@ import { IResponse } from 'src/utils/interfaces/response.interface';
 import { User } from './entities/user.entity';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -140,6 +142,15 @@ export class UsersController {
   @Get()
   getUsers(@Query('page') page: string, @Query('limit') limit: string) {
     return this.usersService.getAll(+page, +limit);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getUSersProfile(
+    @GetUser() { userId }: IGetUser
+  ): Promise<User> {
+    const thisUser = await this.usersService.findProfileUser(userId);
+    return thisUser;
   }
 
   @ApiOperation({

@@ -30,6 +30,15 @@ import { ReviewsService } from '../reviews/reviews.service';
 import { OrdersService } from '../orders/orders.service';
 import { PaymentsService } from '../payments/payments.service';
 import { GenericPaginateUserInt } from './interfaces/genericsIntUsers.interface';
+import { Product } from 'src/products/entities/product.entity';
+import { ShoppingCart } from 'src/shopping-cart/entities/shopping-cart.entity';
+import { Order } from 'src/orders/entities/order.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
+import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
+import { Review } from 'src/reviews/entities/review.entity';
+import { Direction } from 'src/directions/entities/direction.entity';
+import { Categories } from 'src/categories/entities/category.entity';
+import { Brand } from 'src/brands/entities/brand.entity';
 
 @Injectable()
 export class UsersService {
@@ -51,7 +60,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -243,9 +252,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -256,9 +264,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });
@@ -345,4 +352,78 @@ export class UsersService {
       }
     }
   }
+
+  async findProfileUser(
+    userId: string,
+  ): Promise<User> {
+    try {
+      const genericResponseUser = await User.findByPk(
+        userId,
+        {
+          attributes: ['firstName', 'lastName', 'email', 'phone'],
+          include: [
+            {
+              model: ShoppingCart,
+              attributes: ['id'],
+
+              include: [{
+                model: Product,
+                attributes: ['id', 'title', 'state', 'price', 'image'],
+                include: [
+                  { model: Categories },
+                  { model: Brand },
+                ],
+                through: { attributes: ['amount'] }
+              }],
+            },
+            {
+              model: Order,
+              attributes: ['id'],
+              include: [
+                /* { model: Payment }, */
+                {
+                  model: Product,
+                  attributes: ['id', 'title', 'state', 'price', 'image'],
+                  through: { attributes: ['amount', 'price'] }
+                }
+              ]
+              /* a agregar una vez se hayan hecho las uniones respectivas con Payment entiti */
+            },
+            {
+              model: UserProductFav,
+              attributes: ['id'],
+              include: [
+                {
+                  model: Product,
+                  attributes: ['id', 'title', 'state', 'price', 'image'],
+                  through: { attributes: [] }
+                }
+              ],
+            },
+            {
+              model: Review,
+              attributes: ['id', 'review', 'rating']
+            },
+            {
+              model: Direction,
+              attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone']
+            },
+          ]
+        }
+      );
+      if (!genericResponseUser)
+        throw new BadRequestException('No ha sido posible encontro al usuario');
+      return genericResponseUser;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            'Ocurrio un error al trabajar la entidad Usuario a la hora de indagar por el perfil del usuario.\n' + error.message
+          );
+      }
+    }
+  }
+
 }
