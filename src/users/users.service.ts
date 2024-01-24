@@ -387,6 +387,10 @@ export class UsersService {
                 {
                   model: Product,
                   attributes: ['id', 'title', 'state', 'price', 'image'],
+                  include: [
+                    { model: Categories },
+                    { model: Brand },
+                  ],
                   through: { attributes: ['amount', 'price'] }
                 },
                 {
@@ -403,6 +407,10 @@ export class UsersService {
                 {
                   model: Product,
                   attributes: ['id', 'title', 'state', 'price', 'image'],
+                   include: [
+                  { model: Categories },
+                  { model: Brand },
+                ],
                   through: { attributes: [] }
                 }
               ],
