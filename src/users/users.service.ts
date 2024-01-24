@@ -380,11 +380,18 @@ export class UsersService {
               model: Order,
               attributes: ['id'],
               include: [
-                /* { model: Payment }, */
+                {
+                  model: Payment,
+                  attributes: ['id', 'amount', 'state', 'user_email']
+                },
                 {
                   model: Product,
                   attributes: ['id', 'title', 'state', 'price', 'image'],
                   through: { attributes: ['amount', 'price'] }
+                },
+                {
+                  model: Direction,
+                  attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone']
                 }
               ]
               /* a agregar una vez se hayan hecho las uniones respectivas con Payment entiti */
