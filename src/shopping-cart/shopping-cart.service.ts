@@ -349,7 +349,7 @@ export class ShoppingCartService {
     products: Product[],
   ) {
     const genericCartPRoducts = await this.cartProductModel.findAll(options);
-    console.log(2);
+
     const productsResponse = [];
     for (const thisCart of genericCartPRoducts) {
       const thisProduct = products.find(
