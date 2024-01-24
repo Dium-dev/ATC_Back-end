@@ -31,7 +31,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -146,9 +146,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getUSersProfile(
-    @GetUser() { userId }: IGetUser
-  ): Promise<User> {
+  async getUSersProfile(@GetUser() { userId }: IGetUser): Promise<User> {
     const thisUser = await this.usersService.findProfileUser(userId);
     return thisUser;
   }
