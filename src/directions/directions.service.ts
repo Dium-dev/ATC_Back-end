@@ -21,7 +21,7 @@ export class DirectionsService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
-  ) {}
+  ) { }
 
   async create(
     createDirectionDto: CreateDirectionDto,
@@ -45,7 +45,7 @@ export class DirectionsService {
       if (error instanceof BadRequestException) {
         throw new BadRequestException('No se puede crear direccion');
       } else {
-        throw new InternalServerErrorException('Error del servidor');
+        throw new InternalServerErrorException('Error del servidor' + error.message);
       }
     }
   }

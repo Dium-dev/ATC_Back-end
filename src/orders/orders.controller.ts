@@ -37,6 +37,7 @@ export class OrdersController {
     description: 'id de la orden que busco',
     type: 'string',
   })
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOneOrder(
     @GetUser() { userId }: IGetUser,
@@ -47,6 +48,7 @@ export class OrdersController {
   }
 
   //Obtener órdenes por usuario
+  @UseGuards(JwtAuthGuard)
   @Get('user-orders/:id')
   async findAlByUser(@GetUser() { userId }: IGetUser): Promise<IOrder> {
     const response = await this.ordersService.findAllByUser(userId);
