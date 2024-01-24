@@ -44,7 +44,7 @@ export class OrdersService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) {}
+  ) { }
 
   async findOneOrder(id: string, userId: string) {
     try {
@@ -170,12 +170,17 @@ export class OrdersService {
           { transaction },
         );
       }
+
       const urlBuy = await this.paymentsService.createPayment(
         total,
         thisUser,
         newOrder.id,
         transaction,
       );
+
+      newOrder.paymentId = urlBuy.paymentId;
+
+      await newOrder.save({ transaction });
 
       await this.shoppingCartService.destroyShoppingCart(
         { userId },

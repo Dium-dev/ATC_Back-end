@@ -81,13 +81,13 @@ export class Order extends Model<Order> {
   @BelongsTo(() => Direction)
   direction: Direction;
 
-  @ForeignKey(() => Payment)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  paymentId: string;
-
   @HasOne(() => Payment)
   payment: Payment;
+
+  @ForeignKey(() => Payment)
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  paymentId?: string;
 }
