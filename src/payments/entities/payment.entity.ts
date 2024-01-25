@@ -1,4 +1,11 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Order } from 'src/orders/entities/order.entity';
 
 export enum PaymentState {
@@ -40,7 +47,7 @@ export class Payment extends Model<Payment> {
   user_email: string;
 
   @BelongsTo(() => Order)
-  order: Order
+  order: Order;
 
   @ForeignKey(() => Order)
   @Column({
