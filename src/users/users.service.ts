@@ -20,7 +20,7 @@ import { MailService } from '../mail/mail.service';
 import { Cases } from '../mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
 import { ICreateUserContext } from '../mail/interfaces/create-account-context.interface';
-import { Transaction } from 'sequelize';
+import { OrderItem, Transaction, WhereOptions } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
 import { FindOptions, or } from 'sequelize';
@@ -39,6 +39,7 @@ import { Review } from 'src/reviews/entities/review.entity';
 import { Direction } from 'src/directions/entities/direction.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class UsersService {
@@ -218,11 +219,33 @@ export class UsersService {
     }
   }
 
-  async getAll(page: number, limit: number) {
+  async getAll(
+    page: number,
+    limit: number,
+    order: string,
+    filter: string | null = null,
+    search: string | null = null,
+  ) {
     try {
       page--;
-      const allUsers = await this.userModel.findAll();
-      const limitOfPages = Math.ceil(allUsers.length / limit);
+
+      let orderClause: OrderItem[] = [];
+      let where: WhereOptions = {};
+      // busca el valor sobre el atributo filtrado
+      if (filter && search) where = { [filter]: { [Op.like]: `%${search}%` } };
+      // ordena sobre el atributo filtrado, al no mandar ningun filtro ordena por orden de creacion
+      if (order) {
+        const columnToOrder = filter || 'createdAt';
+        orderClause = [[columnToOrder, order]] as OrderItem[];
+      }
+
+      const { rows: users, count: totalItems } = await this.userModel.findAndCountAll({
+        where,
+        limit,
+        order: orderClause,
+      });
+
+      const limitOfPages = Math.ceil(totalItems / limit);
 
       if (page < 0 || page > limitOfPages) {
         throw new HttpException('This page not exist.', 400);
@@ -232,10 +255,10 @@ export class UsersService {
         prevPage: page === 0 ? null : page - 1,
         page: page + 1,
         nextPage: page === limitOfPages ? null : page + 1,
-        users: allUsers.slice(page * limit, (page + 1) * limit),
+        users,
       };
     } catch (error) {
-      throw new HttpException('Error al buscar usuarios.', 404);
+      throw new HttpException('Error al buscar usuarios.' + error.message, 404);
     }
   }
 

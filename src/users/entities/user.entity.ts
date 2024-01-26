@@ -91,6 +91,11 @@ export class User extends Model<User> {
   phone: string;
 
   @Column({
+    type: DataType.STRING,
+  })
+  image: string;
+
+  @Column({
     type: DataType.ENUM({
       values: ['superAdmin', 'admin', 'user'],
     }),

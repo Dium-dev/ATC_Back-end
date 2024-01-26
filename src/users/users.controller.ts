@@ -27,6 +27,7 @@ import { User } from './entities/user.entity';
 import { GetUser } from 'src/auth/auth-user.decorator';
 import { IGetUser } from 'src/auth/interefaces/getUser.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
+import { QueryUsersDto } from './dto/query-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -137,11 +138,16 @@ export class UsersController {
 
   @ApiOperation({
     summary:
-      'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
+      'Ruta para ver todos los usuarios (se debe enviar "page" y "limit" por query).',
   })
   @Get()
-  getUsers(@Query('page') page: string, @Query('limit') limit: string) {
-    return this.usersService.getAll(+page, +limit);
+  getUsers(
+  @Query() querys: QueryUsersDto,
+  ) {
+    const { limit, page, desc, filter, search } = querys;
+    const order = desc === 'true' ? 'DESC' : 'ASC';
+
+    return this.usersService.getAll(+page, +limit, order, filter, search);
   }
 
   @UseGuards(JwtAuthGuard)
