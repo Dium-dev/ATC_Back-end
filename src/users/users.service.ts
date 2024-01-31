@@ -39,6 +39,7 @@ import { Review } from 'src/reviews/entities/review.entity';
 import { Direction } from 'src/directions/entities/direction.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
+import { IUpdateUserRol } from './interfaces/updateUserRol.interface';
 
 @Injectable()
 export class UsersService {
@@ -497,6 +498,23 @@ export class UsersService {
             'Ocurrio un error al trabajar la entidad Usuario a la hora de indagar por el perfil del usuario.\n' +
             error.message,
           );
+      }
+    }
+  }
+
+  async updateOneUserRol(user: IUpdateUserRol): Promise<void> {
+    try {
+      const updateCount = await this.userModel.update({ rol: user.rol }, { where: { id: user.id } })
+      if (!updateCount[0]) {
+        throw new BadRequestException('No se pudo encontrar al usuario indicado.')
+      }
+      return;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message)
+        default:
+          throw new InternalServerErrorException(`Ocurrio un problema en el servidor al intentar actualizar el rol del usuario.\nError: ${error.message}`)
       }
     }
   }

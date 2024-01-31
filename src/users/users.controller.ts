@@ -29,6 +29,7 @@ import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { AuthAdminUser } from 'src/auth/decorators/auth-admin-user.decorator';
 import { PaginateUsersDto } from './dto/get-paginate-users.dto';
+import { UpdateUserRolDto } from './dto/updateUserRol.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -44,16 +45,6 @@ export class UsersController {
     description:
       'Si todo sale bien, se devolverá un objeto con un statusCode 201 y el token de verificación de usuario.',
   })
-  /* 
-    Dejo comentado éste debido a que en la funcion crear usuario deja de estar el 400 de error 
-    en la creacion x datos del usuario, quedando con el 500 nomás.
-    los datos del ususario se validan en el DTO !
-  */
-  /* @ApiResponse({
-    status: 400,
-    description:
-      'Indica que hubo un error a la hora de crear la cuenta del usuario en la aplicación. Recomendacion verificar los datos enviados',
-  }) */
   @ApiResponse({
     status: 409,
     description:
@@ -163,5 +154,19 @@ export class UsersController {
   @Delete()
   deleteUser(@GetUser() { userId }: IGetUser) {
     return this.usersService.deleteUser(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('updateRol')
+  @HttpCode(200)
+  async updateUserRol(
+    @AuthAdminUser() _user: void,
+    @Body() user: UpdateUserRolDto
+  ): Promise<IResponse> {
+    await this.usersService.updateOneUserRol(user);
+    return {
+      statusCode: 200,
+      message: 'Usuario actualizado!'
+    }
   }
 }

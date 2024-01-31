@@ -5,10 +5,15 @@ import { IGetUser } from "../interfaces/getUser.interface";
 
 export const AuthAdminUser = createParamDecorator(
     async (_data: unknown, context: ExecutionContext): Promise<void> => {
-        const dataUser = context.switchToHttp().getRequest().user;
-        const requestPath = context.switchToHttp().getRequest().path;
+        const req = context.switchToHttp().getRequest()
+        const dataUser = req.user;
+        const requestPath = req.path;
+        const requestMethod = req.method;
 
-        if (requestPath.includes("/admin-products")) {
+        console.log(requestMethod + '\n' + requestPath);
+
+
+        if (requestPath.includes("/admin-products") || requestPath.includes("/users") && requestMethod == 'PATCH') {
             await validateAdminUser(dataUser, Rol.superAdmin)
         } else {
             await validateAdminUser(dataUser, Rol.admin);
