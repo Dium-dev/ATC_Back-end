@@ -18,7 +18,7 @@ import { JWT_SECRET } from '../config/env';
 import { IResponse } from '../utils/interfaces/response.interface';
 import { MailService } from '../mail/mail.service';
 import { Cases } from '../mail/dto/sendMail.dto';
-import { IGetUser } from './interefaces/getUser.interface';
+import { IGetUser } from './interfaces/getUser.interface';
 import { Rol } from 'src/users/entities/user.entity';
 @Injectable()
 export class AuthService {

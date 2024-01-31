@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -21,15 +22,16 @@ import { ProductsService } from 'src/products/products.service';
 
 /* .env Variable */
 import { API_KEY } from 'src/config/env';
+import { Op } from 'sequelize';
+import { IProduct, IUpdateDataProduct } from './interfaces/updateDataProduct.interface';
 
 @Injectable()
 export class AdminProductsService {
   constructor(
     @Inject(forwardRef(() => ProductsService))
     private productsService: ProductsService,
-  ) {}
+  ) { }
 
-  //Usa una url al archivo original para obtener la información y retornar un buffer
   async getSheetsData(url: string): Promise<GoogleSpreadsheet> {
     try {
       const sheetsId = url.split('/')[5];
@@ -41,7 +43,7 @@ export class AdminProductsService {
       return miDoc;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Hubo un problema al solicitar los datos a la URL: ${url}`,
+        `Hubo un problema al solicitar los datos a la URL: ${Object.values(url)}`,
       );
     }
   }
@@ -70,12 +72,6 @@ export class AdminProductsService {
       );
     }
   }
-
-  /* ya sin utilizar */
-  /* private async findThisProduct(id: string): Promise<Product | null> {
-    const thisProduct: Product | null = await Product.findByPk(id);
-    return thisProduct;
-  } */
 
   private async createNewProduct(
     product: SheetsProductDto,
@@ -112,7 +108,6 @@ export class AdminProductsService {
         await this.productsService.findByPkToValidateExistentProduct(
           value['Número de publicación'],
         );
-      console.log(value);
       if (thisProduct) {
         await this.updateProduct(thisProduct, value, index);
       } else {
@@ -133,13 +128,12 @@ export class AdminProductsService {
   ): Promise<string> {
     try {
       const thisResult: Categories | Brand = await Entity.findOne({
-        where: { name },
+        where: { name: { [Op.iLike]: `%${name}%` } },
       });
 
       if (!thisResult)
         throw new NotFoundException(
-          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${
-            index + 2
+          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${index + 2
           }`,
         );
 
@@ -151,7 +145,7 @@ export class AdminProductsService {
         default:
           throw new InternalServerErrorException(
             `Ocurrio un error al consultar la entidad ${Entity.tableName}, con la categoria: ${name} del indice ${index}. Error: ` +
-              error.message,
+            error.message,
           );
       }
     }
@@ -184,7 +178,7 @@ export class AdminProductsService {
       thisProduct.price = Number(product['Precio COP']);
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
-      thisProduct.image = [`${product.Fotos}`];
+      thisProduct.image = product.Fotos.split(',').map(img => img.trim());
       (thisProduct.year = product.Año), (thisProduct.brandId = brandId);
       thisProduct.categoryId = categoryId;
       thisProduct.model = product.Modelo;
@@ -194,10 +188,38 @@ export class AdminProductsService {
       return;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Ocurrio un error al Actualizar el producto ${
-          product.Título
+        `Ocurrio un error al Actualizar el producto ${product.Título
         }, en el Indice: ${index + 2}`,
       );
     }
   }
+
+  async updateOneProduct(id: string, product: IUpdateDataProduct) {
+    try {
+      await this.productsService.updateProduct(product, { where: { id } })
+      return;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message)
+        default:
+          throw new InternalServerErrorException(error.message)
+      }
+    }
+  }
+
+  async postOneProduct(product: IProduct): Promise<void> {
+    try {
+      await this.productsService.createOneProduct(product)
+      return;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message)
+        default:
+          throw new InternalServerErrorException(error.message)
+      }
+    }
+  }
+
 }

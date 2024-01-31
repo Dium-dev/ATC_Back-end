@@ -11,7 +11,7 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { Rol, User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
@@ -60,7 +60,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -77,8 +77,6 @@ export class UsersService {
       };
 
       const newUser = await this.userModel.create(data, { transaction });
-
-      await transaction.commit();
 
       const response = {
         statusCode: 201,
@@ -103,6 +101,8 @@ export class UsersService {
       };
       //Sending mail
       await this.mailsService.sendMails(mailData);
+
+      await transaction.commit();
 
       return response;
     } catch (error) {
@@ -218,24 +218,79 @@ export class UsersService {
     }
   }
 
-  async getAll(page: number, limit: number) {
+  async getAll(page: number, limit: number, order: string) {
     try {
-      page--;
-      const allUsers = await this.userModel.findAll();
-      const limitOfPages = Math.ceil(allUsers.length / limit);
+      const offset = (page - 1) * limit
 
-      if (page < 0 || page > limitOfPages) {
-        throw new HttpException('This page not exist.', 400);
-      }
+      const { count, rows } = await this.userModel.findAndCountAll({
+        limit,
+        offset,
+        order: [[order.split(' ')[0], order.split(' ')[1]]],
+        attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'rol'],
+        subQuery: false,
+        include: [
+          {
+            model: ShoppingCart,
+            attributes: ['id'],
+            include: [
+              {
+                model: Product,
+                attributes: ['id', 'title', 'state', 'price', 'image'],
+                include: [{ model: Categories }, { model: Brand }],
+                through: { attributes: ['id', 'amount'] },
+              },
+            ],
+          },
+          {
+            model: Order,
+            attributes: ['id'],
+            include: [
+              {
+                model: Payment,
+                attributes: ['id', 'amount', 'state', 'user_email'],
+              },
+              {
+                model: Product,
+                attributes: ['id', 'title', 'state', 'price', 'image'],
+                include: [{ model: Categories }, { model: Brand }],
+                through: { attributes: ['amount', 'price'] },
+              },
+              {
+                model: Direction,
+                attributes: [
+                  'id',
+                  'city',
+                  'district',
+                  'address',
+                  'addressReference',
+                  'neighborhood',
+                  'phone',
+                ],
+              },
+            ],
+          },
+          {
+            model: Review,
+            attributes: ['id', 'review', 'rating'],
+          },
+          {
+            model: Direction,
+            attributes: [
+              'id',
+              'city',
+              'district',
+              'address',
+              'addressReference',
+              'neighborhood',
+              'phone',
+            ],
+          },
+        ],
+      })
 
-      return {
-        prevPage: page === 0 ? null : page - 1,
-        page: page + 1,
-        nextPage: page === limitOfPages ? null : page + 1,
-        users: allUsers.slice(page * limit, (page + 1) * limit),
-      };
+      return { count, rows }
     } catch (error) {
-      throw new HttpException('Error al buscar usuarios.', 404);
+      throw new InternalServerErrorException('Error al buscar usuarios.');
     }
   }
 
@@ -252,9 +307,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -265,9 +319,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });
@@ -442,9 +495,10 @@ export class UsersService {
         default:
           throw new InternalServerErrorException(
             'Ocurrio un error al trabajar la entidad Usuario a la hora de indagar por el perfil del usuario.\n' +
-              error.message,
+            error.message,
           );
       }
     }
   }
+
 }

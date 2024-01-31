@@ -16,9 +16,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
-import { GetUser } from 'src/auth/auth-user.decorator';
+import { GetUser } from 'src/auth/decorators/auth-user.decorator';
 import { IReview } from './interfaces/response-review.interface';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 
 @ApiTags('Reviews')
 @Controller('reviews')

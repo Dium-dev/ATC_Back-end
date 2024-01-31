@@ -14,11 +14,11 @@ import { QueryProductsDto } from './dto/query-product.dto';
 import { IGetProducts } from './interfaces/getProducts.interface';
 import { ApiParam, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { IProductXcategory } from './interfaces/product-x-category.interface';
-import { IProduct } from './interfaces/getProduct.interface';
+import { IGetOneProduct } from './interfaces/getProduct.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
-import { GetUser } from 'src/auth/auth-user.decorator';
+import { GetUser } from 'src/auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 
 @ApiTags('Products')
 @Controller('products')
@@ -106,7 +106,7 @@ export class ProductsController {
     type: 'string',
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<IProduct> {
+  async findOne(@Param('id') id: string): Promise<IGetOneProduct> {
     return this.productsService.findOne(id);
   }
 

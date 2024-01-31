@@ -1,4 +1,5 @@
 import {
+  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
@@ -36,8 +37,12 @@ export class UserProductFav extends Model<UserProductFav> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
+    allowNull: true,
   })
-  userId: string;
+  userId?: string;
+
+  @BelongsTo(() => User)
+  user: User;
 
   @BelongsToMany(() => Product, () => FavProduct)
   products: Product[];

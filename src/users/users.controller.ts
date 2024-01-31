@@ -24,14 +24,16 @@ import {
 import { ICreateUser } from './interfaces/create-user.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { User } from './entities/user.entity';
-import { GetUser } from 'src/auth/auth-user.decorator';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { GetUser } from 'src/auth/decorators/auth-user.decorator';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
+import { AuthAdminUser } from 'src/auth/decorators/auth-admin-user.decorator';
+import { PaginateUsersDto } from './dto/get-paginate-users.dto';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -126,7 +128,7 @@ export class UsersController {
     type: 'string',
   })
   @HttpCode(204)
-  @Patch(':id')
+  @Patch()
   async update(
     @GetUser() { userId }: IGetUser,
     @Body() updateUserDto: UpdateUserDto,
@@ -139,9 +141,13 @@ export class UsersController {
     summary:
       'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
   })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getUsers(@Query('page') page: string, @Query('limit') limit: string) {
-    return this.usersService.getAll(+page, +limit);
+  async getUsers(
+    @AuthAdminUser() _user: void,
+    @Query() paginateUnser: PaginateUsersDto
+  ) {
+    return this.usersService.getAll(Number(paginateUnser.page), Number(paginateUnser.limit), paginateUnser.order);
   }
 
   @UseGuards(JwtAuthGuard)

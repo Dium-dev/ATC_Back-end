@@ -28,4 +28,4 @@ import { PaymentsModule } from '../payments/payments.module';
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

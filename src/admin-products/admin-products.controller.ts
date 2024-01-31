@@ -7,17 +7,25 @@ import {
   Param,
   Delete,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { AdminProductsService } from './admin-products.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SheetsProductDto } from './dto/sheetsProducts.dto';
 import { IResponseCreateOrUpdateProducts } from './interfaces/response-create-update.interface';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
+import { GetUser } from 'src/auth/decorators/auth-user.decorator';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
+import { AuthAdminUser } from 'src/auth/decorators/auth-admin-user.decorator';
+import { UpdateProductDto } from './dto/updateProduct.dto';
+import { IResponse } from 'src/utils/interfaces/response.interface';
+import { CreateOneProductDto } from './dto/createOneProduct.dto';
 
 @ApiTags('Admin Products')
 @Controller('admin-products')
 export class AdminProductsController {
-  constructor(private readonly adminProductsService: AdminProductsService) {}
+  constructor(private readonly adminProductsService: AdminProductsService) { }
 
   @ApiOperation({
     description:
@@ -83,14 +91,15 @@ export class AdminProductsController {
     },
   })
   /* post admin-products */
-  @Post('')
+  @UseGuards(JwtAuthGuard)
+  @Post()
   @HttpCode(201)
   /* agreguar auth para usuarios admins a futuro ! */
   async excelToDataBase(
+    @AuthAdminUser() _user: void,
     @Body('url') url: string,
   ): Promise<IResponseCreateOrUpdateProducts> {
-    /* Se usa la url al archivo excel para generar un buffer, luego a 
-    formato csv y por último formato json para para aprovechar la data */
+
     const sheetsData: GoogleSpreadsheet =
       await this.adminProductsService.getSheetsData(url);
 
@@ -102,4 +111,33 @@ export class AdminProductsController {
       await this.adminProductsService.JsonToDatabase(jsonData);
     return response;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch()
+  @HttpCode(200)
+  async updateOneProduct(
+    @AuthAdminUser() _user: void,
+    @Body() product: UpdateProductDto,
+  ): Promise<IResponse> {
+    await this.adminProductsService.updateOneProduct(product.id, product);
+    return {
+      statusCode: 200,
+      message: 'Producto actualizado!'
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('one')
+  @HttpCode(201)
+  async postOneProduct(
+    @AuthAdminUser() _user: void,
+    @Body() product: CreateOneProductDto,
+  ): Promise<IResponse> {
+    await this.adminProductsService.postOneProduct(product);
+    return {
+      statusCode: 201,
+      message: 'Producto creado!'
+    }
+  }
+
 }

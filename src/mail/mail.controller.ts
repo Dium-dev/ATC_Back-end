@@ -17,8 +17,8 @@ import { ContactFormDto } from './dto/contactForm.dto';
 import { UpdateOrderDto, UpdateOrderDtoSwagger } from './dto/updateOrder.dto';
 import { Cases } from 'src/mail/dto/sendMail.dto';
 import { ADMIN_EMAIL } from 'src/config/env';
-import { GetUser } from 'src/auth/auth-user.decorator';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { GetUser } from 'src/auth/decorators/auth-user.decorator';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 
 @ApiTags('Mail')

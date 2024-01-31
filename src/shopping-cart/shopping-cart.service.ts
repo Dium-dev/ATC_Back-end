@@ -38,21 +38,7 @@ export class ShoppingCartService {
     private productsService: ProductsService,
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
-  ) {}
-
-  /*   public async createCartProduct(userId: string) {
-    try {
-      const newCartUser = await this.shoppingCartModel.create({ userId });
-      return newCartUser;
-    } catch (error) {
-      switch (error.constructor) {
-        default:
-          throw new InternalServerErrorException(
-            'Ocurrio un error en el servidor. No se pudo crear el carrito de compras a la hora de realizar la creación de su nuevo carrito. intente más tarde.',
-          );
-      }
-    }
-  } */
+  ) { }
 
   async postProductInCart(
     productId: string,
@@ -197,20 +183,14 @@ export class ShoppingCartService {
 
   async getCart(userId: string) {
     try {
-      const user = await this.userService.findByPkGenericUser(userId, {
-        include: [
-          {
-            model: ShoppingCart,
-          },
-        ],
-      });
-      const cart = await this.shoppingCartModel.findByPk(
-        user.cart.dataValues.id,
+      const cart = await this.shoppingCartModel.findOne(
         {
+          where: { userId },
           include: [
             {
               model: Product,
-              attributes: ['id', 'title', 'price'],
+              attributes: ['id', 'title', 'image', 'price'],
+              through: { attributes: ['id', 'amount'] }
             },
           ],
         },
@@ -218,20 +198,15 @@ export class ShoppingCartService {
 
       const products = await Promise.all(
         cart.products?.map(async (product) => {
-          const cartProduct = await this.cartProductModel.findOne({
-            where: {
-              cartId: cart.id,
-              productId: product.id,
-            },
-          });
 
-          const subtotal = product.price * cartProduct.amount;
+          const subtotal = product.price * product['CartProduct'].amount;
 
           return {
             id: product.id,
             title: product.title,
             price: product.price,
-            amount: cartProduct.amount,
+            image: product.image,
+            amount: product['CartProduct'].amount,
             subtotal, // Agregar el subtotal para este producto
           };
         }),
@@ -249,58 +224,6 @@ export class ShoppingCartService {
       };
     } catch (error) {
       throw new HttpException(error.message, error.status);
-    }
-  }
-
-  async getCartProducts(cartId: string) {
-    try {
-      const thisCart = await this.shoppingCartModel.findByPk(cartId, {
-        include: [{ model: Product, attributes: ['id', 'title', 'price'] }],
-      });
-
-      if (!thisCart) {
-        throw new NotFoundException('No se encontró el carrito de compras.');
-      }
-
-      const products = await Promise.all(
-        thisCart.products?.map(async (product) => {
-          const cartProduct = await this.cartProductModel.findOne({
-            where: {
-              cartId: thisCart.id,
-              productId: product.id,
-            },
-          });
-
-          const subtotal = product.price * cartProduct.amount;
-
-          return {
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            amount: cartProduct.amount,
-            subtotal, // Agregar el subtotal para este producto
-          };
-        }),
-      );
-
-      const total = products.reduce(
-        (acc, product) => acc + product.subtotal,
-        0,
-      );
-
-      return {
-        id: thisCart.id,
-        products,
-        total,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      } else {
-        throw new InternalServerErrorException(
-          'Error del servidor al obtener el carrito de compras.',
-        );
-      }
     }
   }
 

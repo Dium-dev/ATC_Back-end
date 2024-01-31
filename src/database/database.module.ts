@@ -47,4 +47,4 @@ import { FavProduct } from 'src/orders/entities/favProduct.entity';
   ],
   exports: [SequelizeModule],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

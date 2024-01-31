@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { QueryProductsDto } from './dto/query-product.dto';
-import { FindOptions, Op, Sequelize } from 'sequelize';
+import { FindOptions, Op, Sequelize, UpdateOptions } from 'sequelize';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Product } from './entities/product.entity';
@@ -31,6 +31,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { FavProduct } from 'src/orders/entities/favProduct.entity';
 import { miCache } from 'src/utils/nodeCache/nodeCache';
 import { BrandsService } from 'src/brands/brands.service';
+import { IProduct, IUpdateDataProduct } from 'src/admin-products/interfaces/updateDataProduct.interface';
 
 @Injectable()
 export class ProductsService {
@@ -45,7 +46,7 @@ export class ProductsService {
     private FavProductModel: typeof FavProduct,
     @InjectModel(UserProductFav)
     private UserProductFavModel: typeof UserProductFav,
-  ) {}
+  ) { }
 
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
     const limit = parseInt(query.limit);
@@ -329,7 +330,7 @@ export class ProductsService {
         price: Number(product['Precio COP']),
         condition: product.Condición,
         availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: product.Fotos.split(','),
+        image: product.Fotos.split(',').map(img => img.trim()),
         year: product.Año,
         model: product.Modelo,
         brandId,
@@ -339,8 +340,7 @@ export class ProductsService {
       return;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
-          product.Título
+        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${product.Título
         } del indice ${index + 2}.\n ${error.message}`,
       );
     }
@@ -421,4 +421,31 @@ export class ProductsService {
       throw new InternalServerErrorException('Error del paginado');
     }
   }
+
+  public async updateProduct(product: IUpdateDataProduct, options: UpdateOptions): Promise<void> {
+    try {
+      const thisCount = await Product.update({ ...product, image: product.image.split(',').map(img => img.trim()) }, options);
+      if (!thisCount[0]) {
+        throw new BadRequestException('No se encontó el producto solicitado para realizar los cambios');
+      };
+      return;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(`Ocurrio un error al querer actualizar el producto.\nError: ${error.message}`);
+      }
+    }
+  }
+
+  public async createOneProduct(product: IProduct): Promise<void> {
+    try {
+      await Product.create({ ...product, image: product.image.split(',').map(img => img.trim()) });
+      return;
+    } catch (error) {
+      throw new InternalServerErrorException(`Ocurrio un error al querer crear el producto.\nError: ${error.message}`)
+    }
+  }
+
 }

@@ -1,6 +1,6 @@
+import { IResponse } from 'src/utils/interfaces/response.interface';
 import { Product } from '../entities/product.entity';
 
-export interface IProduct {
-  statusCode: number;
+export interface IGetOneProduct extends IResponse {
   product: Product;
 }
