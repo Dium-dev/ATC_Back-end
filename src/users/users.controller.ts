@@ -130,7 +130,7 @@ export class UsersController {
 
   @ApiOperation({
     summary:
-      'Ruta para ver todos los usuarios (enviar "page" y "limit" por query).',
+      'Ruta para ver todos los usuarios (se debe enviar "page" y "limit" por query).',
   })
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -138,7 +138,7 @@ export class UsersController {
     @AuthAdminUser() _user: void,
     @Query() paginateUnser: PaginateUsersDto,
   ) {
-    return this.usersService.getAll(
+    return await this.usersService.getAll(
       Number(paginateUnser.page),
       Number(paginateUnser.limit),
       paginateUnser.order,

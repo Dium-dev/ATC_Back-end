@@ -20,7 +20,7 @@ import { MailService } from '../mail/mail.service';
 import { Cases } from '../mail/dto/sendMail.dto';
 import { HttpStatusCode } from 'axios';
 import { ICreateUserContext } from '../mail/interfaces/create-account-context.interface';
-import { Transaction } from 'sequelize';
+import { OrderItem, Transaction, WhereOptions } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
 import { FindOptions, or } from 'sequelize';
@@ -40,6 +40,7 @@ import { Direction } from 'src/directions/entities/direction.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { IUpdateUserRol } from './interfaces/updateUserRol.interface';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class UsersService {
@@ -289,7 +290,12 @@ export class UsersService {
         ],
       });
 
-      return { count, rows };
+      return { 
+        totalUser: count, 
+        totalPages:  Math.ceil(count / limit),
+        users: rows,
+        page
+      };
     } catch (error) {
       throw new InternalServerErrorException('Error al buscar usuarios.');
     }
