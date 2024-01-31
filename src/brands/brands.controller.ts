@@ -19,14 +19,14 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 
 @Controller('brands')
 export class BrandsController {
-  constructor(private readonly brandsService: BrandsService) { }
+  constructor(private readonly brandsService: BrandsService) {}
 
   @Get()
   async getAllCategories(): Promise<IGetAllBrands> {
     const brands = await this.brandsService.findAllBrands();
     return {
       statusCode: 200,
-      brands
+      brands,
     };
   }
 
@@ -37,18 +37,19 @@ export class BrandsController {
     @AuthAdminUser() _user: void,
     @Body('url') url: string,
   ): Promise<IResponse> {
-    await this.brandsService.getSheetsData(url)
+    await this.brandsService
+      .getSheetsData(url)
       .then(async (data: GoogleSpreadsheet) => {
         return await this.brandsService.spreadSheetsToJSON(data);
       })
       .then(async (data: { name: string }[]) => {
-        return await this.brandsService.postInDatabase(data)
+        return await this.brandsService.postInDatabase(data);
       });
     return {
       statusCode: 201,
-      message: 'Marcas creadas con éxito!'
+      message: 'Marcas creadas con éxito!',
     };
-  };
+  }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
@@ -60,8 +61,8 @@ export class BrandsController {
     await this.brandsService.createOneBrand(name);
     return {
       statusCode: 201,
-      message: 'La Marca se creo con éxito!'
-    }
+      message: 'La Marca se creo con éxito!',
+    };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -73,8 +74,7 @@ export class BrandsController {
   ): Promise<IResponse> {
     await this.brandsService.updateBrandName(cateogry);
     return {
-      statusCode: 204
+      statusCode: 204,
     };
   }
-
 }

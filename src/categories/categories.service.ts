@@ -15,7 +15,7 @@ export class CategoriesService {
   constructor(
     @InjectModel(Categories)
     private categoriesModel: typeof Categories,
-  ) { }
+  ) {}
 
   async findAllCategories(): Promise<Categories[]> {
     try {
@@ -39,7 +39,10 @@ export class CategoriesService {
 
   async getSheetsData(url: string): Promise<GoogleSpreadsheet> {
     try {
-      if (!url.length) throw new BadRequestException('No olvide indicarnos la URL del documento a trabajar.');
+      if (!url.length)
+        throw new BadRequestException(
+          'No olvide indicarnos la URL del documento a trabajar.',
+        );
 
       const sheetsId = url.split('/')[5];
 
@@ -51,10 +54,12 @@ export class CategoriesService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
           throw new InternalServerErrorException(
-            `Hubo un problema al solicitar los datos a la URL: ${Object.values(url)}\n${error.message}`,
+            `Hubo un problema al solicitar los datos a la URL: ${Object.values(
+              url,
+            )}\n${error.message}`,
           );
       }
     }
@@ -66,8 +71,13 @@ export class CategoriesService {
     try {
       const miSheets = Data.sheetsByIndex[0];
 
-      const rowValues = await miSheets.getCellsInRange('A:Z')
-        .then((res) => res.flat().map((val: string) => { return { name: val.charAt(0).toUpperCase() + val.slice(1).toLowerCase() } }))
+      const rowValues = await miSheets.getCellsInRange('A:Z').then((res) =>
+        res.flat().map((val: string) => {
+          return {
+            name: val.charAt(0).toUpperCase() + val.slice(1).toLowerCase(),
+          };
+        }),
+      );
 
       return rowValues;
     } catch (error) {
@@ -82,29 +92,40 @@ export class CategoriesService {
       await this.categoriesModel.bulkCreate(data);
       return;
     } catch (error) {
-      throw new InternalServerErrorException(`Error al crear las categorías en la base de datos.\nError: ${error.message}`)
+      throw new InternalServerErrorException(
+        `Error al crear las categorías en la base de datos.\nError: ${error.message}`,
+      );
     }
   }
 
   async createOneCategory(name: string) {
     try {
-      await this.categoriesModel.create({ name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() });
+      await this.categoriesModel.create({
+        name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
+      });
       return;
     } catch (error) {
-      throw new InternalServerErrorException(`Error al crear la categoría en la base de datos.\nError: ${error.message}`)
+      throw new InternalServerErrorException(
+        `Error al crear la categoría en la base de datos.\nError: ${error.message}`,
+      );
     }
   }
 
   async updateCategoryName(categorie: ICategoriesData) {
     try {
       await this.categoriesModel.update(
-        { name: categorie.name.charAt(0).toUpperCase() + categorie.name.slice(1).toLowerCase() },
-        { where: { id: categorie.id } }
+        {
+          name:
+            categorie.name.charAt(0).toUpperCase() +
+            categorie.name.slice(1).toLowerCase(),
+        },
+        { where: { id: categorie.id } },
       );
       return;
     } catch (error) {
-      throw new InternalServerErrorException(`Error al actualizar la categoría en la base de datos.\nError: ${error.message}`)
+      throw new InternalServerErrorException(
+        `Error al actualizar la categoría en la base de datos.\nError: ${error.message}`,
+      );
     }
   }
-
 }

@@ -18,7 +18,7 @@ import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 @ApiTags('Shopping cart')
 @Controller('shopping-cart')
 export class ShoppingCartController {
-  constructor(private readonly shoppingCartService: ShoppingCartService) { }
+  constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
   @ApiOperation({ summary: 'Agregar producto al carrito' })
   @UseGuards(JwtAuthGuard)
@@ -56,7 +56,9 @@ export class ShoppingCartController {
     return response;
   }
 
-  @ApiOperation({ summary: 'Obtener un carrito por el id del usuario sacado del Token' })
+  @ApiOperation({
+    summary: 'Obtener un carrito por el id del usuario sacado del Token',
+  })
   @UseGuards(JwtAuthGuard)
   @Get()
   async getCart(@GetUser() { userId }: IGetUser) {

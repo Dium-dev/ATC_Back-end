@@ -19,7 +19,7 @@ import { CreateBrandDto } from 'src/brands/dto/create-brand.dto';
 
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) { }
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   @HttpCode(200)
   @Get()
@@ -27,9 +27,9 @@ export class CategoriesController {
     const categories = await this.categoriesService.findAllCategories();
     return {
       statusCode: 200,
-      categories
+      categories,
     };
-  };
+  }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
@@ -38,18 +38,19 @@ export class CategoriesController {
     @AuthAdminUser() _user: void,
     @Body('url') url: string,
   ): Promise<IResponse> {
-    await this.categoriesService.getSheetsData(url)
+    await this.categoriesService
+      .getSheetsData(url)
       .then(async (data: GoogleSpreadsheet) => {
         return await this.categoriesService.spreadSheetsToJSON(data);
       })
       .then(async (data: { name: string }[]) => {
-        return await this.categoriesService.postInDatabase(data)
+        return await this.categoriesService.postInDatabase(data);
       });
     return {
       statusCode: 201,
-      message: 'Categorías creadas con éxito!'
+      message: 'Categorías creadas con éxito!',
     };
-  };
+  }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
@@ -61,8 +62,8 @@ export class CategoriesController {
     await this.categoriesService.createOneCategory(name);
     return {
       statusCode: 201,
-      message: 'La Categoría se creo con éxito!'
-    }
+      message: 'La Categoría se creo con éxito!',
+    };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -74,8 +75,7 @@ export class CategoriesController {
   ): Promise<IResponse> {
     await this.categoriesService.updateCategoryName(cateogry);
     return {
-      statusCode: 204
+      statusCode: 204,
     };
   }
-
 }

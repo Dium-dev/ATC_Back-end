@@ -34,7 +34,7 @@ import { UpdateUserRolDto } from './dto/updateUserRol.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -136,9 +136,13 @@ export class UsersController {
   @Get()
   async getUsers(
     @AuthAdminUser() _user: void,
-    @Query() paginateUnser: PaginateUsersDto
+    @Query() paginateUnser: PaginateUsersDto,
   ) {
-    return this.usersService.getAll(Number(paginateUnser.page), Number(paginateUnser.limit), paginateUnser.order);
+    return this.usersService.getAll(
+      Number(paginateUnser.page),
+      Number(paginateUnser.limit),
+      paginateUnser.order,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -161,12 +165,12 @@ export class UsersController {
   @HttpCode(200)
   async updateUserRol(
     @AuthAdminUser() _user: void,
-    @Body() user: UpdateUserRolDto
+    @Body() user: UpdateUserRolDto,
   ): Promise<IResponse> {
     await this.usersService.updateOneUserRol(user);
     return {
       statusCode: 200,
-      message: 'Usuario actualizado!'
-    }
+      message: 'Usuario actualizado!',
+    };
   }
 }

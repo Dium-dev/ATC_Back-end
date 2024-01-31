@@ -41,7 +41,7 @@ export enum Rol {
       });
     },
     async afterCreate(instance: User, { transaction }) {
-      const userId = instance.id
+      const userId = instance.id;
       await ShoppingCart.create({ userId }, { transaction });
       await UserProductFav.create({ userId }, { transaction });
     },

@@ -38,7 +38,7 @@ export class ShoppingCartService {
     private productsService: ProductsService,
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
-  ) { }
+  ) {}
 
   async postProductInCart(
     productId: string,
@@ -183,22 +183,19 @@ export class ShoppingCartService {
 
   async getCart(userId: string) {
     try {
-      const cart = await this.shoppingCartModel.findOne(
-        {
-          where: { userId },
-          include: [
-            {
-              model: Product,
-              attributes: ['id', 'title', 'image', 'price'],
-              through: { attributes: ['id', 'amount'] }
-            },
-          ],
-        },
-      );
+      const cart = await this.shoppingCartModel.findOne({
+        where: { userId },
+        include: [
+          {
+            model: Product,
+            attributes: ['id', 'title', 'image', 'price'],
+            through: { attributes: ['id', 'amount'] },
+          },
+        ],
+      });
 
       const products = await Promise.all(
         cart.products?.map(async (product) => {
-
           const subtotal = product.price * product['CartProduct'].amount;
 
           return {

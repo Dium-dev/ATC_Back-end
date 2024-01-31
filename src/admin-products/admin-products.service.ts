@@ -23,14 +23,17 @@ import { ProductsService } from 'src/products/products.service';
 /* .env Variable */
 import { API_KEY } from 'src/config/env';
 import { Op } from 'sequelize';
-import { IProduct, IUpdateDataProduct } from './interfaces/updateDataProduct.interface';
+import {
+  IProduct,
+  IUpdateDataProduct,
+} from './interfaces/updateDataProduct.interface';
 
 @Injectable()
 export class AdminProductsService {
   constructor(
     @Inject(forwardRef(() => ProductsService))
     private productsService: ProductsService,
-  ) { }
+  ) {}
 
   async getSheetsData(url: string): Promise<GoogleSpreadsheet> {
     try {
@@ -43,7 +46,9 @@ export class AdminProductsService {
       return miDoc;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Hubo un problema al solicitar los datos a la URL: ${Object.values(url)}`,
+        `Hubo un problema al solicitar los datos a la URL: ${Object.values(
+          url,
+        )}`,
       );
     }
   }
@@ -133,7 +138,8 @@ export class AdminProductsService {
 
       if (!thisResult)
         throw new NotFoundException(
-          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${index + 2
+          `No se pudo encontrar entre las entidades a ${name}, en el Indice: ${
+            index + 2
           }`,
         );
 
@@ -145,7 +151,7 @@ export class AdminProductsService {
         default:
           throw new InternalServerErrorException(
             `Ocurrio un error al consultar la entidad ${Entity.tableName}, con la categoria: ${name} del indice ${index}. Error: ` +
-            error.message,
+              error.message,
           );
       }
     }
@@ -178,7 +184,7 @@ export class AdminProductsService {
       thisProduct.price = Number(product['Precio COP']);
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
-      thisProduct.image = product.Fotos.split(',').map(img => img.trim());
+      thisProduct.image = product.Fotos.split(',').map((img) => img.trim());
       (thisProduct.year = product.Año), (thisProduct.brandId = brandId);
       thisProduct.categoryId = categoryId;
       thisProduct.model = product.Modelo;
@@ -188,7 +194,8 @@ export class AdminProductsService {
       return;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Ocurrio un error al Actualizar el producto ${product.Título
+        `Ocurrio un error al Actualizar el producto ${
+          product.Título
         }, en el Indice: ${index + 2}`,
       );
     }
@@ -196,30 +203,29 @@ export class AdminProductsService {
 
   async updateOneProduct(id: string, product: IUpdateDataProduct) {
     try {
-      await this.productsService.updateProduct(product, { where: { id } })
+      await this.productsService.updateProduct(product, { where: { id } });
       return;
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
-          throw new InternalServerErrorException(error.message)
+          throw new InternalServerErrorException(error.message);
       }
     }
   }
 
   async postOneProduct(product: IProduct): Promise<void> {
     try {
-      await this.productsService.createOneProduct(product)
+      await this.productsService.createOneProduct(product);
       return;
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
-          throw new InternalServerErrorException(error.message)
+          throw new InternalServerErrorException(error.message);
       }
     }
   }
-
 }

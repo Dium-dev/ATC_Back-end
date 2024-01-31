@@ -24,7 +24,7 @@ import { AuthAdminUser } from 'src/auth/decorators/auth-admin-user.decorator';
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) { }
+  constructor(private readonly ordersService: OrdersService) {}
 
   //Obtener una orden por id
   @ApiOperation({ summary: 'Obtener orden' })
@@ -92,7 +92,7 @@ export class OrdersController {
   @HttpCode(200)
   async patchUpdateStateOrder(
     @AuthAdminUser() _user: void,
-    @Body() updateDto: UpdateOrderDto
+    @Body() updateDto: UpdateOrderDto,
   ) {
     const response = await this.ordersService.updateStateOrder(updateDto);
     return response;

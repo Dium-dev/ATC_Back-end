@@ -61,7 +61,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -221,7 +221,7 @@ export class UsersService {
 
   async getAll(page: number, limit: number, order: string) {
     try {
-      const offset = (page - 1) * limit
+      const offset = (page - 1) * limit;
 
       const { count, rows } = await this.userModel.findAndCountAll({
         limit,
@@ -287,9 +287,9 @@ export class UsersService {
             ],
           },
         ],
-      })
+      });
 
-      return { count, rows }
+      return { count, rows };
     } catch (error) {
       throw new InternalServerErrorException('Error al buscar usuarios.');
     }
@@ -308,8 +308,9 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
-                } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -320,8 +321,9 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
-                } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });
@@ -496,7 +498,7 @@ export class UsersService {
         default:
           throw new InternalServerErrorException(
             'Ocurrio un error al trabajar la entidad Usuario a la hora de indagar por el perfil del usuario.\n' +
-            error.message,
+              error.message,
           );
       }
     }
@@ -504,19 +506,25 @@ export class UsersService {
 
   async updateOneUserRol(user: IUpdateUserRol): Promise<void> {
     try {
-      const updateCount = await this.userModel.update({ rol: user.rol }, { where: { id: user.id } })
+      const updateCount = await this.userModel.update(
+        { rol: user.rol },
+        { where: { id: user.id } },
+      );
       if (!updateCount[0]) {
-        throw new BadRequestException('No se pudo encontrar al usuario indicado.')
+        throw new BadRequestException(
+          'No se pudo encontrar al usuario indicado.',
+        );
       }
       return;
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
-          throw new InternalServerErrorException(`Ocurrio un problema en el servidor al intentar actualizar el rol del usuario.\nError: ${error.message}`)
+          throw new InternalServerErrorException(
+            `Ocurrio un problema en el servidor al intentar actualizar el rol del usuario.\nError: ${error.message}`,
+          );
       }
     }
   }
-
 }

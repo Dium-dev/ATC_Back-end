@@ -22,7 +22,7 @@ export class BrandsService {
     private productService: ProductsService,
     @InjectModel(Brand)
     private brandsModel: typeof Brand,
-  ) { }
+  ) {}
 
   async findAllBrands(): Promise<Brand[]> {
     try {
@@ -79,10 +79,12 @@ export class BrandsService {
     }
   }
 
-
   async getSheetsData(url: string): Promise<GoogleSpreadsheet> {
     try {
-      if (!url.length) throw new BadRequestException('No olvide indicarnos la URL del documento a trabajar.');
+      if (!url.length)
+        throw new BadRequestException(
+          'No olvide indicarnos la URL del documento a trabajar.',
+        );
 
       const sheetsId = url.split('/')[5];
 
@@ -94,10 +96,12 @@ export class BrandsService {
     } catch (error) {
       switch (error.constructor) {
         case BadRequestException:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(error.message);
         default:
           throw new InternalServerErrorException(
-            `Hubo un problema al solicitar los datos a la URL: ${Object.values(url)}\n${error.message}`,
+            `Hubo un problema al solicitar los datos a la URL: ${Object.values(
+              url,
+            )}\n${error.message}`,
           );
       }
     }
@@ -109,8 +113,11 @@ export class BrandsService {
     try {
       const miSheets = Data.sheetsByIndex[0];
 
-      const rowValues = await miSheets.getCellsInRange('A:Z')
-        .then((res) => res.flat().map((val: string) => { return { name: val } }))
+      const rowValues = await miSheets.getCellsInRange('A:Z').then((res) =>
+        res.flat().map((val: string) => {
+          return { name: val };
+        }),
+      );
 
       return rowValues;
     } catch (error) {
@@ -125,7 +132,9 @@ export class BrandsService {
       await this.brandsModel.bulkCreate(data);
       return;
     } catch (error) {
-      throw new InternalServerErrorException(`Error al crear las marcas en la base de datos.\nError: ${error.message}`)
+      throw new InternalServerErrorException(
+        `Error al crear las marcas en la base de datos.\nError: ${error.message}`,
+      );
     }
   }
 
@@ -134,7 +143,9 @@ export class BrandsService {
       await this.brandsModel.create({ name: name });
       return;
     } catch (error) {
-      throw new InternalServerErrorException(`Error al crear la marca en la base de datos.\nError: ${error.message}`)
+      throw new InternalServerErrorException(
+        `Error al crear la marca en la base de datos.\nError: ${error.message}`,
+      );
     }
   }
 
@@ -142,13 +153,13 @@ export class BrandsService {
     try {
       await this.brandsModel.update(
         { name: brand.name },
-        { where: { id: brand.id } }
+        { where: { id: brand.id } },
       );
       return;
     } catch (error) {
-      throw new InternalServerErrorException(`Error al actualizar la marca en la base de datos.\nError: ${error.message}`)
+      throw new InternalServerErrorException(
+        `Error al actualizar la marca en la base de datos.\nError: ${error.message}`,
+      );
     }
   }
-
-
 }

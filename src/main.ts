@@ -36,4 +36,4 @@ async function bootstrap() {
   await app.listen(PORT);
   console.log('Server raised in port:', PORT);
 }
-bootstrap()
+bootstrap();

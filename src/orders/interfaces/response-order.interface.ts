@@ -7,7 +7,7 @@ export interface IOrder {
   data: Order | Order[] | string;
 }
 
-export interface UpdateStateOrder extends IResponse { }
+export interface UpdateStateOrder extends IResponse {}
 
 export interface IGetOrders {
   statusCode: number;

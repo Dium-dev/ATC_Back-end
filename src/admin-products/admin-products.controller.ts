@@ -25,7 +25,7 @@ import { CreateOneProductDto } from './dto/createOneProduct.dto';
 @ApiTags('Admin Products')
 @Controller('admin-products')
 export class AdminProductsController {
-  constructor(private readonly adminProductsService: AdminProductsService) { }
+  constructor(private readonly adminProductsService: AdminProductsService) {}
 
   @ApiOperation({
     description:
@@ -99,7 +99,6 @@ export class AdminProductsController {
     @AuthAdminUser() _user: void,
     @Body('url') url: string,
   ): Promise<IResponseCreateOrUpdateProducts> {
-
     const sheetsData: GoogleSpreadsheet =
       await this.adminProductsService.getSheetsData(url);
 
@@ -122,8 +121,8 @@ export class AdminProductsController {
     await this.adminProductsService.updateOneProduct(product.id, product);
     return {
       statusCode: 200,
-      message: 'Producto actualizado!'
-    }
+      message: 'Producto actualizado!',
+    };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -136,8 +135,7 @@ export class AdminProductsController {
     await this.adminProductsService.postOneProduct(product);
     return {
       statusCode: 201,
-      message: 'Producto creado!'
-    }
+      message: 'Producto creado!',
+    };
   }
-
 }

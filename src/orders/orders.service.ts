@@ -44,7 +44,7 @@ export class OrdersService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) { }
+  ) {}
 
   async findOneOrder(id: string, userId: string) {
     try {
