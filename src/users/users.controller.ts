@@ -34,7 +34,7 @@ import { UpdateUserRolDto } from './dto/updateUserRol.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
