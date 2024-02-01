@@ -197,6 +197,8 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<IResponse> {
     try {
+      console.log(updateUserDto);
+
       const user = await User.update(updateUserDto, { where: { id } });
       if (user) {
         return {
