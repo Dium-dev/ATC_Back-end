@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import {
   ApiTags,
@@ -30,6 +29,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 import { AuthAdminUser } from 'src/auth/decorators/auth-admin-user.decorator';
 import { PaginateUsersDto } from './dto/get-paginate-users.dto';
 import { UpdateUserRolDto } from './dto/updateUserRol.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -118,6 +118,7 @@ export class UsersController {
     description: 'id del usuario a modificar',
     type: 'string',
   })
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Patch()
   async update(
