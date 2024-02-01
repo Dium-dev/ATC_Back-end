@@ -9,11 +9,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { GetUser } from '../auth/auth-user.decorator';
+import { GetUser } from '../auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guarg';
 import { UserChangePasswordDto } from '../auth/dto/user-change-password.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 
 @ApiTags('Shopping cart')
 @Controller('shopping-cart')
@@ -21,8 +21,10 @@ export class ShoppingCartController {
   constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
   @ApiOperation({ summary: 'Agregar producto al carrito' })
+  @UseGuards(JwtAuthGuard)
   @Post()
   async postProductoInShoppingCart(
+    @GetUser() _user: IGetUser,
     @Body() data: { productId: string; cartId: string; amount: number },
   ) {
     const postThisProduct = await this.shoppingCartService.postProductInCart(
@@ -43,8 +45,10 @@ export class ShoppingCartController {
     status: 404,
     description: 'No se encontró el registro de CartProduct',
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':cartId/:productId')
   async remove(
+    @GetUser() _user: IGetUser,
     @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
@@ -52,16 +56,9 @@ export class ShoppingCartController {
     return response;
   }
 
-  @ApiOperation({ summary: 'Obtener un carrito por id' })
-  @Get(':cartId') // Cambiar el parámetro a cartId
-  async getCartProducts(@Param('cartId') cartId: string) {
-    // Cambiar el nombre del parámetro a cartId
-    const thisShoppingCart = await this.shoppingCartService.getCartProducts(
-      cartId, // Pasar el cartId como parámetro
-    );
-    return thisShoppingCart;
-  }
-
+  @ApiOperation({
+    summary: 'Obtener un carrito por el id del usuario sacado del Token',
+  })
   @UseGuards(JwtAuthGuard)
   @Get()
   async getCart(@GetUser() { userId }: IGetUser) {

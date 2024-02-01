@@ -215,23 +215,26 @@ export class OrdersService {
       });
       if (!order) throw new NotFoundException('Orden no encontrada');
 
-      //* Cancelar orden
-      //! Falta realizar validacion de rol
-      if (order.state === OrderStateEnum.APROBADO)
+      if (order.state === OrderStateEnum.ENTREGADO) {
         throw new ForbiddenException(
-          'No se permite cambiar la orden a este estado',
+          'No se permite cambiar el estado de la Orden una vez ya en estado de "entrega".',
         );
-
-      if (updateDto.OrderStateEnum === OrderStateEnum.CANCELADO) {
+      } else if (order.state === OrderStateEnum.CANCELADO) {
+        throw new ForbiddenException(
+          'No se permite cambiar el estado de la Orden una vez ya "cancelada".',
+        );
+      } else {
         order.state = updateDto.OrderStateEnum;
         order.save({ transaction });
       }
 
+      await transaction.commit();
       return {
         statusCode: 200,
         message: 'Orden actualizada',
       };
     } catch (error) {
+      await transaction.rollback();
       throw new HttpException(error.message, error.status);
     }
   }

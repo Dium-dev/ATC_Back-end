@@ -40,13 +40,10 @@ export enum Rol {
         force: true,
       });
     },
-    async afterCreate(instance: User) {
-      const thisShoppCart = await ShoppingCart.create();
-      const thisFavContainer = await UserProductFav.create();
-      thisShoppCart.userId = instance.id;
-      thisFavContainer.userId = instance.id;
-      thisShoppCart.save();
-      thisFavContainer.save();
+    async afterCreate(instance: User, { transaction }) {
+      const userId = instance.id;
+      await ShoppingCart.create({ userId }, { transaction });
+      await UserProductFav.create({ userId }, { transaction });
     },
   },
 })
@@ -92,8 +89,9 @@ export class User extends Model<User> {
 
   @Column({
     type: DataType.STRING,
+    allowNull: true
   })
-  image: string;
+  image?: string;
 
   @Column({
     type: DataType.ENUM({

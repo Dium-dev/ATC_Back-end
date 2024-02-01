@@ -20,8 +20,8 @@ import {
 } from '@nestjs/swagger';
 import { IResDirection } from './interfaces/direction.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
-import { GetUser } from 'src/auth/auth-user.decorator';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { GetUser } from 'src/auth/decorators/auth-user.decorator';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
 
 @ApiTags('Directions')

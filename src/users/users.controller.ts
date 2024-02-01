@@ -24,15 +24,17 @@ import {
 import { ICreateUser } from './interfaces/create-user.interface';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { User } from './entities/user.entity';
-import { GetUser } from 'src/auth/auth-user.decorator';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { GetUser } from 'src/auth/decorators/auth-user.decorator';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guarg';
-import { QueryUsersDto } from './dto/query-user.dto';
+import { AuthAdminUser } from 'src/auth/decorators/auth-admin-user.decorator';
+import { PaginateUsersDto } from './dto/get-paginate-users.dto';
+import { UpdateUserRolDto } from './dto/updateUserRol.dto';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @ApiOperation({
     summary: 'Ruta para crear la cuenta de un nuevo usuario.',
@@ -43,16 +45,6 @@ export class UsersController {
     description:
       'Si todo sale bien, se devolverá un objeto con un statusCode 201 y el token de verificación de usuario.',
   })
-  /* 
-    Dejo comentado éste debido a que en la funcion crear usuario deja de estar el 400 de error 
-    en la creacion x datos del usuario, quedando con el 500 nomás.
-    los datos del ususario se validan en el DTO !
-  */
-  /* @ApiResponse({
-    status: 400,
-    description:
-      'Indica que hubo un error a la hora de crear la cuenta del usuario en la aplicación. Recomendacion verificar los datos enviados',
-  }) */
   @ApiResponse({
     status: 409,
     description:
@@ -127,7 +119,7 @@ export class UsersController {
     type: 'string',
   })
   @HttpCode(204)
-  @Patch(':id')
+  @Patch()
   async update(
     @GetUser() { userId }: IGetUser,
     @Body() updateUserDto: UpdateUserDto,
@@ -140,14 +132,17 @@ export class UsersController {
     summary:
       'Ruta para ver todos los usuarios (se debe enviar "page" y "limit" por query).',
   })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getUsers(
-  @Query() querys: QueryUsersDto,
+  async getUsers(
+    @AuthAdminUser() _user: void,
+    @Query() paginateUnser: PaginateUsersDto,
   ) {
-    const { limit, page, desc, filter, search } = querys;
-    const order = desc === 'true' ? 'DESC' : 'ASC';
-
-    return this.usersService.getAll(+page, +limit, order, filter, search);
+    return await this.usersService.getAll(
+      Number(paginateUnser.page),
+      Number(paginateUnser.limit),
+      paginateUnser.order,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -163,5 +158,19 @@ export class UsersController {
   @Delete()
   deleteUser(@GetUser() { userId }: IGetUser) {
     return this.usersService.deleteUser(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('updateRol')
+  @HttpCode(200)
+  async updateUserRol(
+    @AuthAdminUser() _user: void,
+    @Body() user: UpdateUserRolDto,
+  ): Promise<IResponse> {
+    await this.usersService.updateOneUserRol(user);
+    return {
+      statusCode: 200,
+      message: 'Usuario actualizado!',
+    };
   }
 }

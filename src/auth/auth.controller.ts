@@ -10,7 +10,7 @@ import { AuthService } from './auth.service';
 import { RecoverPasswordDto } from './dto/recover-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { GetUser } from './auth-user.decorator';
+import { GetUser } from './decorators/auth-user.decorator';
 import {
   ApiTags,
   ApiOperation,
@@ -21,7 +21,7 @@ import {
 import { JwtAuthGuard } from './guards/jwt-auth.guarg';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import { IResponse } from 'src/utils/interfaces/response.interface';
-import { IGetUser } from './interefaces/getUser.interface';
+import { IGetUser } from './interfaces/getUser.interface';
 
 @ApiTags('Auth')
 @Controller('auth')

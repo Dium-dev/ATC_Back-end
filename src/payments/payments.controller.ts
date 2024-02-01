@@ -12,9 +12,9 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { GetUser } from '../auth/auth-user.decorator';
+import { GetUser } from '../auth/decorators/auth-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guarg';
-import { IGetUser } from 'src/auth/interefaces/getUser.interface';
+import { IGetUser } from 'src/auth/interfaces/getUser.interface';
 
 @ApiTags('Payments')
 @Controller('payments')

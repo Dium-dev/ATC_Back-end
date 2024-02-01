@@ -11,7 +11,7 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { Rol, User } from './entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
@@ -39,6 +39,7 @@ import { Review } from 'src/reviews/entities/review.entity';
 import { Direction } from 'src/directions/entities/direction.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
+import { IUpdateUserRol } from './interfaces/updateUserRol.interface';
 import { Op } from 'sequelize';
 
 @Injectable()
@@ -61,7 +62,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -78,8 +79,6 @@ export class UsersService {
       };
 
       const newUser = await this.userModel.create(data, { transaction });
-
-      await transaction.commit();
 
       const response = {
         statusCode: 201,
@@ -104,6 +103,8 @@ export class UsersService {
       };
       //Sending mail
       await this.mailsService.sendMails(mailData);
+
+      await transaction.commit();
 
       return response;
     } catch (error) {
@@ -145,7 +146,7 @@ export class UsersService {
         case UnauthorizedException:
           throw new UnauthorizedException(error.message);
         default:
-          throw new InternalServerErrorException('Error interno del servidor.');
+          throw new InternalServerErrorException('Error interno del servidor.\n' + error.message);
       }
     }
   }
@@ -166,7 +167,7 @@ export class UsersService {
         case UnauthorizedException:
           throw new UnauthorizedException(error.message);
         default:
-          throw new InternalServerErrorException('Error interno del servidor.');
+          throw new InternalServerErrorException('Error interno del servidor.\n' + error.message);
       }
     }
   }
@@ -219,46 +220,84 @@ export class UsersService {
     }
   }
 
-  async getAll(
-    page: number,
-    limit: number,
-    order: string,
-    filter: string | null = null,
-    search: string | null = null,
-  ) {
+  async getAll(page: number, limit: number, order: string) {
     try {
-      page--;
+      const offset = (page - 1) * limit;
 
-      let orderClause: OrderItem[] = [];
-      let where: WhereOptions = {};
-      // busca el valor sobre el atributo filtrado
-      if (filter && search) where = { [filter]: { [Op.like]: `%${search}%` } };
-      // ordena sobre el atributo filtrado, al no mandar ningun filtro ordena por orden de creacion
-      if (order) {
-        const columnToOrder = filter || 'createdAt';
-        orderClause = [[columnToOrder, order]] as OrderItem[];
-      }
-
-      const { rows: users, count: totalItems } = await this.userModel.findAndCountAll({
-        where,
+      const { count, rows } = await this.userModel.findAndCountAll({
         limit,
-        order: orderClause,
+        offset,
+        order: [[order.split(' ')[0], order.split(' ')[1]]],
+        attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'rol'],
+        subQuery: false,
+        include: [
+          {
+            model: ShoppingCart,
+            attributes: ['id'],
+            include: [
+              {
+                model: Product,
+                attributes: ['id', 'title', 'state', 'price', 'image'],
+                include: [{ model: Categories }, { model: Brand }],
+                through: { attributes: ['id', 'amount'] },
+              },
+            ],
+          },
+          {
+            model: Order,
+            attributes: ['id'],
+            include: [
+              {
+                model: Payment,
+                attributes: ['id', 'amount', 'state', 'user_email'],
+              },
+              {
+                model: Product,
+                attributes: ['id', 'title', 'state', 'price', 'image'],
+                include: [{ model: Categories }, { model: Brand }],
+                through: { attributes: ['amount', 'price'] },
+              },
+              {
+                model: Direction,
+                attributes: [
+                  'id',
+                  'city',
+                  'district',
+                  'address',
+                  'addressReference',
+                  'neighborhood',
+                  'phone',
+                ],
+              },
+            ],
+          },
+          {
+            model: Review,
+            attributes: ['id', 'review', 'rating'],
+          },
+          {
+            model: Direction,
+            attributes: [
+              'id',
+              'city',
+              'district',
+              'address',
+              'addressReference',
+              'neighborhood',
+              'phone',
+            ],
+          },
+        ],
       });
 
-      const limitOfPages = Math.ceil(totalItems / limit);
-
-      if (page < 0 || page > limitOfPages) {
-        throw new HttpException('This page not exist.', 400);
-      }
-
       return {
-        prevPage: page === 0 ? null : page - 1,
-        page: page + 1,
-        nextPage: page === limitOfPages ? null : page + 1,
-        users,
+        totalUser: count,
+        totalPages: Math.ceil(count / limit),
+        users: rows,
+        page
       };
     } catch (error) {
-      throw new HttpException('Error al buscar usuarios.' + error.message, 404);
+      throw new InternalServerErrorException('Error al buscar usuarios.');
     }
   }
 
@@ -275,9 +314,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -288,9 +326,8 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${
-                user.firstName + ' ' + user.lastName
-              } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
+                } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });
@@ -465,7 +502,31 @@ export class UsersService {
         default:
           throw new InternalServerErrorException(
             'Ocurrio un error al trabajar la entidad Usuario a la hora de indagar por el perfil del usuario.\n' +
-              error.message,
+            error.message,
+          );
+      }
+    }
+  }
+
+  async updateOneUserRol(user: IUpdateUserRol): Promise<void> {
+    try {
+      const updateCount = await this.userModel.update(
+        { rol: user.rol },
+        { where: { id: user.id } },
+      );
+      if (!updateCount[0]) {
+        throw new BadRequestException(
+          'No se pudo encontrar al usuario indicado.',
+        );
+      }
+      return;
+    } catch (error) {
+      switch (error.constructor) {
+        case BadRequestException:
+          throw new BadRequestException(error.message);
+        default:
+          throw new InternalServerErrorException(
+            `Ocurrio un problema en el servidor al intentar actualizar el rol del usuario.\nError: ${error.message}`,
           );
       }
     }

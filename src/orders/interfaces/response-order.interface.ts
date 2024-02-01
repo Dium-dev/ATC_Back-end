@@ -1,15 +1,13 @@
 import { IGetProducts } from 'src/products/interfaces/getProducts.interface';
 import { Order } from '../entities/order.entity';
+import { IResponse } from 'src/utils/interfaces/response.interface';
 
 export interface IOrder {
   statusCode: number;
   data: Order | Order[] | string;
 }
 
-export interface UpdateStateOrder {
-  statusCode: number;
-  message: string;
-}
+export interface UpdateStateOrder extends IResponse {}
 
 export interface IGetOrders {
   statusCode: number;

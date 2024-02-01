@@ -1,4 +1,5 @@
 import {
+  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
@@ -37,5 +38,12 @@ export class ShoppingCart extends Model {
   products: Product[];
 
   @ForeignKey(() => User)
-  userId: string;
+  @Column({
+    type: DataType.UUID,
+    allowNull: true,
+  })
+  userId?: string;
+
+  @BelongsTo(() => User)
+  user: User;
 }
