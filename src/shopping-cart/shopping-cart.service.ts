@@ -202,7 +202,7 @@ export class ShoppingCartService {
             id: product.id,
             title: product.title,
             price: product.price,
-            image: product.image,
+            image: product.images,
             amount: product['CartProduct'].amount,
             subtotal, // Agregar el subtotal para este producto
           };

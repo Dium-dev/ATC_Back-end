@@ -21,6 +21,8 @@ import { AuthAdminUser } from 'src/auth/decorators/auth-admin-user.decorator';
 import { UpdateProductDto } from './dto/updateProduct.dto';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { CreateOneProductDto } from './dto/createOneProduct.dto';
+import { DeleteProductImageDto } from './dto/deleteProductImage.dto';
+import { IDestroyedImagesResponse } from 'src/products/interfaces/destroyedImages.interfaces';
 
 @ApiTags('Admin Products')
 @Controller('admin-products')
@@ -123,6 +125,16 @@ export class AdminProductsController {
       statusCode: 200,
       message: 'Producto actualizado!',
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('product-image')
+  @HttpCode(200)
+  async deleteProductImage(
+    @AuthAdminUser() _user: void,
+    @Body() productData: DeleteProductImageDto[],
+  ): Promise<IDestroyedImagesResponse> {
+    return await this.adminProductsService.DeleteImages(productData);
   }
 
   @UseGuards(JwtAuthGuard)

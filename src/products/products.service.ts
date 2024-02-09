@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { QueryProductsDto } from './dto/query-product.dto';
-import { FindOptions, Op, Sequelize, UpdateOptions } from 'sequelize';
+import { FindOptions, Op, UpdateOptions } from 'sequelize';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Product } from './entities/product.entity';
@@ -20,6 +20,8 @@ import {
 import { AdminProductsService } from 'src/admin-products/admin-products.service';
 import { SheetsProductDto } from 'src/admin-products/dto/sheetsProducts.dto';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+
+import * as fs from 'fs';
 
 /* temporal acá */
 enum EModelsTable {
@@ -35,6 +37,14 @@ import {
   IProduct,
   IUpdateDataProduct,
 } from 'src/admin-products/interfaces/updateDataProduct.interface';
+import { Image } from './entities/image.entity';
+import axios from 'axios';
+import { randomUUID } from 'crypto';
+import { Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+import { promisify } from 'util';
+import { IDeleteProductImage } from 'src/admin-products/dto/deleteProductImage.dto';
+import { IDestroyedImagesResponse } from './interfaces/destroyedImages.interfaces';
 
 @Injectable()
 export class ProductsService {
@@ -49,6 +59,9 @@ export class ProductsService {
     private FavProductModel: typeof FavProduct,
     @InjectModel(UserProductFav)
     private UserProductFavModel: typeof UserProductFav,
+    @InjectModel(Image)
+    private imageModel: typeof Image,
+    private sequelize: Sequelize,
   ) {}
 
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
@@ -129,7 +142,6 @@ export class ProductsService {
         'mostSelled',
         'condition',
         'availability',
-        'image',
         'model',
         'year',
       ],
@@ -137,9 +149,9 @@ export class ProductsService {
       include: [
         { model: Brand, as: 'brand', where: whereBrandId },
         { model: Categories, as: 'category', where: whereCategoryId },
+        { model: Image },
       ],
     });
-
     const totalPages = Math.ceil(totalItems / limit);
 
     return { items, totalItems, totalPages, page: Number(page) };
@@ -323,25 +335,35 @@ export class ProductsService {
     categoryId: string,
     index: number,
   ) {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      const genericCreatedProduct = await Product.create({
-        id: product['Número de publicación'],
-        title: product.Título,
-        description: product.Descripción,
-        state: product.Estado,
-        stock: Number(product.Stock),
-        price: Number(product['Precio COP']),
-        condition: product.Condición,
-        availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: product.Fotos.split(',').map((img) => img.trim()),
-        year: product.Año,
-        model: product.Modelo,
-        brandId,
-        categoryId,
-      });
-      if (!genericCreatedProduct) throw new InternalServerErrorException();
+      await Product.create(
+        {
+          id: product['Número de publicación'],
+          title: product.Título,
+          description: product.Descripción,
+          state: product.Estado,
+          stock: Number(product.Stock),
+          price: Number(product['Precio COP']),
+          condition: product.Condición,
+          availability: Number(product['Disponibilidad de stock (días)']) || 0,
+          /* image: product.Fotos.split(',').map((img) => img.trim()), */
+          year: product.Año,
+          model: product.Modelo,
+          brandId,
+          categoryId,
+        },
+        { transaction },
+      );
+      await this.createImages(
+        product.Fotos.split(',').map((img) => img.trim()),
+        product['Número de publicación'],
+        transaction,
+      );
+      await transaction.commit();
       return;
     } catch (error) {
+      await transaction.rollback();
       throw new InternalServerErrorException(
         `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
           product.Título
@@ -429,22 +451,25 @@ export class ProductsService {
   public async updateProduct(
     product: IUpdateDataProduct,
     options: UpdateOptions,
+    id: string,
   ): Promise<void> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      const thisCount = await Product.update(
-        {
-          ...product,
-          image: product.image.split(',').map((img) => img.trim()),
-        },
-        options,
+      const thisCount = await Product.update(product, options);
+      await this.createImages(
+        product.image.split(',').map((img) => img.trim()),
+        id,
+        transaction,
       );
       if (!thisCount[0]) {
         throw new BadRequestException(
           'No se encontó el producto solicitado para realizar los cambios',
         );
       }
+      await transaction.commit();
       return;
     } catch (error) {
+      await transaction.rollback();
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);
@@ -457,15 +482,88 @@ export class ProductsService {
   }
 
   public async createOneProduct(product: IProduct): Promise<void> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      await Product.create({
-        ...product,
-        image: product.image.split(',').map((img) => img.trim()),
-      });
+      const thisProduct = await Product.create(product, { transaction });
+      await this.createImages(
+        product.image.split(',').map((img) => img.trim()),
+        thisProduct.id,
+        transaction,
+      );
+      await transaction.commit();
+      return;
+    } catch (error) {
+      await transaction.rollback();
+      throw new InternalServerErrorException(
+        `Ocurrio un error al querer crear el producto.\nError: ${error.message}`,
+      );
+    }
+  }
+
+  public async createImages(
+    images: string[],
+    productId: string,
+    transaction: Transaction,
+  ): Promise<void> {
+    try {
+      console.log(images);
+
+      for await (const img of images) {
+        const thisDataResponse = await axios.get(img, {
+          responseType: 'arraybuffer',
+        });
+
+        const id = randomUUID();
+
+        const localUrlProduct = `./public/${productId}`;
+
+        const localUrl = `${localUrlProduct}/${id}.jpeg`;
+
+        if (fs.existsSync(localUrlProduct)) {
+          fs.writeFileSync(localUrl, thisDataResponse.data);
+        } else {
+          fs.mkdirSync(localUrlProduct);
+          fs.writeFileSync(localUrl, thisDataResponse.data);
+        }
+        await this.imageModel.create(
+          { id, localUrl, productId },
+          { transaction },
+        );
+      }
       return;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Ocurrio un error al querer crear el producto.\nError: ${error.message}`,
+        `Ocurrió un problema al subir las imagenes al Servidor.\nError: ${error.message}`,
+      );
+    }
+  }
+
+  async DeleteProductImages(
+    dataProducts: IDeleteProductImage[],
+  ): Promise<IDestroyedImagesResponse> {
+    try {
+      let count = 0;
+      const totalImagesRequested = dataProducts.length;
+      for await (const { id, productId } of dataProducts) {
+        const thisDeletedImage = await this.imageModel.findOne({
+          where: { id, productId },
+        });
+        if (thisDeletedImage) {
+          fs.unlinkSync(thisDeletedImage.localUrl);
+          await thisDeletedImage.destroy({ force: true }).then(() => {
+            count += 1;
+          });
+        }
+      }
+      return {
+        statusCode: 200,
+        message: `Eliminacion de imagenes solicitadas ${count}/${totalImagesRequested}`,
+        requested: totalImagesRequested,
+        total: count,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Ocurrió un error al intentar eliminar las imagenes de la base de datos!.\nError ${error.message}`,
       );
     }
   }
