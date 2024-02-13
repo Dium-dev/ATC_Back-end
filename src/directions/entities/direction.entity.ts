@@ -15,11 +15,11 @@ import { Order } from 'src/orders/entities/order.entity';
   underscored: true,
   paranoid: true,
   hooks: {
-    async afterCreate(instance: Direction) {
+    async afterCreate(instance: Direction, { transaction }) {
       if (!instance.phone) {
-        const thisPhoneNumber = await User.findByPk(instance.userId);
+        const thisPhoneNumber = await User.findByPk(instance.userId, { transaction });
         instance.phone = thisPhoneNumber.phone;
-        instance.save();
+        await instance.save({ transaction });
       }
     },
   },

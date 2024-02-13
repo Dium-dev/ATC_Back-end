@@ -16,6 +16,7 @@ import { User } from '../users/entities/user.entity';
 import { ProductsService } from 'src/products/products.service';
 import { InjectModel } from '@nestjs/sequelize';
 import { OrdersService } from 'src/orders/orders.service';
+import { Image } from 'src/products/entities/image.entity';
 
 @Injectable()
 export class ShoppingCartService {
@@ -38,7 +39,7 @@ export class ShoppingCartService {
     private productsService: ProductsService,
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
-  ) {}
+  ) { }
 
   async postProductInCart(
     productId: string,
@@ -133,16 +134,15 @@ export class ShoppingCartService {
 
   async remove(cartId: string, productId: string) {
     try {
-      const cartProductToDelete = await this.cartProductModel.findOne({
+      const cartProductToDelete = await this.cartProductModel.destroy({
         where: {
           cartId: cartId,
           productId: productId,
         },
+        force: true,
       });
 
       if (cartProductToDelete) {
-        await cartProductToDelete.destroy();
-
         return {
           statusCode: 204,
           message: 'Producto eliminado exitosamente',
@@ -188,8 +188,11 @@ export class ShoppingCartService {
         include: [
           {
             model: Product,
-            attributes: ['id', 'title', 'image', 'price'],
+            attributes: ['id', 'title', 'price'],
             through: { attributes: ['id', 'amount'] },
+            include: [
+              { model: Image, attributes: ['image'] },
+            ]
           },
         ],
       });

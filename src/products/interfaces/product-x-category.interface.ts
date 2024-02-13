@@ -7,9 +7,9 @@ export interface IItemsProducXcategory {
   price: number;
   image?:
     | {
-        id: string;
-        localUrl: string;
-        productId: string;
+        id?: string;
+        image: Buffer;
+        productId?: string;
       }[]
     | [];
   category: {

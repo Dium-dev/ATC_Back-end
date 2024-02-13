@@ -45,10 +45,13 @@ import { Sequelize } from 'sequelize-typescript';
 import { promisify } from 'util';
 import { IDeleteProductImage } from 'src/admin-products/dto/deleteProductImage.dto';
 import { IDestroyedImagesResponse } from './interfaces/destroyedImages.interfaces';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
     @Inject(forwardRef(() => AdminProductsService))
     private adminProductsService: AdminProductsService,
     @Inject(forwardRef(() => ShoppingCartService))
@@ -62,12 +65,12 @@ export class ProductsService {
     @InjectModel(Image)
     private imageModel: typeof Image,
     private sequelize: Sequelize,
-  ) {}
+  ) { }
 
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
     const limit = parseInt(query.limit);
     const page = parseInt(query.page);
-    let allBrands;
+    let allBrands: any;
     if (query.brandId) {
       allBrands = miCache.get('AllBrands_Id');
       if (allBrands) null;
@@ -87,9 +90,7 @@ export class ProductsService {
     };
 
     if (query.name)
-      // eslint-disable-next-line @typescript-eslint/dot-notation
       querys.whereProduct['title'] = { [Op.iLike]: `%${query.name}%` };
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     if (query.active) querys.whereProduct['state'] = query.active;
     if (query.order) {
       const thisOrder = query.order.split(' ');
@@ -149,7 +150,7 @@ export class ProductsService {
       include: [
         { model: Brand, as: 'brand', where: whereBrandId },
         { model: Categories, as: 'category', where: whereCategoryId },
-        { model: Image },
+        { model: Image, attributes: ['image'] },
       ],
     });
     const totalPages = Math.ceil(totalItems / limit);
@@ -182,13 +183,14 @@ export class ProductsService {
     try {
       const items: IItemsProducXcategory[] | [] = await Product.findAll({
         limit: 5,
-        attributes: ['id', 'title', 'state', 'price', 'image'],
+        attributes: ['id', 'title', 'state', 'price'],
         include: [
           {
             model: Categories,
             where: { name: { [Op.iLike]: `%${categoryName}%` } },
           },
           { model: Brand },
+          { model: Image, attributes: ['image'] },
         ],
       });
       if (items.length === 0) throw new BadRequestException();
@@ -212,7 +214,13 @@ export class ProductsService {
 
   async findOne(id: string) {
     try {
-      const product = await Product.findByPk(id);
+      const product = await Product.findByPk(id, {
+        include: [
+          { model: Image, attributes: ['image'] },
+          { model: Categories },
+          { model: Brand },
+        ]
+      });
 
       if (product) {
         return {
@@ -233,10 +241,9 @@ export class ProductsService {
 
   async remove(id: string) {
     try {
-      const product = await Product.findByPk(id);
+      const product = await Product.destroy({ where: { id } });
 
       if (product) {
-        await product.destroy();
         return {
           statusCode: 204,
           message: 'Producto eliminado exitosamente',
@@ -365,8 +372,7 @@ export class ProductsService {
     } catch (error) {
       await transaction.rollback();
       throw new InternalServerErrorException(
-        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
-          product.Título
+        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${product.Título
         } del indice ${index + 2}.\n ${error.message}`,
       );
     }
@@ -431,7 +437,14 @@ export class ProductsService {
           limit,
           subQuery: false,
           include: [
-            { model: Product, attributes: ['id'], through: { attributes: [] } },
+            {
+              model: Product,
+              attributes: ['id'],
+              through: { attributes: [] },
+              include: [
+                { model: Image, attributes: ['image'] },
+              ]
+            },
           ],
         });
 
@@ -506,29 +519,12 @@ export class ProductsService {
     transaction: Transaction,
   ): Promise<void> {
     try {
-      console.log(images);
-
       for await (const img of images) {
-        const thisDataResponse = await axios.get(img, {
+        const { data } = await axios.get(img, {
           responseType: 'arraybuffer',
         });
 
-        const id = randomUUID();
-
-        const localUrlProduct = `./public/${productId}`;
-
-        const localUrl = `${localUrlProduct}/${id}.jpeg`;
-
-        if (fs.existsSync(localUrlProduct)) {
-          fs.writeFileSync(localUrl, thisDataResponse.data);
-        } else {
-          fs.mkdirSync(localUrlProduct);
-          fs.writeFileSync(localUrl, thisDataResponse.data);
-        }
-        await this.imageModel.create(
-          { id, localUrl, productId },
-          { transaction },
-        );
+        await this.imageModel.create({ image: data, productId }, { transaction })
       }
       return;
     } catch (error) {
@@ -545,15 +541,7 @@ export class ProductsService {
       let count = 0;
       const totalImagesRequested = dataProducts.length;
       for await (const { id, productId } of dataProducts) {
-        const thisDeletedImage = await this.imageModel.findOne({
-          where: { id, productId },
-        });
-        if (thisDeletedImage) {
-          fs.unlinkSync(thisDeletedImage.localUrl);
-          await thisDeletedImage.destroy({ force: true }).then(() => {
-            count += 1;
-          });
-        }
+        count += await this.imageModel.destroy({ where: { id, productId }, force: true })
       }
       return {
         statusCode: 200,
@@ -567,4 +555,5 @@ export class ProductsService {
       );
     }
   }
+
 }

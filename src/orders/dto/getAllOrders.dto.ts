@@ -6,6 +6,8 @@ import {
   IsNotEmpty,
   IsString,
   IsPositive,
+  IsOptional,
+  IsNumber,
 } from 'class-validator';
 import { OrderStateEnum } from '../entities/order.entity';
 
@@ -30,22 +32,22 @@ export class GetAllOrdersDto {
   //Según el limit, la página de las órdenes
   page: string;
 
-  @IsNotEmpty({
+  @IsOptional({
     message: '$property no debe estar vacío',
   })
-  @IsString({
-    message: 'la propiedad $property debe ser un tipo de estado de las ordenes',
+  @IsEnum(OrderStateEnum, {
+    message: `la propiedad $property debe ser un tipo de estado de las ordenes (${Object.values(OrderStateEnum)})`,
   })
   //El estado actual de la orden
-  status: string;
+  status: OrderStateEnum;
 
-  @IsNotEmpty({
+  @IsOptional({
     message: '$property no debe estar vacío',
   })
-  @IsString({
+  @IsEnum(DateOrder, {
     message:
-      'la propiedad $property contener "ASC" o "DESC" acorde al tipo de orden que requiera',
+      `la propiedad $property contener "ASC" o "DESC" acorde al tipo de orden que requiera (${Object.values(DateOrder)})`,
   })
   //El orden en el que se envían las órdenes
-  order: string;
+  order: DateOrder;
 }

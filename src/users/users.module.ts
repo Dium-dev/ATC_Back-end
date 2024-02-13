@@ -13,6 +13,7 @@ import { DirectionsModule } from '../directions/directions.module';
 import { ReviewsModule } from '../reviews/reviews.module';
 import { OrdersModule } from '../orders/orders.module';
 import { PaymentsModule } from '../payments/payments.module';
+import { ProductsModule } from 'src/products/products.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PaymentsModule } from '../payments/payments.module';
     forwardRef(() => ReviewsModule),
     forwardRef(() => OrdersModule),
     forwardRef(() => PaymentsModule),
+    forwardRef(() => ProductsModule),
     SequelizeModule.forFeature([User, Direction, ShoppingCart]),
   ],
   providers: [UsersService, AuthService, MailService],

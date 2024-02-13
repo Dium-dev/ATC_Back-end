@@ -11,7 +11,7 @@ import * as fs from 'fs';
 
 export interface IImage {
   id: string;
-  localUrl: string;
+  image: Buffer;
   productId: string;
 }
 
@@ -23,6 +23,7 @@ export interface IImage {
 export class Image extends Model implements IImage {
   @Column({
     type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
     allowNull: false,
     primaryKey: true,
     unique: true,
@@ -30,11 +31,10 @@ export class Image extends Model implements IImage {
   id: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.BLOB,
     allowNull: false,
-    unique: true,
   })
-  localUrl: string;
+  image: Buffer;
 
   @ForeignKey(() => Product)
   @Column({

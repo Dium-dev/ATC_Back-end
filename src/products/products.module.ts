@@ -11,6 +11,7 @@ import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
 import { FavProduct } from 'src/orders/entities/favProduct.entity';
 import { BrandsModule } from 'src/brands/brands.module';
 import { Image } from './entities/image.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Image } from './entities/image.entity';
     forwardRef(() => AdminProductsModule),
     forwardRef(() => ShoppingCartModule),
     forwardRef(() => BrandsModule),
+    forwardRef(() => UsersModule),
   ],
   controllers: [ProductsController],
   providers: [ProductsService],
