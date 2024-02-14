@@ -5,7 +5,13 @@ export interface IItemsProducXcategory {
   title: string;
   state: StateProduct;
   price: number;
-  image: string[];
+  image?:
+    | {
+        id?: string;
+        image: Buffer;
+        productId?: string;
+      }[]
+    | [];
   category: {
     id: string;
     name: string;

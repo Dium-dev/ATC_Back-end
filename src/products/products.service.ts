@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { QueryProductsDto } from './dto/query-product.dto';
-import { FindOptions, Op, Sequelize, UpdateOptions } from 'sequelize';
+import { FindOptions, Op, UpdateOptions } from 'sequelize';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Categories } from 'src/categories/entities/category.entity';
 import { Product } from './entities/product.entity';
@@ -20,6 +20,8 @@ import {
 import { AdminProductsService } from 'src/admin-products/admin-products.service';
 import { SheetsProductDto } from 'src/admin-products/dto/sheetsProducts.dto';
 import { ShoppingCartService } from 'src/shopping-cart/shopping-cart.service';
+
+import * as fs from 'fs';
 
 /* temporal acá */
 enum EModelsTable {
@@ -35,10 +37,21 @@ import {
   IProduct,
   IUpdateDataProduct,
 } from 'src/admin-products/interfaces/updateDataProduct.interface';
+import { Image } from './entities/image.entity';
+import axios from 'axios';
+import { randomUUID } from 'crypto';
+import { Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+import { promisify } from 'util';
+import { IDeleteProductImage } from 'src/admin-products/dto/deleteProductImage.dto';
+import { IDestroyedImagesResponse } from './interfaces/destroyedImages.interfaces';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
+    @Inject(forwardRef(() => UsersService))
+    private userService: UsersService,
     @Inject(forwardRef(() => AdminProductsService))
     private adminProductsService: AdminProductsService,
     @Inject(forwardRef(() => ShoppingCartService))
@@ -49,12 +62,15 @@ export class ProductsService {
     private FavProductModel: typeof FavProduct,
     @InjectModel(UserProductFav)
     private UserProductFavModel: typeof UserProductFav,
-  ) {}
+    @InjectModel(Image)
+    private imageModel: typeof Image,
+    private sequelize: Sequelize,
+  ) { }
 
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
     const limit = parseInt(query.limit);
     const page = parseInt(query.page);
-    let allBrands;
+    let allBrands: any;
     if (query.brandId) {
       allBrands = miCache.get('AllBrands_Id');
       if (allBrands) null;
@@ -74,9 +90,7 @@ export class ProductsService {
     };
 
     if (query.name)
-      // eslint-disable-next-line @typescript-eslint/dot-notation
       querys.whereProduct['title'] = { [Op.iLike]: `%${query.name}%` };
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     if (query.active) querys.whereProduct['state'] = query.active;
     if (query.order) {
       const thisOrder = query.order.split(' ');
@@ -129,7 +143,6 @@ export class ProductsService {
         'mostSelled',
         'condition',
         'availability',
-        'image',
         'model',
         'year',
       ],
@@ -137,9 +150,9 @@ export class ProductsService {
       include: [
         { model: Brand, as: 'brand', where: whereBrandId },
         { model: Categories, as: 'category', where: whereCategoryId },
+        { model: Image, attributes: ['image'] },
       ],
     });
-
     const totalPages = Math.ceil(totalItems / limit);
 
     return { items, totalItems, totalPages, page: Number(page) };
@@ -170,13 +183,14 @@ export class ProductsService {
     try {
       const items: IItemsProducXcategory[] | [] = await Product.findAll({
         limit: 5,
-        attributes: ['id', 'title', 'state', 'price', 'image'],
+        attributes: ['id', 'title', 'state', 'price'],
         include: [
           {
             model: Categories,
             where: { name: { [Op.iLike]: `%${categoryName}%` } },
           },
           { model: Brand },
+          { model: Image, attributes: ['image'] },
         ],
       });
       if (items.length === 0) throw new BadRequestException();
@@ -200,7 +214,13 @@ export class ProductsService {
 
   async findOne(id: string) {
     try {
-      const product = await Product.findByPk(id);
+      const product = await Product.findByPk(id, {
+        include: [
+          { model: Image, attributes: ['image'] },
+          { model: Categories },
+          { model: Brand },
+        ]
+      });
 
       if (product) {
         return {
@@ -221,10 +241,9 @@ export class ProductsService {
 
   async remove(id: string) {
     try {
-      const product = await Product.findByPk(id);
+      const product = await Product.destroy({ where: { id } });
 
       if (product) {
-        await product.destroy();
         return {
           statusCode: 204,
           message: 'Producto eliminado exitosamente',
@@ -323,28 +342,37 @@ export class ProductsService {
     categoryId: string,
     index: number,
   ) {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      const genericCreatedProduct = await Product.create({
-        id: product['Número de publicación'],
-        title: product.Título,
-        description: product.Descripción,
-        state: product.Estado,
-        stock: Number(product.Stock),
-        price: Number(product['Precio COP']),
-        condition: product.Condición,
-        availability: Number(product['Disponibilidad de stock (días)']) || 0,
-        image: product.Fotos.split(',').map((img) => img.trim()),
-        year: product.Año,
-        model: product.Modelo,
-        brandId,
-        categoryId,
-      });
-      if (!genericCreatedProduct) throw new InternalServerErrorException();
+      await Product.create(
+        {
+          id: product['Número de publicación'],
+          title: product.Título,
+          description: product.Descripción,
+          state: product.Estado,
+          stock: Number(product.Stock),
+          price: Number(product['Precio COP']),
+          condition: product.Condición,
+          availability: Number(product['Disponibilidad de stock (días)']) || 0,
+          /* image: product.Fotos.split(',').map((img) => img.trim()), */
+          year: product.Año,
+          model: product.Modelo,
+          brandId,
+          categoryId,
+        },
+        { transaction },
+      );
+      await this.createImages(
+        product.Fotos.split(',').map((img) => img.trim()),
+        product['Número de publicación'],
+        transaction,
+      );
+      await transaction.commit();
       return;
     } catch (error) {
+      await transaction.rollback();
       throw new InternalServerErrorException(
-        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
-          product.Título
+        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${product.Título
         } del indice ${index + 2}.\n ${error.message}`,
       );
     }
@@ -409,7 +437,14 @@ export class ProductsService {
           limit,
           subQuery: false,
           include: [
-            { model: Product, attributes: ['id'], through: { attributes: [] } },
+            {
+              model: Product,
+              attributes: ['id'],
+              through: { attributes: [] },
+              include: [
+                { model: Image, attributes: ['image'] },
+              ]
+            },
           ],
         });
 
@@ -429,22 +464,25 @@ export class ProductsService {
   public async updateProduct(
     product: IUpdateDataProduct,
     options: UpdateOptions,
+    id: string,
   ): Promise<void> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      const thisCount = await Product.update(
-        {
-          ...product,
-          image: product.image.split(',').map((img) => img.trim()),
-        },
-        options,
+      const thisCount = await Product.update(product, options);
+      await this.createImages(
+        product.image.split(',').map((img) => img.trim()),
+        id,
+        transaction,
       );
       if (!thisCount[0]) {
         throw new BadRequestException(
           'No se encontó el producto solicitado para realizar los cambios',
         );
       }
+      await transaction.commit();
       return;
     } catch (error) {
+      await transaction.rollback();
       switch (error.constructor) {
         case BadRequestException:
           throw new BadRequestException(error.message);
@@ -457,16 +495,65 @@ export class ProductsService {
   }
 
   public async createOneProduct(product: IProduct): Promise<void> {
+    const transaction: Transaction = await this.sequelize.transaction();
     try {
-      await Product.create({
-        ...product,
-        image: product.image.split(',').map((img) => img.trim()),
-      });
+      const thisProduct = await Product.create(product, { transaction });
+      await this.createImages(
+        product.image.split(',').map((img) => img.trim()),
+        thisProduct.id,
+        transaction,
+      );
+      await transaction.commit();
       return;
     } catch (error) {
+      await transaction.rollback();
       throw new InternalServerErrorException(
         `Ocurrio un error al querer crear el producto.\nError: ${error.message}`,
       );
     }
   }
+
+  public async createImages(
+    images: string[],
+    productId: string,
+    transaction: Transaction,
+  ): Promise<void> {
+    try {
+      for await (const img of images) {
+        const { data } = await axios.get(img, {
+          responseType: 'arraybuffer',
+        });
+
+        await this.imageModel.create({ image: data, productId }, { transaction })
+      }
+      return;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Ocurrió un problema al subir las imagenes al Servidor.\nError: ${error.message}`,
+      );
+    }
+  }
+
+  async DeleteProductImages(
+    dataProducts: IDeleteProductImage[],
+  ): Promise<IDestroyedImagesResponse> {
+    try {
+      let count = 0;
+      const totalImagesRequested = dataProducts.length;
+      for await (const { id, productId } of dataProducts) {
+        count += await this.imageModel.destroy({ where: { id, productId }, force: true })
+      }
+      return {
+        statusCode: 200,
+        message: `Eliminacion de imagenes solicitadas ${count}/${totalImagesRequested}`,
+        requested: totalImagesRequested,
+        total: count,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Ocurrió un error al intentar eliminar las imagenes de la base de datos!.\nError ${error.message}`,
+      );
+    }
+  }
+
 }

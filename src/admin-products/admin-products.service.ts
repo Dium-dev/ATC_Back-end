@@ -27,6 +27,8 @@ import {
   IProduct,
   IUpdateDataProduct,
 } from './interfaces/updateDataProduct.interface';
+import { IDeleteProductImage } from './dto/deleteProductImage.dto';
+import { IDestroyedImagesResponse } from 'src/products/interfaces/destroyedImages.interfaces';
 
 @Injectable()
 export class AdminProductsService {
@@ -108,21 +110,34 @@ export class AdminProductsService {
   async JsonToDatabase(
     allProducts: any[],
   ): Promise<IResponseCreateOrUpdateProducts> {
-    for (const [index, value] of allProducts.entries()) {
-      const thisProduct: Product | null =
-        await this.productsService.findByPkToValidateExistentProduct(
-          value['Número de publicación'],
-        );
-      if (thisProduct) {
-        await this.updateProduct(thisProduct, value, index);
+    const results = await Promise.allSettled(
+      allProducts.map(async (value, index) => {
+        const thisProduct: Product | null =
+          await this.productsService.findByPkToValidateExistentProduct(
+            value['Número de publicación'],
+          );
+        if (thisProduct) {
+          await this.updateProduct(thisProduct, value, index);
+        } else {
+          await this.createNewProduct(value, index);
+        }
+      }),
+    );
+    let successful = 0;
+    const errors = [];
+    for await (const [index, value] of results.entries()) {
+      if (value.status == 'fulfilled') {
+        successful += 1;
       } else {
-        await this.createNewProduct(value, index);
+        errors.push({ index, reason: value.reason });
       }
     }
 
     return {
       statusCode: 201,
       message: 'Productos creados / actualizados con éxito!',
+      successful,
+      errors,
     };
   }
 
@@ -184,7 +199,7 @@ export class AdminProductsService {
       thisProduct.price = Number(product['Precio COP']);
       thisProduct.availability =
         Number(product['Disponibilidad de stock (días)']) || 0;
-      thisProduct.image = product.Fotos.split(',').map((img) => img.trim());
+      /* thisProduct.image = product.Fotos.split(',').map((img) => img.trim()); */
       (thisProduct.year = product.Año), (thisProduct.brandId = brandId);
       thisProduct.categoryId = categoryId;
       thisProduct.model = product.Modelo;
@@ -203,7 +218,7 @@ export class AdminProductsService {
 
   async updateOneProduct(id: string, product: IUpdateDataProduct) {
     try {
-      await this.productsService.updateProduct(product, { where: { id } });
+      await this.productsService.updateProduct(product, { where: { id } }, id);
       return;
     } catch (error) {
       switch (error.constructor) {
@@ -226,6 +241,16 @@ export class AdminProductsService {
         default:
           throw new InternalServerErrorException(error.message);
       }
+    }
+  }
+
+  async DeleteImages(
+    dataProducts: IDeleteProductImage[],
+  ): Promise<IDestroyedImagesResponse> {
+    try {
+      return await this.productsService.DeleteProductImages(dataProducts);
+    } catch (error) {
+      throw new Error(error.message);
     }
   }
 }

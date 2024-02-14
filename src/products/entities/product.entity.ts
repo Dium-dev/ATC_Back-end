@@ -6,6 +6,7 @@ import {
   BelongsTo,
   ForeignKey,
   BelongsToMany,
+  HasMany,
 } from 'sequelize-typescript';
 import { Brand } from '../../brands/entities/brand.entity';
 import { Categories } from '../../categories/entities/category.entity';
@@ -16,6 +17,7 @@ import { ShoppingCart } from '../../shopping-cart/entities/shopping-cart.entity'
 import { User } from 'src/users/entities/user.entity';
 import { UserProductFav } from 'src/orders/entities/userProductFav.entity';
 import { FavProduct } from 'src/orders/entities/favProduct.entity';
+import { Image } from 'src/products/entities/image.entity';
 
 export enum StateProduct {
   Active = 'Activo',
@@ -95,12 +97,6 @@ export class Product extends Model<Product> {
   mostSelled?: boolean;
 
   @Column({
-    type: DataType.ARRAY(DataType.STRING),
-    allowNull: true,
-  })
-  image: string[];
-
-  @Column({
     type: DataType.STRING,
     allowNull: true,
   })
@@ -111,6 +107,9 @@ export class Product extends Model<Product> {
     allowNull: true,
   })
   year: string;
+
+  @HasMany(() => Image, {})
+  images: Image[];
 
   @ForeignKey(() => Brand)
   @Column({

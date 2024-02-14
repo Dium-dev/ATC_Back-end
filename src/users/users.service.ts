@@ -41,6 +41,8 @@ import { Categories } from 'src/categories/entities/category.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { IUpdateUserRol } from './interfaces/updateUserRol.interface';
 import { Op } from 'sequelize';
+import { Image } from 'src/products/entities/image.entity';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class UsersService {
@@ -51,6 +53,8 @@ export class UsersService {
     private authService: AuthService,
     @Inject(MailService)
     private mailsService: MailService,
+    @Inject(forwardRef(() => ProductsService))
+    private productService: ProductsService,
     @Inject(forwardRef(() => ShoppingCartService))
     private shopCartService: ShoppingCartService,
     private sequelize: Sequelize,
@@ -146,7 +150,9 @@ export class UsersService {
         case UnauthorizedException:
           throw new UnauthorizedException(error.message);
         default:
-          throw new InternalServerErrorException('Error interno del servidor.\n' + error.message);
+          throw new InternalServerErrorException(
+            'Error interno del servidor.\n' + error.message,
+          );
       }
     }
   }
@@ -167,7 +173,9 @@ export class UsersService {
         case UnauthorizedException:
           throw new UnauthorizedException(error.message);
         default:
-          throw new InternalServerErrorException('Error interno del servidor.\n' + error.message);
+          throw new InternalServerErrorException(
+            'Error interno del servidor.\n' + error.message,
+          );
       }
     }
   }
@@ -237,8 +245,8 @@ export class UsersService {
             include: [
               {
                 model: Product,
-                attributes: ['id', 'title', 'state', 'price', 'image'],
-                include: [{ model: Categories }, { model: Brand }],
+                attributes: ['id', 'title', 'state', 'price'],
+                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
                 through: { attributes: ['id', 'amount'] },
               },
             ],
@@ -253,8 +261,8 @@ export class UsersService {
               },
               {
                 model: Product,
-                attributes: ['id', 'title', 'state', 'price', 'image'],
-                include: [{ model: Categories }, { model: Brand }],
+                attributes: ['id', 'title', 'state', 'price'],
+                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
                 through: { attributes: ['amount', 'price'] },
               },
               {
@@ -290,14 +298,16 @@ export class UsersService {
         ],
       });
 
+      
+
       return {
         totalUser: count,
         totalPages: Math.ceil(count / limit),
         users: rows,
-        page
+        page,
       };
     } catch (error) {
-      throw new InternalServerErrorException('Error al buscar usuarios.');
+      throw new InternalServerErrorException('Error al buscar usuarios.' + error.message);
     }
   }
 
@@ -427,8 +437,8 @@ export class UsersService {
             include: [
               {
                 model: Product,
-                attributes: ['id', 'title', 'state', 'price', 'image'],
-                include: [{ model: Categories }, { model: Brand }],
+                attributes: ['id', 'title', 'state', 'price'],
+                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
                 through: { attributes: ['id', 'amount'] },
               },
             ],
@@ -443,8 +453,8 @@ export class UsersService {
               },
               {
                 model: Product,
-                attributes: ['id', 'title', 'state', 'price', 'image'],
-                include: [{ model: Categories }, { model: Brand }],
+                attributes: ['id', 'title', 'state', 'price'],
+                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
                 through: { attributes: ['amount', 'price'] },
               },
               {
@@ -468,8 +478,8 @@ export class UsersService {
             include: [
               {
                 model: Product,
-                attributes: ['id', 'title', 'state', 'price', 'image'],
-                include: [{ model: Categories }, { model: Brand }],
+                attributes: ['id', 'title', 'state', 'price'],
+                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
                 through: { attributes: [] },
               },
             ],

@@ -29,6 +29,7 @@ import { Transaction } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { Direction } from 'src/directions/entities/direction.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { Image } from 'src/products/entities/image.entity';
 
 @Injectable()
 export class OrdersService {
@@ -44,7 +45,7 @@ export class OrdersService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) {}
+  ) { }
 
   async findOneOrder(id: string, userId: string) {
     try {
@@ -57,13 +58,17 @@ export class OrdersService {
         include: [
           {
             model: Product,
-            attributes: ['id', 'title', 'price', 'image', 'model', 'year'],
+            attributes: ['id', 'title', 'price', 'model', 'year'],
             through: {
               attributes: ['amount', 'price'],
             },
+            include: [
+              { model: Image, attributes: ['image'] },
+            ]
           },
           {
             model: Direction,
+            attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone'],
           },
         ],
       });
@@ -96,13 +101,17 @@ export class OrdersService {
         include: [
           {
             model: Product,
-            attributes: ['id', 'title', 'price', 'image', 'model', 'year'],
+            attributes: ['id', 'title', 'price', 'model', 'year'],
             through: {
               attributes: ['amount', 'price'],
             },
+            include: [
+              { model: Image, attributes: ['image'] },
+            ]
           },
           {
             model: Direction,
+            attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone'],
           },
         ],
       });
@@ -262,11 +271,14 @@ export class OrdersService {
             {
               model: Product,
               attributes: ['id', 'title'],
+              include: [
+                { model: Image, attributes: ['image'] }
+              ],
               through: { attributes: ['id', 'price', 'amount'] },
             },
             {
               model: Direction,
-              attributes: ['id', 'codigoPostal', 'ciudad', 'estado', 'calle'],
+              attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone'],
             },
             {
               model: User,

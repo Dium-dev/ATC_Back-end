@@ -14,8 +14,6 @@ export const AuthAdminUser = createParamDecorator(
     const requestPath = req.path;
     const requestMethod = req.method;
 
-    console.log(requestMethod + '\n' + requestPath);
-
     if (
       requestPath.includes('/admin-products') ||
       (requestPath.includes('/users') && requestMethod == 'PATCH')
