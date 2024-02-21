@@ -83,37 +83,78 @@ export class ContactController {
   @ApiBody({ type: ContactFormDto })
   @Post()
   async sendContactForm(@Body() contactData: ContactFormDto) {
-    try {
-      const userContext: IContactFormUserContext = {
-        firstname: contactData.name,
-      };
+    const userContext: IContactFormUserContext = {
+      firstname: contactData.name,
+    };
 
-      await this.mailService.sendMails({
+    await this.mailService
+      .sendMails({
         EmailAddress: contactData.userEmail,
         subject: Cases.CONTACT_FORM_USER,
         context: userContext,
+      })
+      .then(async () => {
+        const adminContext: IContactFormAdminContext = {
+          name: contactData.name,
+          phone: contactData.phone,
+          message: contactData.message,
+          userEmail: contactData.userEmail,
+        };
+
+        await this.mailService.sendMails({
+          EmailAddress: ADMIN_EMAIL,
+          subject: Cases.CONTACT_FORM_ADMIN,
+          context: adminContext,
+        });
+        return;
       });
 
-      const adminContext: IContactFormAdminContext = {
-        name: contactData.name,
-        phone: contactData.phone,
-        message: contactData.message,
-        userEmail: contactData.userEmail,
-        userId: contactData.userId,
-      };
+    return {
+      status: 200,
+      message: 'Formulario de contacto enviado con éxito',
+    };
+  }
 
-      await this.mailService.sendMails({
-        EmailAddress: ADMIN_EMAIL,
-        subject: Cases.CONTACT_FORM_ADMIN,
-        context: adminContext,
+  @ApiOperation({
+    summary: 'Ruta para contact form del front',
+  })
+  @ApiBody({ type: ContactFormDto })
+  @UseGuards(JwtAuthGuard)
+  @Post('AuthUser')
+  async sendContactFormAuthUser(
+    @GetUser() { userId }: IGetUser,
+    @Body() contactData: ContactFormDto,
+  ) {
+    const userContext: IContactFormUserContext = {
+      firstname: contactData.name,
+    };
+
+    await this.mailService
+      .sendMails({
+        EmailAddress: contactData.userEmail,
+        subject: Cases.CONTACT_FORM_USER,
+        context: userContext,
+      })
+      .then(async () => {
+        const adminContext: IContactFormAdminContext = {
+          name: contactData.name,
+          phone: contactData.phone,
+          message: contactData.message,
+          userEmail: contactData.userEmail,
+          userId,
+        };
+
+        await this.mailService.sendMails({
+          EmailAddress: ADMIN_EMAIL,
+          subject: Cases.CONTACT_FORM_ADMIN,
+          context: adminContext,
+        });
+        return;
       });
 
-      return {
-        status: 200,
-        message: 'Formulario de contacto enviado con éxito',
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
+    return {
+      status: 200,
+      message: 'Formulario de contacto enviado con éxito',
+    };
   }
 }

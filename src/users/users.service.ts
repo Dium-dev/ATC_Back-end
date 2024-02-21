@@ -66,7 +66,7 @@ export class UsersService {
     private orderService: OrdersService,
     @Inject(forwardRef(() => PaymentsService))
     private paymentService: PaymentsService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<ICreateUser> {
     const transaction: Transaction = await this.sequelize.transaction();
@@ -246,7 +246,11 @@ export class UsersService {
               {
                 model: Product,
                 attributes: ['id', 'title', 'state', 'price'],
-                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
+                include: [
+                  { model: Categories },
+                  { model: Brand },
+                  { model: Image, attributes: ['image'] },
+                ],
                 through: { attributes: ['id', 'amount'] },
               },
             ],
@@ -262,7 +266,11 @@ export class UsersService {
               {
                 model: Product,
                 attributes: ['id', 'title', 'state', 'price'],
-                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
+                include: [
+                  { model: Categories },
+                  { model: Brand },
+                  { model: Image, attributes: ['image'] },
+                ],
                 through: { attributes: ['amount', 'price'] },
               },
               {
@@ -298,8 +306,6 @@ export class UsersService {
         ],
       });
 
-      
-
       return {
         totalUser: count,
         totalPages: Math.ceil(count / limit),
@@ -307,7 +313,9 @@ export class UsersService {
         page,
       };
     } catch (error) {
-      throw new InternalServerErrorException('Error al buscar usuarios.' + error.message);
+      throw new InternalServerErrorException(
+        'Error al buscar usuarios.' + error.message,
+      );
     }
   }
 
@@ -324,8 +332,9 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se inactivó la cuenta del Usuario: ${user.firstName + ' ' + user.lastName
-                } correctamente.`,
+              message: `Se inactivó la cuenta del Usuario: ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
               status: HttpStatusCode.NoContent,
             };
           });
@@ -336,8 +345,9 @@ export class UsersService {
           .then(async () => {
             await user.save().then(async () => transaction.commit());
             return {
-              message: `Se ah restaurado la cuenta del Usuario ${user.firstName + ' ' + user.lastName
-                } correctamente.`,
+              message: `Se ah restaurado la cuenta del Usuario ${
+                user.firstName + ' ' + user.lastName
+              } correctamente.`,
               status: HttpStatusCode.Ok,
             };
           });
@@ -438,7 +448,11 @@ export class UsersService {
               {
                 model: Product,
                 attributes: ['id', 'title', 'state', 'price'],
-                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
+                include: [
+                  { model: Categories },
+                  { model: Brand },
+                  { model: Image, attributes: ['image'] },
+                ],
                 through: { attributes: ['id', 'amount'] },
               },
             ],
@@ -454,7 +468,11 @@ export class UsersService {
               {
                 model: Product,
                 attributes: ['id', 'title', 'state', 'price'],
-                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
+                include: [
+                  { model: Categories },
+                  { model: Brand },
+                  { model: Image, attributes: ['image'] },
+                ],
                 through: { attributes: ['amount', 'price'] },
               },
               {
@@ -479,7 +497,11 @@ export class UsersService {
               {
                 model: Product,
                 attributes: ['id', 'title', 'state', 'price'],
-                include: [{ model: Categories }, { model: Brand }, { model: Image, attributes: ['image'] }],
+                include: [
+                  { model: Categories },
+                  { model: Brand },
+                  { model: Image, attributes: ['image'] },
+                ],
                 through: { attributes: [] },
               },
             ],
@@ -512,7 +534,7 @@ export class UsersService {
         default:
           throw new InternalServerErrorException(
             'Ocurrio un error al trabajar la entidad Usuario a la hora de indagar por el perfil del usuario.\n' +
-            error.message,
+              error.message,
           );
       }
     }

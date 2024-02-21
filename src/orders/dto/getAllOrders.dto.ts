@@ -36,7 +36,9 @@ export class GetAllOrdersDto {
     message: '$property no debe estar vacío',
   })
   @IsEnum(OrderStateEnum, {
-    message: `la propiedad $property debe ser un tipo de estado de las ordenes (${Object.values(OrderStateEnum)})`,
+    message: `la propiedad $property debe ser un tipo de estado de las ordenes (${Object.values(
+      OrderStateEnum,
+    )})`,
   })
   //El estado actual de la orden
   status: OrderStateEnum;
@@ -45,8 +47,9 @@ export class GetAllOrdersDto {
     message: '$property no debe estar vacío',
   })
   @IsEnum(DateOrder, {
-    message:
-      `la propiedad $property contener "ASC" o "DESC" acorde al tipo de orden que requiera (${Object.values(DateOrder)})`,
+    message: `la propiedad $property contener "ASC" o "DESC" acorde al tipo de orden que requiera (${Object.values(
+      DateOrder,
+    )})`,
   })
   //El orden en el que se envían las órdenes
   order: DateOrder;

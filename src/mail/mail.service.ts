@@ -96,22 +96,21 @@ export class MailService {
           });
           break;
         case Cases.CONTACT_FORM_ADMIN:
-          if ('userId' in context)
-            mail = await this.mailerService.sendMail({
-              to: EmailAddress,
-              subject: context.userId
-                ? `Ayuda para Usuario ID: ${context.userId}`
-                : 'Recibiste una Consulta Gral',
-              template: Templates.contactFormAdmin,
-              context: context,
-              attachments: [
-                {
-                  filename: 'ATCarroLogo.png',
-                  path: './src/public/ATCarroLogo.png',
-                  cid: 'headerATCLogo',
-                },
-              ],
-            });
+          mail = await this.mailerService.sendMail({
+            to: EmailAddress,
+            subject: context['userId']
+              ? `Ayuda para Usuario ID: ${context['userId']}`
+              : 'Recibiste una Consulta Gral',
+            template: Templates.contactFormAdmin,
+            context: context,
+            attachments: [
+              {
+                filename: 'ATCarroLogo.png',
+                path: './src/public/ATCarroLogo.png',
+                cid: 'headerATCLogo',
+              },
+            ],
+          });
           break;
 
         case Cases.UPDATE_ORDER:
@@ -133,17 +132,14 @@ export class MailService {
       }
       //If mail.accepted: [ user_email ]
       if (mail && mail.accepted && mail.accepted.length) {
-        return {
-          statusCode: 200,
-          message: 'El link para recuperar la contraseña ha sido enviado',
-        };
+        return;
       } else {
         throw new InternalServerErrorException(
           'Error al enviar el correo de recuperación',
         );
       }
     } catch (error) {
-      throw new HttpException(new Error(error.message), error.status);
+      throw new InternalServerErrorException(error.message);
     }
   }
 }
