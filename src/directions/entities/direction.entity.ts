@@ -17,7 +17,9 @@ import { Order } from 'src/orders/entities/order.entity';
   hooks: {
     async afterCreate(instance: Direction, { transaction }) {
       if (!instance.phone) {
-        const thisPhoneNumber = await User.findByPk(instance.userId, { transaction });
+        const thisPhoneNumber = await User.findByPk(instance.userId, {
+          transaction,
+        });
         instance.phone = thisPhoneNumber.phone;
         await instance.save({ transaction });
       }

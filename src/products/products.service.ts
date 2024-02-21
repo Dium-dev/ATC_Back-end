@@ -65,7 +65,7 @@ export class ProductsService {
     @InjectModel(Image)
     private imageModel: typeof Image,
     private sequelize: Sequelize,
-  ) { }
+  ) {}
 
   async getQueryDB(query: QueryProductsDto): Promise<IQuery> {
     const limit = parseInt(query.limit);
@@ -219,7 +219,7 @@ export class ProductsService {
           { model: Image, attributes: ['image'] },
           { model: Categories },
           { model: Brand },
-        ]
+        ],
       });
 
       if (product) {
@@ -372,7 +372,8 @@ export class ProductsService {
     } catch (error) {
       await transaction.rollback();
       throw new InternalServerErrorException(
-        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${product.Título
+        `Ocurrio un error al trabajar la entidad Producto a la hora de crear el producto ${
+          product.Título
         } del indice ${index + 2}.\n ${error.message}`,
       );
     }
@@ -441,9 +442,7 @@ export class ProductsService {
               model: Product,
               attributes: ['id'],
               through: { attributes: [] },
-              include: [
-                { model: Image, attributes: ['image'] },
-              ]
+              include: [{ model: Image, attributes: ['image'] }],
             },
           ],
         });
@@ -524,7 +523,10 @@ export class ProductsService {
           responseType: 'arraybuffer',
         });
 
-        await this.imageModel.create({ image: data, productId }, { transaction })
+        await this.imageModel.create(
+          { image: data, productId },
+          { transaction },
+        );
       }
       return;
     } catch (error) {
@@ -541,7 +543,10 @@ export class ProductsService {
       let count = 0;
       const totalImagesRequested = dataProducts.length;
       for await (const { id, productId } of dataProducts) {
-        count += await this.imageModel.destroy({ where: { id, productId }, force: true })
+        count += await this.imageModel.destroy({
+          where: { id, productId },
+          force: true,
+        });
       }
       return {
         statusCode: 200,
@@ -555,5 +560,4 @@ export class ProductsService {
       );
     }
   }
-
 }

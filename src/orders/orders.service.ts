@@ -45,7 +45,7 @@ export class OrdersService {
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     private sequelize: Sequelize,
-  ) { }
+  ) {}
 
   async findOneOrder(id: string, userId: string) {
     try {
@@ -62,13 +62,19 @@ export class OrdersService {
             through: {
               attributes: ['amount', 'price'],
             },
-            include: [
-              { model: Image, attributes: ['image'] },
-            ]
+            include: [{ model: Image, attributes: ['image'] }],
           },
           {
             model: Direction,
-            attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone'],
+            attributes: [
+              'id',
+              'city',
+              'district',
+              'address',
+              'addressReference',
+              'neighborhood',
+              'phone',
+            ],
           },
         ],
       });
@@ -105,13 +111,19 @@ export class OrdersService {
             through: {
               attributes: ['amount', 'price'],
             },
-            include: [
-              { model: Image, attributes: ['image'] },
-            ]
+            include: [{ model: Image, attributes: ['image'] }],
           },
           {
             model: Direction,
-            attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone'],
+            attributes: [
+              'id',
+              'city',
+              'district',
+              'address',
+              'addressReference',
+              'neighborhood',
+              'phone',
+            ],
           },
         ],
       });
@@ -271,14 +283,20 @@ export class OrdersService {
             {
               model: Product,
               attributes: ['id', 'title'],
-              include: [
-                { model: Image, attributes: ['image'] }
-              ],
+              include: [{ model: Image, attributes: ['image'] }],
               through: { attributes: ['id', 'price', 'amount'] },
             },
             {
               model: Direction,
-              attributes: ['id', 'city', 'district', 'address', 'addressReference', 'neighborhood', 'phone'],
+              attributes: [
+                'id',
+                'city',
+                'district',
+                'address',
+                'addressReference',
+                'neighborhood',
+                'phone',
+              ],
             },
             {
               model: User,

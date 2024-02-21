@@ -39,7 +39,7 @@ export class ShoppingCartService {
     private productsService: ProductsService,
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
-  ) { }
+  ) {}
 
   async postProductInCart(
     productId: string,
@@ -190,9 +190,7 @@ export class ShoppingCartService {
             model: Product,
             attributes: ['id', 'title', 'price'],
             through: { attributes: ['id', 'amount'] },
-            include: [
-              { model: Image, attributes: ['image'] },
-            ]
+            include: [{ model: Image, attributes: ['image'] }],
           },
         ],
       });

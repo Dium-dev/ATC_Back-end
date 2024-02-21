@@ -38,12 +38,4 @@ export class ContactFormDto {
       'Recibe el email del usuario y verifica si es el formato adecuado. Requerido',
   })
   userEmail: string;
-
-  @IsNotEmpty({ message: 'La propiedad $property, no debe estar vacia' })
-  @IsUUID('4', { message: 'La propiedad $property, debe ser un Id de tipo V4' })
-  @ApiProperty({
-    description: 'ID del usuario (opcional, para usuarios autenticados)',
-    required: false,
-  })
-  userId: string;
 }
